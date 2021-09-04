@@ -13,4 +13,19 @@
         <tag>preface</tag>
       </tags>
   </entry>
+  <entry>
+    <title>ThinkPhp的常见漏洞</title>
+    <url>/2021/09/04/thinkphp%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="一、信息泄露"><a href="#一、信息泄露" class="headerlink" title="一、信息泄露"></a>一、信息泄露</h2><p>开启了debug模式的ThinkPhp网站会在错误页面显示版本信息</p>
+<h2 id="二、RCE"><a href="#二、RCE" class="headerlink" title="二、RCE"></a>二、RCE</h2>]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>thinkphp</tag>
+      </tags>
+  </entry>
 </search>
