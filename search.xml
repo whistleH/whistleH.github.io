@@ -4,6 +4,8 @@
     <title>Hello World</title>
     <url>/2021/08/26/hello-world/</url>
     <content><![CDATA[<h2 id="写在前面的一些话"><a href="#写在前面的一些话" class="headerlink" title="写在前面的一些话"></a>写在前面的一些话</h2><p>Welcome to my blog!</p>
+<span id="more"></span>
+
 <p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
 <p>（在CTF的学习路上看到好多hexo框架的博客，这就是ctfer的必经之路吗orz。希望等有一天我写过的CTF博客被人搜索出来的时候，我还在做安全吧</p>
 ]]></content>
