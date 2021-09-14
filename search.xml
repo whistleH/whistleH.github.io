@@ -57,7 +57,9 @@
 <h5 id="2、引号与反斜杠转移字符绕过"><a href="#2、引号与反斜杠转移字符绕过" class="headerlink" title="2、引号与反斜杠转移字符绕过"></a>2、引号与反斜杠转移字符绕过</h5><p>Linux bash中，</p>
 <p>flag.php 等价于  fla””g.php（原理：字符串的连接，fla””g.php = fla + “” +g.php，或者是转义，待考证</p>
 <p>flag.php 等价于  fla\g.php  （原理：转义字符）</p>
-<h5 id="3、同义特殊字符的替换"><a href="#3、同义特殊字符的替换" class="headerlink" title="3、同义特殊字符的替换"></a>3、同义特殊字符的替换</h5>]]></content>
+<h5 id="3、同义特殊字符的替换"><a href="#3、同义特殊字符的替换" class="headerlink" title="3、同义特殊字符的替换"></a>3、同义特殊字符的替换</h5><p><a href="https://blog.csdn.net/weixin_43460822/article/details/101622147">Linux 的 管道运算符+%0a</a></p>
+<p><a href="https://blog.csdn.net/JC_xxx/article/details/108921607">Linux 的文件读取指令 + grep</a></p>
+]]></content>
       <categories>
         <category>ctf</category>
         <category>web</category>
