@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.1">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -264,7 +264,7 @@
 <p>我们尝试url注入，在page处加上一个引号封闭一下，果然弹出来第一个flag。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://19d516b0310286729dd8449820bfdb6f.ctf.hacker101.com/page/edit/1&#x27;</span><br></pre></td></tr></table></figure>
 <p>接下来，我们进入test页面，发现这里留了一个留言板，非常有XSS的暗示性，我们直接上手来一个</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;<span class="title function_">alert</span>(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
 <p>有意思的是，这个留言板在后端显然把script过滤了，并且值给了我们</p>
 
     </div>
