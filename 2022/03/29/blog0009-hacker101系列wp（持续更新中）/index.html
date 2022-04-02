@@ -28,14 +28,18 @@
 <meta property="og:site_name" content="The world of whistleH">
 <meta property="og:description" content="一、Micro-CMS v1这道题有4个flag，我们逐个分解。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_3.png">
 <meta property="article:published_time" content="2022-03-29T13:53:28.000Z">
-<meta property="article:modified_time" content="2022-03-29T14:06:55.850Z">
+<meta property="article:modified_time" content="2022-04-02T11:39:08.875Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="wp">
 <meta property="article:tag" content="hacker101">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_1.png">
 
 <link rel="canonical" href="http://example.com/2022/03/29/blog0009-hacker101%E7%B3%BB%E5%88%97wp%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%E4%B8%AD%EF%BC%89/">
 
@@ -220,10 +224,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-03-29 21:53:28 / 修改时间：22:06:55" itemprop="dateCreated datePublished" datetime="2022-03-29T21:53:28+08:00">2022-03-29</time>
+              <time title="创建时间：2022-03-29 21:53:28" itemprop="dateCreated datePublished" datetime="2022-03-29T21:53:28+08:00">2022-03-29</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-02 19:39:08" itemprop="dateModified" datetime="2022-04-02T19:39:08+08:00">2022-04-02</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -260,12 +270,19 @@
         <h2 id="一、Micro-CMS-v1"><a href="#一、Micro-CMS-v1" class="headerlink" title="一、Micro-CMS v1"></a>一、Micro-CMS v1</h2><p>这道题有4个flag，我们逐个分解。</p>
 <span id="more"></span>
 <p>首先一进来，页面异常简洁，直接Ctrl+U，观察一下全局，url中page带数字。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_1.png" alt=""></p>
 <p>其实一般来说page含数字的，我们可以考虑一下是不是有文件包含（include）或者注入点（查询）。</p>
 <p>我们尝试url注入，在page处加上一个引号封闭一下，果然弹出来第一个flag。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://19d516b0310286729dd8449820bfdb6f.ctf.hacker101.com/page/edit/1&#x27;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_2.png" alt=""></p>
 <p>接下来，我们进入test页面，发现这里留了一个留言板，非常有XSS的暗示性，我们直接上手来一个</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_3.png" alt=""></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>有意思的是，这个留言板在后端显然把script过滤了，并且值给了我们</p>
+<p>有意思的是，这个留言板在后端显然把script过滤了，但是这个过滤还是太年轻了，我们尝试换种思路注入</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;buttun onclick=<span class="string">&quot;alert(1)&quot;</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>同理，我们也可以在标题框注入，这样得到了两个flag。</p>
+<p>那么最后一个flag在哪里？我们这时候尝试创建一个新的留言板。</p>
+<p>进入之后观察，发现新的界面的page跳过3-7，怀疑一下其中有猫腻，于是bp爆破，发现其中一个返回405，其他都是404，进入edit页面之后，访问得到最后一个flag</p>
 
     </div>
 
@@ -373,13 +390,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
