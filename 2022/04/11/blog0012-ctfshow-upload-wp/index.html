@@ -29,12 +29,12 @@
 <meta property="og:description" content="一、写在前面 文件上传开始">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-04-11T05:36:58.000Z">
-<meta property="article:modified_time" content="2022-04-14T07:54:37.966Z">
+<meta property="article:modified_time" content="2022-10-19T12:11:06.924Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="web">
-<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="wp">
+<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="upload">
 <meta name="twitter:card" content="summary">
 
@@ -231,7 +231,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-14 15:54:37" itemprop="dateModified" datetime="2022-04-14T15:54:37+08:00">2022-04-14</time>
+                <time title="修改时间：2022-10-19 20:11:06" itemprop="dateModified" datetime="2022-10-19T20:11:06+08:00">2022-10-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -298,7 +298,7 @@
 <p>同web157，一把过。</p>
 <h3 id="web159">web159</h3>
 <p>同web157</p>
-<h3 id="web160日志包含逃逸">web160（日志包含逃逸）</h3>
+<h3 id="web160.user.ini包含逃逸">web160（.user.ini包含逃逸）</h3>
 <p>这道题还是基于上面<code>.user.ini</code>的攻击思路，但是也需要类似逃逸的思路。</p>
 <p>首先描述一下攻击思路：</p>
 <p><strong>.user.ini（文件包含）--&gt; 上传1.png（rce，可控）--&gt; /upload/index.php 攻击</strong></p>
@@ -353,8 +353,8 @@
           <div class="post-tags">
               <a href="/tags/ctf/" rel="tag"># ctf</a>
               <a href="/tags/web/" rel="tag"># web</a>
-              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
               <a href="/tags/wp/" rel="tag"># wp</a>
+              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
               <a href="/tags/upload/" rel="tag"># upload</a>
           </div>
 
@@ -429,7 +429,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">一、写在前面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#web151%E7%BB%95%E8%BF%87%E5%89%8D%E7%AB%AF%E6%A0%A1%E9%AA%8C"><span class="nav-text">web151（绕过前端校验）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web152%E7%BB%95%E8%BF%87content-type"><span class="nav-text">web152（绕过Content-Type）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web153.user.ini"><span class="nav-text">web153（.user.ini）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web154%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E6%A0%A1%E9%AA%8C"><span class="nav-text">web154（文件内容校验）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web155"><span class="nav-text">web155</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web156"><span class="nav-text">web156</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web157"><span class="nav-text">web157</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web158"><span class="nav-text">web158</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web159"><span class="nav-text">web159</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web160%E6%97%A5%E5%BF%97%E5%8C%85%E5%90%AB%E9%80%83%E9%80%B8"><span class="nav-text">web160（日志包含逃逸）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web161%E6%96%87%E4%BB%B6%E5%A4%B4%E6%A3%80%E6%9F%A5%E7%BB%95%E8%BF%87"><span class="nav-text">web161（文件头检查绕过）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web164png%E6%96%87%E4%BB%B6%E6%B8%B2%E6%9F%93"><span class="nav-text">web164（PNG文件渲染）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web165jpg%E6%B8%B2%E6%9F%93%E7%BB%95%E8%BF%87"><span class="nav-text">web165（JPG渲染绕过）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web166zip%E4%BC%AA%E5%8D%8F%E8%AE%AE%E8%AF%BB%E5%8F%96"><span class="nav-text">web166（zip伪协议读取）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web167.htaccess%E8%A7%A3%E6%9E%90"><span class="nav-text">web167（.htaccess解析）</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">一、写在前面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#web151%E7%BB%95%E8%BF%87%E5%89%8D%E7%AB%AF%E6%A0%A1%E9%AA%8C"><span class="nav-text">web151（绕过前端校验）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web152%E7%BB%95%E8%BF%87content-type"><span class="nav-text">web152（绕过Content-Type）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web153.user.ini"><span class="nav-text">web153（.user.ini）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web154%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E6%A0%A1%E9%AA%8C"><span class="nav-text">web154（文件内容校验）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web155"><span class="nav-text">web155</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web156"><span class="nav-text">web156</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web157"><span class="nav-text">web157</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web158"><span class="nav-text">web158</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web159"><span class="nav-text">web159</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web160.user.ini%E5%8C%85%E5%90%AB%E9%80%83%E9%80%B8"><span class="nav-text">web160（.user.ini包含逃逸）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web161%E6%96%87%E4%BB%B6%E5%A4%B4%E6%A3%80%E6%9F%A5%E7%BB%95%E8%BF%87"><span class="nav-text">web161（文件头检查绕过）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web164png%E6%96%87%E4%BB%B6%E6%B8%B2%E6%9F%93"><span class="nav-text">web164（PNG文件渲染）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web165jpg%E6%B8%B2%E6%9F%93%E7%BB%95%E8%BF%87"><span class="nav-text">web165（JPG渲染绕过）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web166zip%E4%BC%AA%E5%8D%8F%E8%AE%AE%E8%AF%BB%E5%8F%96"><span class="nav-text">web166（zip伪协议读取）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web167.htaccess%E8%A7%A3%E6%9E%90"><span class="nav-text">web167（.htaccess解析）</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
