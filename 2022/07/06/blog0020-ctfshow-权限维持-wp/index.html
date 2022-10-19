@@ -33,8 +33,8 @@
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="web">
-<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="wp">
+<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="权限维持">
 <meta name="twitter:card" content="summary">
 
@@ -267,7 +267,8 @@
 
       
         <h2 id="写在前面">0、写在前面</h2>
-<p>开始学习权限维持啦 <span id="more"></span></p>
+<p>开始学习权限维持啦<br />
+<span id="more"></span></p>
 <h2 id="不死马的利用">1、不死马的利用</h2>
 <p>先看源代码。</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 题目说明：</span></span><br><span class="line"><span class="comment">// 想办法维持权限，确定无误后提交check，通过check后，才会生成flag，此前flag不存在</span></span><br><span class="line"></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span>(<span class="variable">$a</span>)&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;cmd&#x27;</span>:</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;cmd&#x27;</span>]);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;check&#x27;</span>:</span><br><span class="line">        file_get_contents(<span class="string">&quot;http://checker/api/check&quot;</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;params not validate&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
@@ -293,8 +294,8 @@
           <div class="post-tags">
               <a href="/tags/ctf/" rel="tag"># ctf</a>
               <a href="/tags/web/" rel="tag"># web</a>
-              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
               <a href="/tags/wp/" rel="tag"># wp</a>
+              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
               <a href="/tags/%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/" rel="tag"># 权限维持</a>
           </div>
 

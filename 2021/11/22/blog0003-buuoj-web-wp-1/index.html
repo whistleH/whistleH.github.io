@@ -338,9 +338,7 @@
 <p>可以注意到，这里在右上角获取到了我的IP地址，是一个跟后端交互的点，同时注意到这个网页使用的是smarty，基本可以考虑PHP的模板注入。</p>
 <p>首先我们尝试获取相关信息</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="variable">$smarty</span>.version&#125;	<span class="comment">//获取版本信息</span></span><br></pre></td></tr></table></figure>
-<figure>
-<img src="C:\Users\chendher\AppData\Roaming\Typora\typora-user-images\image-20220405202653660.png" alt="image-20220405202653660" /><figcaption aria-hidden="true">image-20220405202653660</figcaption>
-</figure>
+<p><img src="C:\Users\chendher\AppData\Roaming\Typora\typora-user-images\image-20220405202653660.png" alt="image-20220405202653660" /></p>
 <p>得到了smarty的版本为3+，在3以上版本的smarty禁止了<code>&#123;php&#125;&#123;/php&#125;</code>标签。</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;php&#125;phpinfo();&#123;/php&#125;</span><br></pre></td></tr></table></figure>
 <p>不过我们可以使用其他的标签（这里说起来感觉和XSS有点接近，毕竟都是涉及到Web画面渲染）。</p>

