@@ -18,15 +18,15 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="一、题目描述给你一个由数字和运算符组成的字符串 expression ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 按任意顺序 返回答案">
+  <meta name="description" content="一、题目描述 给你一个由数字和运算符组成的字符串 expression ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 按任意顺序 返回答案">
 <meta property="og:type" content="article">
 <meta property="og:title" content="leetcode-分治-为运算表达式设计优先级">
 <meta property="og:url" content="http://example.com/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="一、题目描述给你一个由数字和运算符组成的字符串 expression ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 按任意顺序 返回答案">
+<meta property="og:description" content="一、题目描述 给你一个由数字和运算符组成的字符串 expression ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 按任意顺序 返回答案">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-03-27T06:30:51.000Z">
 <meta property="article:modified_time" content="2022-03-30T11:00:32.306Z">
@@ -257,23 +257,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="一、题目描述"><a href="#一、题目描述" class="headerlink" title="一、题目描述"></a>一、题目描述</h2><p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
+        <h2 id="一题目描述">一、题目描述</h2>
+<p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
 <span id="more"></span>
 <p><strong>示例：</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">输入：expression = &quot;2-1-1&quot;</span><br><span class="line">输出：[0,2]</span><br><span class="line">解释：</span><br><span class="line">((2-1)-1) = 0 </span><br><span class="line">(2-(1-1)) = 2</span><br><span class="line"></span><br><span class="line">输入：expression = &quot;2*3-4*5&quot;</span><br><span class="line">输出：[-34,-14,-10,-10,10]</span><br><span class="line">解释：</span><br><span class="line">(2*(3-(4*5))) = -34 </span><br><span class="line">((2*3)-(4*5)) = -14 </span><br><span class="line">((2*(3-4))*5) = -10 </span><br><span class="line">(2*((3-4)*5)) = -10 </span><br><span class="line">(((2*3)-4)*5) = 10</span><br></pre></td></tr></table></figure>
 <p><strong>提示：</strong></p>
 <ul>
 <li>1 &lt;= expression.length &lt;= 20</li>
-<li>输入表达式中的所有整数值在范围 [0, 99] </li>
-<li>expression 由数字和算符 ‘+’、’-‘ 和 ‘*’ 组成。</li>
+<li>输入表达式中的所有整数值在范围 [0, 99]</li>
+<li>expression 由数字和算符 '+'、'-' 和 '*' 组成。</li>
 </ul>
-<h2 id="二、我的思路"><a href="#二、我的思路" class="headerlink" title="二、我的思路"></a>二、我的思路</h2><p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为</p>
-<script type="math/tex; mode=display">
+<h2 id="二我的思路">二、我的思路</h2>
+<p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为<br />
+<span class="math display">\[
 2*(3-4*5)\\
-2*3-(4*5)</script><p>但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理：</p>
-<script type="math/tex; mode=display">
-((2*3)-4)*5</script><p>但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<script type="math/tex">2*3</script>时，我们就把式子转化为$(6-4)*5$，这又是我们之前处理的范围了。</p>
-<p>于是，我们将我们之前的思路扭转一下，对于任意的表达式$c$，我们可以将其拆分为$a$ op $b$，这样我们就得到了分治处理的思路。</p>
+2*3-(4*5)
+\]</span><br />
+但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理：<br />
+<span class="math display">\[
+((2*3)-4)*5
+\]</span><br />
+但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<span class="math display">\[2*3\]</span>时，我们就把式子转化为<span class="math inline">\((6-4)*5\)</span>，这又是我们之前处理的范围了。</p>
+<p>于是，我们将我们之前的思路扭转一下，对于任意的表达式<span class="math inline">\(c\)</span>，我们可以将其拆分为<span class="math inline">\(a\)</span> op <span class="math inline">\(b\)</span>，这样我们就得到了分治处理的思路。</p>
 <p><strong>终止条件为：当表达式不存在操作符时，即表达式为数值时，我们直接返回数值本身</strong></p>
 <p>我的代码如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//计算表达式</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">cal</span><span class="params">(<span class="keyword">int</span> num1, <span class="keyword">int</span> num2 , <span class="keyword">char</span> op)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in"><span class="keyword">switch</span></span>(op)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;+&#x27;</span>: <span class="keyword">return</span> num1 + num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>: <span class="keyword">return</span> num1 - num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;*&#x27;</span>: <span class="keyword">return</span> num1 * num2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">diffWaysToCompute</span><span class="params">(string expression)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = expression.<span class="built_in">length</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; v3;</span><br><span class="line">        <span class="keyword">int</span> op_flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">char</span> op = expression[i];</span><br><span class="line">            <span class="keyword">if</span>(!(op == <span class="string">&#x27;+&#x27;</span> || op == <span class="string">&#x27;-&#x27;</span> || op ==<span class="string">&#x27;*&#x27;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            op_flag = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//计算前半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v1 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>(),expression.<span class="built_in">begin</span>() + i));</span><br><span class="line">            <span class="comment">//计算后半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v2 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>() + i + <span class="number">1</span>,expression.<span class="built_in">end</span>()));</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//二重循环，类似笛卡尔积</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;v1.<span class="built_in">size</span>();i++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;v2.<span class="built_in">size</span>();j++)</span><br><span class="line">                &#123;</span><br><span class="line">                    v3.<span class="built_in">push_back</span>(<span class="built_in">cal</span>(v1[i],v2[j],op));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在运算符，即到达终止条件</span></span><br><span class="line">        <span class="keyword">if</span>(op_flag == <span class="number">0</span>)</span><br><span class="line">            v3.<span class="built_in">push_back</span>(<span class="built_in">stoi</span>(expression));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> v3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
@@ -363,7 +369,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="nav-text">一、题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%88%91%E7%9A%84%E6%80%9D%E8%B7%AF"><span class="nav-text">二、我的思路</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="nav-text">一、题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E6%88%91%E7%9A%84%E6%80%9D%E8%B7%AF"><span class="nav-text">二、我的思路</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -538,5 +544,7 @@
 
   
 
+
 </body>
 </html>
+
