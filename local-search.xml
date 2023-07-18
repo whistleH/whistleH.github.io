@@ -28,9 +28,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
     </tags>
     
@@ -92,9 +92,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>audit</tag>
       
@@ -162,9 +162,9 @@
       
       <tag>wp</tag>
       
-      <tag>NSS</tag>
-      
       <tag>Crypto</tag>
+      
+      <tag>NSS</tag>
       
     </tags>
     
@@ -197,9 +197,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>XXE</tag>
       
@@ -234,9 +234,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>ssrf</tag>
       
@@ -300,9 +300,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>权限维持</tag>
       
@@ -337,9 +337,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>SSTI</tag>
       
@@ -387,9 +387,9 @@
       
       <tag>wp</tag>
       
-      <tag>NSS</tag>
-      
       <tag>Crypto</tag>
+      
+      <tag>NSS</tag>
       
     </tags>
     
@@ -422,9 +422,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>SQL注入</tag>
       
@@ -459,9 +459,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>反序列化</tag>
       
@@ -531,9 +531,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>upload</tag>
       
@@ -568,9 +568,9 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
+      
+      <tag>wp</tag>
       
       <tag>LFI</tag>
       
@@ -704,11 +704,11 @@
       
       <tag>web</tag>
       
-      <tag>wp</tag>
-      
       <tag>ctfshow</tag>
       
       <tag>xss</tag>
+      
+      <tag>wp</tag>
       
     </tags>
     
@@ -741,9 +741,9 @@
       
       <tag>web</tag>
       
-      <tag>buuoj</tag>
-      
       <tag>wp</tag>
+      
+      <tag>buuoj</tag>
       
     </tags>
     
