@@ -325,26 +325,6 @@
       </tags>
   </entry>
   <entry>
-    <title>HCTF-warmup-目录穿越</title>
-    <url>/2022/01/17/blog0005-HCTF-warmup-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A/</url>
-    <content><![CDATA[<h2 id="一题目重点">一、题目重点</h2>
-<p>我们首先来看一下</p>
-<span id="more"></span>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/wp/LFIHCTF-LFI-wp.png" alt="题目图片" /></p>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>LFI</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>pwn-xctf-新手区wp</title>
     <url>/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/</url>
     <content><![CDATA[<h2 id="一level_2">一、Level_2</h2>
