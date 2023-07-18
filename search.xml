@@ -315,7 +315,6 @@
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>xss</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -337,83 +336,12 @@
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>LFI</category>
       </categories>
       <tags>
         <tag>ctf</tag>
         <tag>web</tag>
         <tag>wp</tag>
         <tag>LFI</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>leetcode-分治-最接近原点的K个点</title>
-    <url>/2022/03/27/blog0007-leetcode-%E5%88%86%E6%B2%BB-%E6%9C%80%E6%8E%A5%E8%BF%91%E5%8E%9F%E7%82%B9%E7%9A%84K%E4%B8%AA%E7%82%B9/</url>
-    <content><![CDATA[<h2 id="一题目描述">一、题目描述</h2>
-<p>给定一个数组 points ，其中 points[i] = [xi, yi] 表示 X-Y 平面上的一个点，并且是一个整数 k ，返回离原点 (0,0) 最近的 k 个点。</p>
-<p>这里，平面上两点之间的距离是 欧几里德距离（ √(x1 - x2)2 + (y1 - y2)2 ）。</p>
-<p>你可以按 <strong>任何顺序</strong> 返回答案。除了点坐标的顺序之外，答案 确保 是 <strong>唯一</strong> 的。</p>
-<span id="more"></span>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：points = [[1,3],[-2,2]], k = 1</span><br><span class="line">输出：[[-2,2]]</span><br><span class="line">解释： </span><br><span class="line">(1, 3) 和原点之间的距离为 sqrt(10)，</span><br><span class="line">(-2, 2) 和原点之间的距离为 sqrt(8)，</span><br><span class="line">由于 sqrt(8) &lt; sqrt(10)，(-2, 2) 离原点更近。</span><br><span class="line">我们只需要距离原点最近的 K = 1 个点，所以答案就是 [[-2,2]]。</span><br><span class="line">示例 2：</span><br><span class="line"></span><br><span class="line">输入：points = [[3,3],[5,-1],[-2,4]], k = 2</span><br><span class="line">输出：[[3,3],[-2,4]]</span><br><span class="line">（答案 [[-2,4],[3,3]] 也会被接受。）</span><br></pre></td></tr></table></figure>
-<h2 id="二我的思路">二、我的思路</h2>
-<h4 id="思路一排序">思路一：排序</h4>
-<p>显然是非常直观的思路，我们可以直接排序数组，返回前K个数。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">kClosest</span>(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points, <span class="keyword">int</span> k) &#123;</span><br><span class="line">        vector&lt;pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;&gt; res;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;points.<span class="built_in">size</span>();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            res.<span class="built_in">push_back</span>(pair&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;(i ,points[i][<span class="number">0</span>] * points[i][<span class="number">0</span>] + points[i][<span class="number">1</span>] * points[i][<span class="number">1</span>]));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">sort</span>(res.<span class="built_in">begin</span>(),res.<span class="built_in">end</span>());</span><br><span class="line">        <span class="keyword">return</span> vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; (res.<span class="built_in">begin</span>(),res.<span class="built_in">begin</span>() + k);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h4 id="思路二">思路二：</h4>
-<p>我们这次主要是学习分治的思想，因此我们可以考虑使用快排的思路（其实algorithm的sort也是快排），当我们完成一次快排，我们可以将数组分为两个部分，因此我们可以借此不断将数组分割来找到第K个数。</p>
-<p>代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; dist;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">partition</span><span class="params">(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points,<span class="keyword">int</span> beg,<span class="keyword">int</span> end)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = beg;</span><br><span class="line">        <span class="keyword">int</span> j = end;</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; p = points[beg];</span><br><span class="line">        <span class="keyword">int</span> p_dist = dist[beg];</span><br><span class="line">        <span class="keyword">while</span> (i &lt; j)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; dist[j] &gt; p_dist)</span><br><span class="line">            &#123;</span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">            &#123;</span><br><span class="line">                points[i] = points[j];</span><br><span class="line">                dist[i] = dist[j];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; j &amp;&amp; dist[i] &lt;= p_dist)</span><br><span class="line">            &#123;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; j)</span><br><span class="line">            &#123;</span><br><span class="line">                points[j] = points[i];</span><br><span class="line">                dist[j] = dist[i];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        points[j] = p;</span><br><span class="line">        dist[j] = p_dist;</span><br><span class="line">        <span class="keyword">return</span> j;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">select_random</span><span class="params">(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points,<span class="keyword">int</span> left,<span class="keyword">int</span> right,<span class="keyword">int</span> k)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> pivot = <span class="built_in">partition</span>(points, left, right);</span><br><span class="line">        <span class="keyword">if</span> (pivot == k)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (pivot &lt; k)</span><br><span class="line">        &#123;	<span class="comment">// 注意此时我们使用的是数组的引用，因此我们的K未发生变化</span></span><br><span class="line">            <span class="built_in">select_random</span>(points, pivot + <span class="number">1</span>, right, k);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">select_random</span>(points, left, pivot - <span class="number">1</span>, k);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">kClosest</span>(vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt;&amp; points, <span class="keyword">int</span> k) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> tar = k - <span class="number">1</span>;</span><br><span class="line">        dist.<span class="built_in">resize</span>(points.<span class="built_in">size</span>(), <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; points.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            dist[i] = (points[i][<span class="number">0</span>] * points[i][<span class="number">0</span>] + points[i][<span class="number">1</span>] * points[i][<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">select_random</span>(points, <span class="number">0</span>, points.<span class="built_in">size</span>() - <span class="number">1</span>, tar);</span><br><span class="line">        vector&lt;vector&lt;<span class="keyword">int</span>&gt;&gt; <span class="built_in">res</span>(points.<span class="built_in">begin</span>(), points.<span class="built_in">begin</span>() + k);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>leetcode</category>
-        <category>分治</category>
-      </categories>
-      <tags>
-        <tag>algorithm</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>题解</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>leetcode-分治-为运算表达式设计优先级</title>
-    <url>/2022/03/27/blog0006-leetcode-%E5%88%86%E6%B2%BB-%E4%B8%BA%E8%BF%90%E7%AE%97%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%BE%E8%AE%A1%E4%BC%98%E5%85%88%E7%BA%A7/</url>
-    <content><![CDATA[<h2 id="一题目描述">一、题目描述</h2>
-<p>给你一个由数字和运算符组成的字符串 <code>expression</code> ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 <strong>按任意顺序</strong> 返回答案</p>
-<span id="more"></span>
-<p><strong>示例：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：expression = &quot;2-1-1&quot;</span><br><span class="line">输出：[0,2]</span><br><span class="line">解释：</span><br><span class="line">((2-1)-1) = 0 </span><br><span class="line">(2-(1-1)) = 2</span><br><span class="line"></span><br><span class="line">输入：expression = &quot;2*3-4*5&quot;</span><br><span class="line">输出：[-34,-14,-10,-10,10]</span><br><span class="line">解释：</span><br><span class="line">(2*(3-(4*5))) = -34 </span><br><span class="line">((2*3)-(4*5)) = -14 </span><br><span class="line">((2*(3-4))*5) = -10 </span><br><span class="line">(2*((3-4)*5)) = -10 </span><br><span class="line">(((2*3)-4)*5) = 10</span><br></pre></td></tr></table></figure>
-<p><strong>提示：</strong></p>
-<ul>
-<li>1 &lt;= expression.length &lt;= 20</li>
-<li>输入表达式中的所有整数值在范围 [0, 99]</li>
-<li>expression 由数字和算符 '+'、'-' 和 '*' 组成。</li>
-</ul>
-<h2 id="二我的思路">二、我的思路</h2>
-<p>最开始，我的处理思路是对于一个expression，我们可以分解一个数字和一个剩余的表达式。将（2*3-4*5）分解为<br />
-<span class="math display">\[
-2*(3-4*5)\\
-2*3-(4*5)
-\]</span><br />
-但显然这样是不对的，我们需要注意的是，这样子我们就没有回头路了，简单的理解就是我们无法处理：<br />
-<span class="math display">\[
-((2*3)-4)*5
-\]</span><br />
-但是一旦意识到我们存在这样的错误时，我们发现其实将我们前面的思路改进一下，当我们计算出<span class="math display">\[2*3\]</span>时，我们就把式子转化为<span class="math inline">\((6-4)*5\)</span>，这又是我们之前处理的范围了。</p>
-<p>于是，我们将我们之前的思路扭转一下，对于任意的表达式<span class="math inline">\(c\)</span>，我们可以将其拆分为<span class="math inline">\(a\)</span> op <span class="math inline">\(b\)</span>，这样我们就得到了分治处理的思路。</p>
-<p><strong>终止条件为：当表达式不存在操作符时，即表达式为数值时，我们直接返回数值本身</strong></p>
-<p>我的代码如下：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//计算表达式</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">cal</span><span class="params">(<span class="keyword">int</span> num1, <span class="keyword">int</span> num2 , <span class="keyword">char</span> op)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="built_in"><span class="keyword">switch</span></span>(op)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;+&#x27;</span>: <span class="keyword">return</span> num1 + num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;-&#x27;</span>: <span class="keyword">return</span> num1 - num2;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;*&#x27;</span>: <span class="keyword">return</span> num1 * num2;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="function">vector&lt;<span class="keyword">int</span>&gt; <span class="title">diffWaysToCompute</span><span class="params">(string expression)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> len = expression.<span class="built_in">length</span>();</span><br><span class="line">        vector&lt;<span class="keyword">int</span>&gt; v3;</span><br><span class="line">        <span class="keyword">int</span> op_flag = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">char</span> op = expression[i];</span><br><span class="line">            <span class="keyword">if</span>(!(op == <span class="string">&#x27;+&#x27;</span> || op == <span class="string">&#x27;-&#x27;</span> || op ==<span class="string">&#x27;*&#x27;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            op_flag = <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//计算前半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v1 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>(),expression.<span class="built_in">begin</span>() + i));</span><br><span class="line">            <span class="comment">//计算后半段的表达式结果</span></span><br><span class="line">            vector&lt;<span class="keyword">int</span>&gt; v2 = <span class="built_in">diffWaysToCompute</span>(<span class="built_in">string</span>(expression.<span class="built_in">begin</span>() + i + <span class="number">1</span>,expression.<span class="built_in">end</span>()));</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//二重循环，类似笛卡尔积</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;v1.<span class="built_in">size</span>();i++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;v2.<span class="built_in">size</span>();j++)</span><br><span class="line">                &#123;</span><br><span class="line">                    v3.<span class="built_in">push_back</span>(<span class="built_in">cal</span>(v1[i],v2[j],op));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在运算符，即到达终止条件</span></span><br><span class="line">        <span class="keyword">if</span>(op_flag == <span class="number">0</span>)</span><br><span class="line">            v3.<span class="built_in">push_back</span>(<span class="built_in">stoi</span>(expression));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> v3;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>leetcode</category>
-        <category>分治</category>
-      </categories>
-      <tags>
-        <tag>algorithm</tag>
-        <tag>leetcode</tag>
-        <tag>算法</tag>
-        <tag>题解</tag>
       </tags>
   </entry>
   <entry>
@@ -451,141 +379,12 @@
       <categories>
         <category>ctf</category>
         <category>pwn</category>
-        <category>wp</category>
       </categories>
       <tags>
         <tag>ctf</tag>
         <tag>wp</tag>
         <tag>xctf</tag>
         <tag>pwn</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hacker101系列wp（持续更新中）</title>
-    <url>/2022/03/29/blog0009-hacker101%E7%B3%BB%E5%88%97wp%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%E4%B8%AD%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="一micro-cms-v1">一、Micro-CMS v1</h2>
-<p>这道题有4个flag，我们逐个分解。</p>
-<span id="more"></span>
-<p>首先一进来，页面异常简洁，直接Ctrl+U，观察一下全局，url中page带数字。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_1.png" /></p>
-<p>其实一般来说page含数字的，我们可以考虑一下是不是有文件包含（include）或者注入点（查询）。</p>
-<p>我们尝试url注入，在page处加上一个引号封闭一下，果然弹出来第一个flag。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://19d516b0310286729dd8449820bfdb6f.ctf.hacker101.com/page/edit/1&#x27;</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_2.png" /></p>
-<p>接下来，我们进入test页面，发现这里留了一个留言板，非常有XSS的暗示性，我们直接上手来一个</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0009/blog0009_3.png" /></p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;alert(<span class="number">1</span>);&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>有意思的是，这个留言板在后端显然把script过滤了，但是这个过滤还是太年轻了，我们尝试换种思路注入</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;buttun onclick=<span class="string">&quot;alert(1)&quot;</span>&gt;</span><br></pre></td></tr></table></figure>
-<p>同理，我们也可以在标题框注入，这样得到了两个flag。</p>
-<p>那么最后一个flag在哪里？我们这时候尝试创建一个新的留言板。</p>
-<p>进入之后观察，发现新的界面的page跳过3-7，怀疑一下其中有猫腻，于是bp爆破，发现其中一个返回405，其他都是404，进入edit页面之后，访问得到最后一个flag</p>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-        <category>comprehensive</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>hacker101</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL语法笔记</title>
-    <url>/2022/03/31/blog0010-SQL%E8%AF%AD%E6%B3%95%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[<h2 id="零基础知识">零、基础知识</h2>
-<p>1、<strong>数据类型</strong></p>
-<p>首先我们要了解SQL语句的基本数据类型。</p>
-<p>具体的知识我们可以参考w3cschools :</p>
-<span id="more"></span>
-<p><strong>2、注释</strong></p>
-<p>SQL注入中我们常常需要借助注释的力量。</p>
-<p>常见的注释方法有:</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">/* */</th>
-<th style="text-align: center;">多行注释</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">--</td>
-<td style="text-align: center;">行末注释</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">#</td>
-<td style="text-align: center;">行末注释（mysql独有的注释符号）</td>
-</tr>
-</tbody>
-</table>
-<p><strong>3、表的基本操作</strong></p>
-<p>表的操作有增删查改。</p>
-<h2 id="一数据查询">一、数据查询</h2>
-<p>不论是何种数据库，设计的意义都是为了方便查询，这也是SQL语法标准的意义所在。对于SQL注入而言，我们主要关心的就是数据的查询。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/* 常见的格式如下 */</span><br><span class="line">select * from &#123;table_name&#125; where &#123;limit&#125;</span><br></pre></td></tr></table></figure>
-<p>重要关键词如下：</p>
-<p><code>DISTINCT</code> : 将返回结果去重</p>
-<p><code>in</code> ：SQL注入中可以替代<code>=</code>使用，bypass的点</p>
-<p><code>比较运算符</code> ：SQL语法中，字符串也可以进行比较（从左向右，根据ASCII码比较）</p>
-<p><code>LIKE</code> ：字段条件匹配</p>
-<p>​ 通配符：% --&gt; 匹配任意字符</p>
-<p>​ _ --&gt; 匹配任意一位字符</p>
-<p><code>order by</code> ：排序关键字</p>
-<ul>
-<li>order by (id/列的索引)</li>
-<li>（默认升序， DESC 表示降序）</li>
-</ul>
-<p><code>limit</code> : 限制筛选输出的行数，在SQL server中，使用top 来代替</p>
-<p><code>alias</code> : 重命名，常用作as，也可以空格代替</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> id <span class="keyword">as</span> whistleh <span class="keyword">from</span> table_user <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> id whistleh	<span class="keyword">from</span> table_user <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> (<span class="keyword">select</span> <span class="number">1</span>)s</span><br></pre></td></tr></table></figure>
-<p><code>union</code> : 联合查询，默认会对结果去重</p>
-<p><code>GROUP BY</code> : 对查询结果建立分组表，和<code>HAVING</code>搭配做进一步的条件筛查</p>
-<p><code>join</code> : 连接关键字，主要用于多表查询</p>
-<ul>
-<li>inner join，内连接，主要是在做交集</li>
-<li>left join，左连接</li>
-<li>right join，右连接</li>
-</ul>
-<p><code>all</code> ： 条件表达式</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> id <span class="operator">&gt;</span> <span class="keyword">all</span>(<span class="keyword">select</span> id <span class="keyword">from</span> user_1);</span><br></pre></td></tr></table></figure>
-<p><code>any</code> : 使用参照<code>all</code></p>
-<h2 id="二函数使用">二、函数使用</h2>
-<p>SQL语法自带一定的函数，当然在mysql,oracle等等具体的SQL语言中，也会有特定的函数。</p>
-<p><code>min</code>,<code>max</code>,<code>sum</code>,<code>count</code>,<code>avg</code>等都是常见的函数</p>
-<p><code>database</code> : 输出当前数据库</p>
-<p><code>user</code> : 输出当前用户</p>
-<p><code>sleep</code> : 常用在时间盲注当中</p>
-<p><code>updatexml</code> : 可以用在报错注入，测试后端是否存在注入点</p>
-<p><code>contact</code> : 连接字符串，支持ASCII编码</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> contact(<span class="number">0x7e</span>,database(),<span class="number">0x7e</span>,@<span class="variable">@datadir</span>);</span><br></pre></td></tr></table></figure>
-<p><code>exist</code> ：判断是否有值，这给了我们盲注爆破的机会</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">exists</span>(<span class="keyword">select</span> <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
-<p><code>ASCII</code> : 返回传入字符串的首字母的ASCII的值</p>
-<p><code>substring</code> : 按照要求返回子串，两个参数：起始位置（下标从1开始计算），截取的长度</p>
-<h2 id="三常量">三、常量</h2>
-<p><code>@@datadir</code> : 数据库的系统目录</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> @<span class="variable">@datadir</span>;</span><br></pre></td></tr></table></figure>
-<p><code>@@character_set_database</code> : 字符集</p>
-<p><code>@@hostname</code> : 计算机名</p>
-<p><code>@@version_compile_os</code> : 操作系统版本</p>
-<p><code>@@basedir</code> ： <code>mysql</code>的路径</p>
-<p><code>mysql.user</code> ：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">User</span>,Password <span class="keyword">from</span> mysql.user;</span><br></pre></td></tr></table></figure>
-<h2 id="四数据库操作">四、数据库操作</h2>
-]]></content>
-      <categories>
-        <category>数据库</category>
-        <category>sql</category>
-      </categories>
-      <tags>
-        <tag>web</tag>
-        <tag>sql</tag>
-        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
@@ -672,7 +471,6 @@
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>upload</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -733,7 +531,6 @@
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>LFI</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -874,7 +671,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>反序列化</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -946,7 +742,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>SQL注入</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -1282,12 +1077,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
       </tags>
   </entry>
   <entry>
-    <title>xctf-web进阶-wp</title>
-    <url>/2022/04/20/blog0016-xctf-web%E8%BF%9B%E9%98%B6-wp/</url>
-    <content><![CDATA[
-]]></content>
-  </entry>
-  <entry>
     <title>NSSCTF-常用编码-wp</title>
     <url>/2022/04/28/blog0017-NSSCTF-%E5%B8%B8%E7%94%A8%E7%BC%96%E7%A0%81-wp/</url>
     <content><![CDATA[<h2 id="零写在前面">零、写在前面</h2>
@@ -1322,14 +1111,14 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
 ]]></content>
       <categories>
         <category>ctf</category>
-        <category>crypto</category>
+        <category>Crypto</category>
         <category>wp</category>
       </categories>
       <tags>
         <tag>ctf</tag>
         <tag>wp</tag>
         <tag>NSS</tag>
-        <tag>crypto</tag>
+        <tag>Crypto</tag>
       </tags>
   </entry>
   <entry>
@@ -1349,7 +1138,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>SSTI</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -1384,7 +1172,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>权限维持</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -1480,7 +1267,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>ssrf</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -1542,7 +1328,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
         <category>ctf</category>
         <category>web</category>
         <category>wp</category>
-        <category>XXE</category>
       </categories>
       <tags>
         <tag>ctf</tag>
@@ -1899,32 +1684,13 @@ m  &amp;= A^{-1}c
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0026/image-20221020201850380.png" alt="image-20221020201850380" /></p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0026/image-20221020201824560.png" alt="image-20221020201824560" style="zoom:67%;" /></p>
 ]]></content>
+      <categories>
+        <category>杂项</category>
+      </categories>
       <tags>
         <tag>环境配置</tag>
         <tag>PHP</tag>
         <tag>VSCode</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ctf Web常见类型题</title>
-    <url>/2023/03/30/blog0028-ctf-Web%E5%B8%B8%E8%A7%81%E7%B1%BB%E5%9E%8B%E9%A2%98/</url>
-    <content><![CDATA[<p>度过了魔幻的半年，整个人也陷入了一种非常混沌的状态，没有打比赛，没有刷题。</p>
-<p>还是在搞安全，基本就是在挖洞/学binary sec基础知识/网络协议安全分析这些，离我原本的CTF Web手有点远。</p>
-<p>接下来大概还有网鼎杯半决赛，ISCC和CISCN，既然决定回归，那就开始快乐地复健吧。</p>
-<p>这一篇章主要是为ISCC准备啦，复习一些CTF Web的经典trick，貌似那边还是有点喜欢这种题的。</p>
-<span id="more"></span>
-<h2 id="web">Web</h2>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>web</category>
-        <category>wp</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>web</tag>
-        <tag>wp</tag>
-        <tag>ctfshow</tag>
       </tags>
   </entry>
   <entry>
@@ -1958,8 +1724,8 @@ m  &amp;= A^{-1}c
 <p>这样再去访问该页面的时候，就能够打出RCE了。</p>
 <h2 id="web488-sql注入">Web488 SQL注入</h2>
 <p>这道题的代码和上一题几乎一致，就修改了SQL注入部分代码</p>
-<p>你可以使用md5绕过SQL注入的tricky密码：ffifdyop</p>
-<p>或者直接不用也行</p>
+<p>你可以使用md5绕过SQL注入的tricky密码：ffifdyop，但是这样验证通过也无法完成攻击。</p>
+<p>真正的漏洞点存在与error页面的username的渲染，直接完成模板注入</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&#x27;render/render_class.php&#x27;</span>);</span><br><span class="line"><span class="keyword">include</span>(<span class="string">&#x27;render/db_class.php&#x27;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="variable">$action</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$action</span>))&#123;</span><br><span class="line">	header(<span class="string">&#x27;location:index.php?action=login&#x27;</span>);</span><br><span class="line">	<span class="keyword">die</span>();	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$action</span>==<span class="string">&#x27;check&#x27;</span>)&#123;</span><br><span class="line">	<span class="variable">$username</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;username&#x27;</span>];</span><br><span class="line">	<span class="variable">$password</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;password&#x27;</span>];</span><br><span class="line">	<span class="variable">$sql</span> = <span class="string">&quot;select id from user where username = &#x27;&quot;</span>.md5(<span class="variable">$username</span>).<span class="string">&quot;&#x27; and password=&#x27;&quot;</span>.md5(<span class="variable">$password</span>).<span class="string">&quot;&#x27; order by id limit 1&quot;</span>;</span><br><span class="line">	<span class="variable">$user</span>=db::select_one(<span class="variable">$sql</span>);</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$user</span>)&#123;</span><br><span class="line">		templateUtil::render(<span class="string">&#x27;index&#x27;</span>,<span class="keyword">array</span>(<span class="string">&#x27;username&#x27;</span>=&gt;<span class="variable">$username</span>));</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		templateUtil::render(<span class="string">&#x27;error&#x27;</span>,<span class="keyword">array</span>(<span class="string">&#x27;username&#x27;</span>=&gt;<span class="variable">$username</span>));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$action</span>==<span class="string">&#x27;login&#x27;</span>)&#123;</span><br><span class="line">	templateUtil::render(<span class="variable">$action</span>);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">	templateUtil::render(<span class="variable">$action</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="web489-变量覆盖">Web489 变量覆盖</h2>
 <p>这道题还是只改了index.php的代码，此处有变量覆盖的漏洞，因此直接利用。</p>
