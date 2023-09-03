@@ -17,12 +17,12 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="零、环境配置  PHP 版本不限，我使用的PHP7.3 Debian 服务器 不同Linux发行版，部分的操作可能不一致，但实现的目标是一致的. VSCode">
+                    <meta name="description" content="PHP在Linux下的调试环境一直没怎么配好，今天记录一下配置过程中的问题。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP+VSCode Server+SSH远程调试教程">
 <meta property="og:url" content="http://example.com/2022/10/20/blog0027-PHP-VScode-Server-SSH%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95%E6%95%99%E7%A8%8B/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="零、环境配置  PHP 版本不限，我使用的PHP7.3 Debian 服务器 不同Linux发行版，部分的操作可能不一致，但实现的目标是一致的. VSCode">
+<meta property="og:description" content="PHP在Linux下的调试环境一直没怎么配好，今天记录一下配置过程中的问题。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0026/image-20221020005835380.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0026/image-20221020010943425.png">
@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0026/image-20221020201850380.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0026/image-20221020201824560.png">
 <meta property="article:published_time" content="2022-10-19T16:39:51.000Z">
-<meta property="article:modified_time" content="2023-07-18T07:06:29.545Z">
+<meta property="article:modified_time" content="2023-09-03T08:56:19.542Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="环境配置">
 <meta property="article:tag" content="PHP">
@@ -249,7 +249,7 @@
         
         
         
-          25 分钟
+          26 分钟
         
       </span>
     
@@ -291,7 +291,9 @@
             
               <div class="markdown-body">
                 
-                <h2 id="零环境配置">零、环境配置</h2>
+                <p>PHP在Linux下的调试环境一直没怎么配好，今天记录一下配置过程中的问题。</p>
+<span id="more"></span>
+<h2 id="一环境配置">一、环境配置</h2>
 <ol type="1">
 <li><p>PHP</p>
 <p>版本不限，我使用的PHP7.3</p></li>
@@ -299,8 +301,7 @@
 <p>不同Linux发行版，部分的操作可能不一致，但实现的目标是一致的.</p></li>
 <li><p>VSCode</p></li>
 </ol>
-<span id="more"></span>
-<h2 id="一xebug配置">一、Xebug配置</h2>
+<h2 id="二xebug配置">二、Xebug配置</h2>
 <h3 id="安装xdebug">安装Xdebug</h3>
 <p>在Debian服务器上安装Xdebug，打开phpinfo页面，<code>Ctrl+U</code>获取页面HTML代码</p>
 <p><a target="_blank" rel="noopener" href="https://xdebug.org/wizard">Xdebug官方指南</a></p>
@@ -319,7 +320,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">service apache2 restart<br></code></pre></td></tr></table></figure>
 <p>重启后打开phpinfo，能够看到Xdebug信息已经出现了</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0026/image-20221020011306322.png" srcset="/img/loading.gif" lazyload alt="image-20221020011306322" /></p>
-<h2 id="二vscode配置">二、VSCode配置</h2>
+<h2 id="三vscode配置">三、VSCode配置</h2>
 <h3 id="安装remote-ssh">安装Remote-SSH</h3>
 <p>这一步网上的教程很多</p>
 <p>可以参考这一篇</p>
@@ -350,7 +351,7 @@
 <p>最后一步是需要配置launch.json文件，当你点击调试符号，VSCode会创建一个默认的调试文件。</p>
 <p>有几处需要你自己改一下</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs json">&#123;<br>    <span class="hljs-comment">// 使用 IntelliSense 了解相关属性。 </span><br>    <span class="hljs-comment">// 悬停以查看现有属性的描述。</span><br>    <span class="hljs-comment">// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387</span><br>    <span class="hljs-attr">&quot;version&quot;</span>: <span class="hljs-string">&quot;0.2.0&quot;</span>,<br>    <span class="hljs-attr">&quot;configurations&quot;</span>: [<br>        &#123;<br>            <span class="hljs-attr">&quot;name&quot;</span>: <span class="hljs-string">&quot;Listen for Xdebug&quot;</span>,<br>            <span class="hljs-attr">&quot;type&quot;</span>: <span class="hljs-string">&quot;php&quot;</span>,<br>            <span class="hljs-attr">&quot;request&quot;</span>: <span class="hljs-string">&quot;launch&quot;</span>,<br>            <span class="hljs-attr">&quot;port&quot;</span>: <span class="hljs-number">9003</span>		<span class="hljs-comment">//填入之前选择的端口</span><br>        &#125;,<br>        &#123;<br>            <span class="hljs-attr">&quot;name&quot;</span>: <span class="hljs-string">&quot;Launch currently open script&quot;</span>,<br>            <span class="hljs-attr">&quot;type&quot;</span>: <span class="hljs-string">&quot;php&quot;</span>,<br>            <span class="hljs-attr">&quot;request&quot;</span>: <span class="hljs-string">&quot;launch&quot;</span>,<br>            <span class="hljs-attr">&quot;program&quot;</span>: <span class="hljs-string">&quot;$&#123;file&#125;&quot;</span>,		<span class="hljs-comment">//你要调试的程序，可以不用修改</span><br>            <span class="hljs-attr">&quot;cwd&quot;</span>: <span class="hljs-string">&quot;$&#123;fileDirname&#125;&quot;</span>,<br>            <span class="hljs-attr">&quot;port&quot;</span>: <span class="hljs-number">0</span>,<br>            <span class="hljs-attr">&quot;runtimeArgs&quot;</span>: [<br>                <span class="hljs-string">&quot;-dxdebug.start_with_request=yes&quot;</span><br>            ],<br>            <span class="hljs-attr">&quot;env&quot;</span>: &#123;<br>                <span class="hljs-attr">&quot;XDEBUG_MODE&quot;</span>: <span class="hljs-string">&quot;debug,develop&quot;</span>,<br>                <span class="hljs-attr">&quot;XDEBUG_CONFIG&quot;</span>: <span class="hljs-string">&quot;client_port=$&#123;port&#125;&quot;</span><br>            &#125;<br>        &#125;,<br>        &#123;<br>            <span class="hljs-attr">&quot;name&quot;</span>: <span class="hljs-string">&quot;Launch Built-in web server&quot;</span>,<br>            <span class="hljs-attr">&quot;type&quot;</span>: <span class="hljs-string">&quot;php&quot;</span>,<br>            <span class="hljs-attr">&quot;request&quot;</span>: <span class="hljs-string">&quot;launch&quot;</span>,<br>            <span class="hljs-attr">&quot;runtimeArgs&quot;</span>: [<br>                <span class="hljs-string">&quot;-dxdebug.mode=debug&quot;</span>,<br>                <span class="hljs-string">&quot;-dxdebug.start_with_request=yes&quot;</span>,<br>                <span class="hljs-string">&quot;-S&quot;</span>,<br>                <span class="hljs-string">&quot;localhost:9003&quot;</span>	<span class="hljs-comment">//注意这里需要将之前设置的端口填入</span><br>            ],<br>            <span class="hljs-attr">&quot;program&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,<br>            <span class="hljs-attr">&quot;cwd&quot;</span>: <span class="hljs-string">&quot;$&#123;workspaceRoot&#125;&quot;</span>,<br>            <span class="hljs-attr">&quot;port&quot;</span>: <span class="hljs-number">9003</span>,			<span class="hljs-comment">//填入之前选择的窗口</span><br>            <span class="hljs-attr">&quot;serverReadyAction&quot;</span>: &#123;<br>                <span class="hljs-attr">&quot;pattern&quot;</span>: <span class="hljs-string">&quot;Development Server \\(http://localhost:([0-9]+)\\) started&quot;</span>,<br>                <span class="hljs-attr">&quot;uriFormat&quot;</span>: <span class="hljs-string">&quot;http://localhost:%s&quot;</span>,<br>                <span class="hljs-attr">&quot;action&quot;</span>: <span class="hljs-string">&quot;openExternally&quot;</span><br>            &#125;<br>        &#125;<br>    ]<br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="三调试测试">三、调试测试</h2>
+<h2 id="四调试测试">四、调试测试</h2>
 <p>以上，我们就完成了VSCode+PHP+Remote SSH的远程调试了，接下来我们尝试一下</p>
 <p>在服务器上部署代码</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0026/image-20221020201627397.png" srcset="/img/loading.gif" lazyload alt="image-20221020201627397" style="zoom: 67%;" /></p>
@@ -377,8 +378,15 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%9D%82%E9%A1%B9/" class="category-chain-item">杂项</a>
+  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="category-chain-item">代码审计</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/PHP/" class="category-chain-item">PHP</a>
+  
+  
+
   
 
       </span>
