@@ -17,25 +17,24 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="上次某个比赛看到PHP反序列化的__wakeup绕过，发现自己竟然只知道利用属性个数异常的来绕过一种方法。确实是比赛打得太少了，很多trick都不知道，特地找了些博客去分析了一下。 推荐博客：php wakeup绕过 1、CVE-2016-7124 影响范围：  PHP5 &lt; 5.6.25 PHP7 &lt; 7.0.10  这个是我学习PHP反序列化绕过学习到的第一个姿势。">
+                    <meta name="description" content="记录一下kali 2021的docker安装过程 后续持续更新一些docker常用的命令">
 <meta property="og:type" content="article">
-<meta property="og:title" content="php反序列化绕过 wakeup 总结">
-<meta property="og:url" content="http://example.com/2023/08/26/blog0032-php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%BB%95%E8%BF%87-wakeup%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:title" content="kali2021 docker安装配置">
+<meta property="og:url" content="http://example.com/2023/09/06/blog0035-kali2021-docker%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="上次某个比赛看到PHP反序列化的__wakeup绕过，发现自己竟然只知道利用属性个数异常的来绕过一种方法。确实是比赛打得太少了，很多trick都不知道，特地找了些博客去分析了一下。 推荐博客：php wakeup绕过 1、CVE-2016-7124 影响范围：  PHP5 &lt; 5.6.25 PHP7 &lt; 7.0.10  这个是我学习PHP反序列化绕过学习到的第一个姿势。">
+<meta property="og:description" content="记录一下kali 2021的docker安装过程 后续持续更新一些docker常用的命令">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-08-26T09:31:55.000Z">
-<meta property="article:modified_time" content="2023-09-06T12:47:01.767Z">
+<meta property="article:published_time" content="2023-09-06T12:36:06.000Z">
+<meta property="article:modified_time" content="2023-09-08T03:14:11.443Z">
 <meta property="article:author" content="whistle.H">
-<meta property="article:tag" content="ctf">
-<meta property="article:tag" content="Web">
-<meta property="article:tag" content="php">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="kali">
 <meta name="twitter:card" content="summary_large_image">
                         
                                 
                                         
                                                     <title>
-                                                        php反序列化绕过 wakeup 总结 - The world of whistleH
+                                                        kali2021 docker安装配置 - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -205,7 +204,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="php反序列化绕过 wakeup 总结"></span>
+            <span id="subtitle" data-typed-text="kali2021 docker安装配置"></span>
           
         </div>
 
@@ -216,8 +215,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-08-26 17:31" pubdate>
-          2023年8月26日 下午
+        <time datetime="2023-09-06 20:36" pubdate>
+          2023年9月6日 晚上
         </time>
       </span>
     
@@ -228,7 +227,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          179 字
+          549 字
         
       </span>
     
@@ -239,7 +238,7 @@
         
         
         
-          2 分钟
+          5 分钟
         
       </span>
     
@@ -276,20 +275,27 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">php反序列化绕过 wakeup 总结</h1>
+            <h1 id="seo-header">kali2021 docker安装配置</h1>
             
             
               <div class="markdown-body">
                 
-                <p>上次某个比赛看到PHP反序列化的__wakeup绕过，发现自己竟然只知道利用属性个数异常的来绕过一种方法。确实是比赛打得太少了，很多trick都不知道，特地找了些博客去分析了一下。</p>
-<p>推荐博客：<a target="_blank" rel="noopener" href="https://fushuling.com/index.php/2023/03/11/php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%ADwakeup%E7%BB%95%E8%BF%87%E6%80%BB%E7%BB%93/">php wakeup绕过</a></p>
-<h2 id="cve-2016-7124">1、CVE-2016-7124</h2>
-<p>影响范围：</p>
-<ul>
-<li>PHP5 &lt; 5.6.25</li>
-<li>PHP7 &lt; 7.0.10</li>
-</ul>
-<p>这个是我学习PHP反序列化绕过学习到的第一个姿势。</p>
+                <p>记录一下kali 2021的docker安装过程</p>
+<p>后续持续更新一些docker常用的命令</p>
+<span id="more"></span>
+<h2 id="安装证书-https-dirmngr">1、安装证书 https dirmngr</h2>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">apt-get update <br>apt-get install -y apt-transport-https ca-certificates <br>apt-get install dirmngr<br></code></pre></td></tr></table></figure>
+<h2 id="密钥与更新源">2、密钥与更新源</h2>
+<p>echo可能会权限不够，可以先切换到root用户完成该命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/gpg | sudo apt-key add -<br>echo &#x27;deb https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/ buster stable&#x27; | sudo tee /etc/apt/sources.list.d/docker.list<br></code></pre></td></tr></table></figure>
+<h2 id="安装docker">3、安装docker</h2>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">apt install docker.io<br></code></pre></td></tr></table></figure>
+<h2 id="用户添加docker组">4、用户添加docker组</h2>
+<p>将kali用户添加至docker组</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo usermod -aG docker kali<br></code></pre></td></tr></table></figure>
+<p>添加完之后记得重新登录，比如注销再登录</p>
+<h2 id="检查安装">5、检查安装</h2>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">systemctl status docker</span><br><span class="hljs-attribute">docker -v</span><br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -308,15 +314,8 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="category-chain-item">代码审计</a>
+  <a href="/categories/%E6%9D%82%E9%A1%B9/" class="category-chain-item">杂项</a>
   
-  
-    <span>></span>
-    
-  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/PHP/" class="category-chain-item">PHP</a>
-  
-  
-
   
 
       </span>
@@ -330,11 +329,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/ctf/" class="print-no-link">#ctf</a>
+        <a href="/tags/docker/" class="print-no-link">#docker</a>
       
-        <a href="/tags/Web/" class="print-no-link">#Web</a>
-      
-        <a href="/tags/php/" class="print-no-link">#php</a>
+        <a href="/tags/kali/" class="print-no-link">#kali</a>
       
     </div>
   
@@ -346,8 +343,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>php反序列化绕过 wakeup 总结</div>
-      <div>http://example.com/2023/08/26/blog0032-php反序列化绕过-wakeup总结/</div>
+      <div>kali2021 docker安装配置</div>
+      <div>http://example.com/2023/09/06/blog0035-kali2021-docker安装配置/</div>
     </div>
     <div class="license-meta">
       
@@ -359,7 +356,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年8月26日</div>
+          <div>2023年9月6日</div>
         </div>
       
       
@@ -391,18 +388,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/09/03/blog0031-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%B8%80%EF%BC%89-IDEA%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="Java代码审计（一） IDEA环境配置">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java代码审计（一） IDEA环境配置</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/07/20/blog0030-node.js%E5%AE%89%E5%85%A8%E7%89%B9%E6%80%A7%E6%80%BB%E7%BB%93/" title="nodejs安全特性总结">
-                        <span class="hidden-mobile">nodejs安全特性总结</span>
+                      <a href="/2023/09/06/blog0034-danted-socks5%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE/" title="danted socks5代理服务器配置">
+                        <span class="hidden-mobile">danted socks5代理服务器配置</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

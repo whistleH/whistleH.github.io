@@ -26,8 +26,20 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230903192123582.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230903192718492.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904155714764.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160038598.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160153646.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160512657.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160620246.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160956617.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904161053521.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904161126266.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904161612726.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904162243806.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904162751524.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20230906112338376.png">
 <meta property="article:published_time" content="2023-09-03T08:36:47.000Z">
-<meta property="article:modified_time" content="2023-09-03T11:27:53.798Z">
+<meta property="article:modified_time" content="2023-09-07T02:29:24.234Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="notes">
@@ -231,7 +243,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          197 字
+          3.8k 字
         
       </span>
     
@@ -242,7 +254,7 @@
         
         
         
-          2 分钟
+          32 分钟
         
       </span>
     
@@ -294,6 +306,446 @@
 <p>在新建的项目中，src -&gt; new Java Class，可以创建Java类对象，完成编程操作。</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230903192718492.png" srcset="/img/loading.gif" lazyload alt="image-20230903192718492" /></p>
 <h2 id="二javase-tomcat配置web">二、JavaSE + tomcat配置Web</h2>
+<p>我们在刚刚的JavaSE项目的基础上，结合tomcat搭建Java Web应用。</p>
+<h3 id="配置项目属性">2.1、配置项目属性</h3>
+<p>点击 <code>File</code> -&gt; <code>Project structure</code></p>
+<p>选择<code>Project</code>配置JDK的版本</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904155714764.png" srcset="/img/loading.gif" lazyload alt="image-20230904155714764" /></p>
+<p>选择<code>Modules</code>，指定运行的模板</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160038598.png" srcset="/img/loading.gif" lazyload alt="image-20230904160038598" /></p>
+<p>选择<code>Libraries</code>可以选择导入的库，当然更好的形式是使用maven来部署</p>
+<p>选择<code>Artifacts</code>，指定部署模式，这里使用war包的形式</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160153646.png" srcset="/img/loading.gif" lazyload alt="image-20230904160153646" /></p>
+<h3 id="配置tomcat">2.2、配置Tomcat</h3>
+<p>单击右上角<code>Add configuration</code></p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160512657.png" srcset="/img/loading.gif" lazyload alt="image-20230904160512657" /></p>
+<p>点击<code>+</code>号后选择tomcat完成项目部署</p>
+<p>注意配置deployment、port等相关信息</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160620246.png" srcset="/img/loading.gif" lazyload alt="image-20230904160620246" /></p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904160956617.png" srcset="/img/loading.gif" lazyload alt="image-20230904160956617" /></p>
+<h2 id="三javaee项目">三、JavaEE项目</h2>
+<p>创建JavaEE项目，一次性配置tomcat+maven</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904161053521.png" srcset="/img/loading.gif" lazyload alt="image-20230904161053521" /></p>
+<p>选择Java EE的版本，并且导入外部库</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904161126266.png" srcset="/img/loading.gif" lazyload alt="image-20230904161126266" /></p>
+<p>项目目录如下</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904161612726.png" srcset="/img/loading.gif" lazyload alt="image-20230904161612726" /></p>
+<p>点击右上角运行，就可以完成相应的配置。</p>
+<h2 id="四java-spring">四、Java + Spring</h2>
+<p>创建Java EE项目时选择Spring框架</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904162243806.png" srcset="/img/loading.gif" lazyload alt="image-20230904162243806" /></p>
+<h2 id="五maven相关">五、Maven相关</h2>
+<h3 id="普通项目导入maven">5.1、普通项目导入maven</h3>
+<p>右键单击我的项目，选择<code>Add Framework Support</code>，添加Maven</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/IT_model/article/details/88815258">普通项目导入Maven</a></p>
+<h3 id="maven仓库配置">5.2、maven仓库配置</h3>
+<p>选择<code>File</code> -&gt; <code>settings</code> -&gt; <code>Build</code> -&gt; <code>maven</code>，配置本地的maven仓库</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0031/image-20230904162751524.png" srcset="/img/loading.gif" lazyload alt="image-20230904162751524" /></p>
+<h3 id="maven配置本地仓库镜像源">5.3、maven配置本地仓库/镜像源</h3>
+<p>在maven安装目录下的<code>conf/settings.xml</code>，配置一些参数</p>
+<p>配置本次包存储位置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">localRepository</span>&gt;</span>D:\MySoftware\apache-maven-3.9.2\repository<span class="hljs-tag">&lt;/<span class="hljs-name">localRepository</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>创建maven项目常常会遇到速度很慢的情况，因此需要替换一下maven源。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>alimaven<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>aliyun maven<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span><br>    http://maven.aliyun.com/nexus/content/groups/public/<br>  <span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>central<span class="hljs-tag">&lt;/<span class="hljs-name">mirrorOf</span>&gt;</span>        <br><span class="hljs-tag">&lt;/<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20230906112338376.png" srcset="/img/loading.gif" lazyload alt="image-20230906112338376" /></p>
+<h2 id="五idea快捷键列表">五、IDEA快捷键列表</h2>
+<table>
+<thead>
+<tr class="header">
+<th>动作</th>
+<th>快捷键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Move Caret to Code Block End</td>
+<td>Ctrl+]</td>
+<td>诸如{}围起来的代码块，使用该快捷键可以快速跳转至代码块的结尾处</td>
+</tr>
+<tr class="even">
+<td>Move Caret to Code Block Start</td>
+<td>Ctrl+[</td>
+<td>同上，快速跳至代码块的开始出</td>
+</tr>
+<tr class="odd">
+<td>Complete Current Statement</td>
+<td><strong>Ctrl+Shift+Enter</strong></td>
+<td>将输入的if、for、函数等等补上{}或者;使代码语句完整</td>
+</tr>
+<tr class="even">
+<td>Start New Line</td>
+<td><strong>Shift+Enter</strong></td>
+<td>在当前行的下方开始新行</td>
+</tr>
+<tr class="odd">
+<td>Start New Line Before Current</td>
+<td><strong>Ctrl+Alt+Enter</strong></td>
+<td>在当前行上方插入新行</td>
+</tr>
+<tr class="even">
+<td>Delete to Word End</td>
+<td><strong>Ctrl+Delete</strong></td>
+<td>删除光标所在至单词结尾处的所有字符</td>
+</tr>
+<tr class="odd">
+<td>Delete to Word Start</td>
+<td>Ctrl+BackSpace</td>
+<td>删除光标所在至单词开头的所有字符</td>
+</tr>
+<tr class="even">
+<td>Move Caret to Previous Word</td>
+<td>Ctrl+向左箭头</td>
+<td>将光标移至前一个单词</td>
+</tr>
+<tr class="odd">
+<td>Move Caret to Next Word</td>
+<td>Ctrl+向右箭头</td>
+<td>将光标移至后一个单词</td>
+</tr>
+<tr class="even">
+<td>Scroll Up</td>
+<td>Ctrl+向上箭头</td>
+<td>向上滚动一行</td>
+</tr>
+<tr class="odd">
+<td>Scroll Down</td>
+<td>Ctrl+向下箭头</td>
+<td>向下滚动一行</td>
+</tr>
+<tr class="even">
+<td>Extend Selection</td>
+<td><strong>Ctrl+W</strong></td>
+<td>选中整个单词</td>
+</tr>
+<tr class="odd">
+<td>Toggle Case</td>
+<td>Ctrl+Shift+U</td>
+<td>切换大小写</td>
+</tr>
+<tr class="even">
+<td>Undo</td>
+<td><strong>Ctrl+Z</strong></td>
+<td>撤销</td>
+</tr>
+<tr class="odd">
+<td>Redo</td>
+<td>Ctrl+Shift+Z</td>
+<td>重做</td>
+</tr>
+<tr class="even">
+<td>Cut</td>
+<td><strong>Ctrl+X</strong></td>
+<td>剪切</td>
+</tr>
+<tr class="odd">
+<td>Copy</td>
+<td><strong>Ctrl+C</strong></td>
+<td>复制</td>
+</tr>
+<tr class="even">
+<td>Paste</td>
+<td><strong>Ctrl+V</strong></td>
+<td>粘贴</td>
+</tr>
+<tr class="odd">
+<td>Join Lines</td>
+<td>Ctrl+Shift+J</td>
+<td>将选中的行合并成一行</td>
+</tr>
+<tr class="even">
+<td>Find</td>
+<td><strong>Ctrl+F</strong></td>
+<td>在当前文件中查找</td>
+</tr>
+<tr class="odd">
+<td>Replace</td>
+<td><strong>Ctrl+R</strong></td>
+<td>替换字符串</td>
+</tr>
+<tr class="even">
+<td>Find in Path</td>
+<td><strong>Ctrl+Shift+F</strong></td>
+<td>在全局文件中查找字符串</td>
+</tr>
+<tr class="odd">
+<td>Replace in Path</td>
+<td><strong>Ctrl+Shift+R</strong></td>
+<td>在全局中替换字符串</td>
+</tr>
+<tr class="even">
+<td>Find Usages</td>
+<td>Alt+F7</td>
+<td>查找当前变量的使用，并列表显示</td>
+</tr>
+<tr class="odd">
+<td>Show Usages</td>
+<td>Ctrl+Alt+F7</td>
+<td>查找当前变量的使用，并直接对话框显示</td>
+</tr>
+<tr class="even">
+<td>Find Usages in File</td>
+<td>Ctrl+F7</td>
+<td>在文件中查找符号的使用</td>
+</tr>
+<tr class="odd">
+<td>Highlight Usages in File</td>
+<td>Ctrl+Shift+F7</td>
+<td>在文件中高亮显示变量的使用</td>
+</tr>
+<tr class="even">
+<td>Class…</td>
+<td><strong>Ctrl+N</strong></td>
+<td>查找类文件</td>
+</tr>
+<tr class="odd">
+<td>File…</td>
+<td><strong>Ctrl+Shift+N</strong></td>
+<td>查找文件</td>
+</tr>
+<tr class="even">
+<td>Line…</td>
+<td><strong>Ctrl+G</strong></td>
+<td>定位到文件某一行</td>
+</tr>
+<tr class="odd">
+<td>Back</td>
+<td>Alt+向左箭头</td>
+<td>返回至上次光标位置</td>
+</tr>
+<tr class="even">
+<td>Forward</td>
+<td>Alt+向右箭头</td>
+<td>返回至后一次光标位置</td>
+</tr>
+<tr class="odd">
+<td>Last Edit Location</td>
+<td>Ctrl+Shift+Backspace</td>
+<td>返回上次编辑位置</td>
+</tr>
+<tr class="even">
+<td>Next Edit Location</td>
+<td>Ctrl+Shift+反斜杠</td>
+<td>返回后一次编辑位置</td>
+</tr>
+<tr class="odd">
+<td>Declaration</td>
+<td>Ctrl+B</td>
+<td>定位至变量定义的位置</td>
+</tr>
+<tr class="even">
+<td>Implementation(s)</td>
+<td>Ctrl+Alt+B</td>
+<td>定位至选中类或方法的具体实现</td>
+</tr>
+<tr class="odd">
+<td>Type Declaration</td>
+<td>Ctrl+Shift+B</td>
+<td>直接定位至光标所在变量的类型定义</td>
+</tr>
+<tr class="even">
+<td>Super Method</td>
+<td>Ctrl+U</td>
+<td>直接定位至当前方法override或者implements的方法定义处</td>
+</tr>
+<tr class="odd">
+<td>File Structure</td>
+<td>Ctrl+F12</td>
+<td>显示当前文件的文件结构</td>
+</tr>
+<tr class="even">
+<td>File Path</td>
+<td>Ctrl+Alt+F12</td>
+<td>显示当前文件的路径，并可以方便的将相关父路径打开</td>
+</tr>
+<tr class="odd">
+<td>Type Hierarchy</td>
+<td>Ctrl+H</td>
+<td>显示当前类的继承层次</td>
+</tr>
+<tr class="even">
+<td>Method Hierarchy</td>
+<td>Ctrl+Shift+H</td>
+<td>显示当前方法的继承层次</td>
+</tr>
+<tr class="odd">
+<td>Call Hierarchy</td>
+<td>Ctrl+Alt+H</td>
+<td>显示当前方法的调用层次</td>
+</tr>
+<tr class="even">
+<td>Next Highlighted Error</td>
+<td>F2</td>
+<td>定位至下一个错误处</td>
+</tr>
+<tr class="odd">
+<td>Previous Highlighted Error</td>
+<td>Shift+F2</td>
+<td>定位至前一个错误处</td>
+</tr>
+<tr class="even">
+<td>Previous Occurrence</td>
+<td>Ctrl+Alt+向上箭头</td>
+<td>查找前一个变量共现的地方</td>
+</tr>
+<tr class="odd">
+<td>Next Occurrence</td>
+<td>Ctrl+Alt+向下箭头</td>
+<td>查找下一个变量共现的地方</td>
+</tr>
+<tr class="even">
+<td>Override Methods…</td>
+<td>Ctrl+O</td>
+<td>重写基类的方法</td>
+</tr>
+<tr class="odd">
+<td>Implement Methods…</td>
+<td>Ctrl+I</td>
+<td>实现基类或接口中的方法</td>
+</tr>
+<tr class="even">
+<td>Generate…</td>
+<td>Alt+Insert</td>
+<td>产生构造方法、getter/setter等方法</td>
+</tr>
+<tr class="odd">
+<td>Surround With…</td>
+<td>Ctrl+Alt+T</td>
+<td>将选中的代码使用if、while、try/catch等包装</td>
+</tr>
+<tr class="even">
+<td>Unwrap/Remove…</td>
+<td>Ctrl+Shift+Delete</td>
+<td>去除相关的包装代码</td>
+</tr>
+<tr class="odd">
+<td>Basic</td>
+<td>Alt+/</td>
+<td>自动完成</td>
+</tr>
+<tr class="even">
+<td>SmartType</td>
+<td>Alt+Enter</td>
+<td>自动提示完成</td>
+</tr>
+<tr class="odd">
+<td>Expand</td>
+<td>Ctrl+=</td>
+<td>展开代码</td>
+</tr>
+<tr class="even">
+<td>Collapse</td>
+<td>Ctrl+-</td>
+<td>收缩代码</td>
+</tr>
+<tr class="odd">
+<td>Expand Recursively</td>
+<td>Ctrl+Alt+=</td>
+<td>递归展开代码</td>
+</tr>
+<tr class="even">
+<td>Collapse Recursively</td>
+<td>Ctrl+Alt+-</td>
+<td>递归收缩代码</td>
+</tr>
+<tr class="odd">
+<td>Expand All</td>
+<td>Ctrl+Shift+=</td>
+<td>展开所有代码</td>
+</tr>
+<tr class="even">
+<td>Collapse All</td>
+<td>Ctrl+Shift+-</td>
+<td>收缩所有代码</td>
+</tr>
+<tr class="odd">
+<td>Insert Live Template</td>
+<td>Ctrl+J</td>
+<td>插入Live Template</td>
+</tr>
+<tr class="even">
+<td>Surround with Live Template</td>
+<td>Ctrl+Alt+J</td>
+<td>使用Live Template包装</td>
+</tr>
+<tr class="odd">
+<td>Comment with Line Comment</td>
+<td><strong>Ctrl+/</strong></td>
+<td>使用//进行注释</td>
+</tr>
+<tr class="even">
+<td>Comment with Block Comment</td>
+<td><strong>Ctrl+Shift+/</strong></td>
+<td>使用/**/进行注释</td>
+</tr>
+<tr class="odd">
+<td>Reformat Code</td>
+<td><strong>Ctrl+Alt+L</strong></td>
+<td>格式化代码</td>
+</tr>
+<tr class="even">
+<td>Auto-Indent Lines</td>
+<td>Ctrl+Alt+I</td>
+<td>自动缩进行</td>
+</tr>
+<tr class="odd">
+<td>Optimize Imports</td>
+<td>Ctrl+Alt+O</td>
+<td>优化import</td>
+</tr>
+<tr class="even">
+<td>Move Statement Down</td>
+<td>Ctrl+Shift+向下箭头</td>
+<td>将光标所在的代码块向下整体移动</td>
+</tr>
+<tr class="odd">
+<td>Move Statement Up</td>
+<td>Ctrl+Shift+向上箭头</td>
+<td>将光标所在的代码块向上移动</td>
+</tr>
+<tr class="even">
+<td>Move Element Left</td>
+<td>Ctrl+Alt+Shift+向左箭头</td>
+<td>将元素向左移动</td>
+</tr>
+<tr class="odd">
+<td>Move Element Right</td>
+<td>Ctrl+Alt+Shift+向右箭头</td>
+<td>将元素向右移动</td>
+</tr>
+<tr class="even">
+<td>Move Line Down</td>
+<td>Alt+Shift+向下箭头</td>
+<td>将行向下移动</td>
+</tr>
+<tr class="odd">
+<td>Move Line Up</td>
+<td>Alt+Shift+向上箭头</td>
+<td>将行向上移动</td>
+</tr>
+<tr class="even">
+<td>Rename</td>
+<td>Shift+F6</td>
+<td>重命名</td>
+</tr>
+<tr class="odd">
+<td>Change Signature</td>
+<td>Ctrl+F6</td>
+<td>更改函数签名</td>
+</tr>
+<tr class="even">
+<td>Type Migration</td>
+<td>Ctrl+Shift+F6</td>
+<td>更改类型</td>
+</tr>
+</tbody>
+</table>
+<h2 id="六报错及解决">六、报错及解决</h2>
+<h3 id="错误的java发行版">6.1、错误的Java发行版</h3>
+<p>具体信息：java: 错误: 无效的源发行版：17</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44299027/article/details/120848738">JDK版本不一致</a></p>
+<h3 id="类文件具有错误的版本-61.0-应为-52.0">6.2、类文件具有错误的版本 61.0, 应为 52.0</h3>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/simonchi/article/details/126625381">Spring6往上版本不支持低版本JDK</a></p>
 
                 
               </div>
@@ -394,6 +846,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2023/09/04/blog0033-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%BA%8C%EF%BC%89-Java-SE%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" title="Java代码审计（二） Java SE基础学习">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java代码审计（二） Java SE基础学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
