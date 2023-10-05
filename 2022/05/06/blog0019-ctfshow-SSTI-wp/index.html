@@ -25,12 +25,12 @@
 <meta property="og:description" content="SSTI，模板引擎注入，主要是利用模板引擎的不正确解析，从而造成信息泄露乃至代码执行等问题。由于涉及到代码执行，因此也常常会和pyjail等沙箱问题一起考察。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-06T13:05:10.000Z">
-<meta property="article:modified_time" content="2023-08-26T03:34:56.495Z">
+<meta property="article:modified_time" content="2023-10-05T05:43:46.664Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="web">
-<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="wp">
+<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="SSTI">
 <meta name="twitter:card" content="summary_large_image">
                         
@@ -337,7 +337,7 @@ flask自带类：
 
 使用原生的字符串拼接
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 这样就构造除了os的字符串</span><br>&#123;&#123;(()|select|string)[<span class="hljs-number">8</span>] + (()|select|string)[<span class="hljs-number">18</span>]&#125;&#125;<br><span class="hljs-comment"># 也可以使用dict函数过滤</span><br>&#123;&#123;(<span class="hljs-built_in">dict</span>(c=o)|join)~(<span class="hljs-built_in">dict</span>(a=s)|join)&#125;&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 这样就构造出了os的字符串</span><br>&#123;&#123;(()|select|string)[<span class="hljs-number">8</span>] + (()|select|string)[<span class="hljs-number">18</span>]&#125;&#125;<br><span class="hljs-comment"># 也可以使用dict函数过滤</span><br>&#123;&#123;(<span class="hljs-built_in">dict</span>(c=o)|join)~(<span class="hljs-built_in">dict</span>(a=s)|join)&#125;&#125;<br></code></pre></td></tr></table></figure>
 
 使用16进制编码绕过，需要注意的是，此时我们的代码中是\\x5f，一直到被模板引擎解析了才转变为具体的字符
 
@@ -465,9 +465,9 @@ payload如下
       
         <a href="/tags/web/" class="print-no-link">#web</a>
       
-        <a href="/tags/ctfshow/" class="print-no-link">#ctfshow</a>
-      
         <a href="/tags/wp/" class="print-no-link">#wp</a>
+      
+        <a href="/tags/ctfshow/" class="print-no-link">#ctfshow</a>
       
         <a href="/tags/SSTI/" class="print-no-link">#SSTI</a>
       
