@@ -25,8 +25,9 @@
 <meta property="og:description" content="在上一章节，我们学习了Java SE的基础语法。 接下来就正式进入了Java Web的学习，我们会从Java Web的架构讲起，并重点介绍servlet、tomcat和JSP技术。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0032/image-20211128141044514.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231006215631395.png">
 <meta property="article:published_time" content="2023-09-18T09:57:16.000Z">
-<meta property="article:modified_time" content="2023-10-06T06:02:06.988Z">
+<meta property="article:modified_time" content="2023-10-07T05:46:52.662Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="notes">
@@ -230,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          702 字
+          1.1k 字
         
       </span>
     
@@ -241,7 +242,7 @@
         
         
         
-          6 分钟
+          10 分钟
         
       </span>
     
@@ -289,18 +290,27 @@
 <h2 id="java-web-架构">1、Java Web 架构</h2>
 <p>首先，我们明确Web应用的基本架构，也为了方便我们后续更好地理解Java Web。</p>
 <p><strong>浏览器</strong>：渲染前端页面，可以执行服务端下发的javascript脚本</p>
-<p><strong>Web应用服务器</strong>：也可以叫Web应用容器/服务器软件，常见的Tomcat、Weblogic等。当然，我们也可以将tomcat和nginx的反向代理功能结合作为一个整体的Web应用服务器。</p>
+<p><strong>服务器软件</strong>：也可以叫Web应用容器/服务器软件，常见的Tomcat、Weblogic等。当然，我们也可以将nginx的反向代理功能和tomcat结合作为一个整体的Web应用服务器。</p>
 <p>Web应用服务器的作用主要在<strong>用户和后端程序间做数据处理</strong>，起到一个桥梁作用，同时也用于管理后端应用程序进程。</p>
 <p>（我们在配置php的时候，apache + php_fpm模块组成的Web应用服务器往往都是自带的，因此不需要额外配置。）</p>
 <p><strong>Web后端程序</strong>：这里就是我们写的Java代码了。比如Servlet类，用来处理用户的请求以及响应。</p>
-<h2 id="servlet">2、Servlet</h2>
+<h2 id="java-web交互">2、Java Web交互</h2>
 <p>在Sun的Java Servlet规范中，对Java Web应用作了这样定义：“JavaWeb应用由一组Servlet、HTML页、类、以及其它可以被绑定的资源构成。它可以在各种供应商提供的实现Servlet规范的 <strong>Servlet容器</strong> 中运行。”</p>
 <p>下图是基本的Java Web响应流程。需要注意的是，JSP在运行时也会被编译为<code>Servlet</code>类。</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0032/image-20211128141044514.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
 <p>我们常见的Servelet容器有：Tomcat、Weblogic等等。</p>
 <h2 id="tomcat">3、Tomcat</h2>
 <p>Tomcat是一款开源的Servelet容器，在实际开发中的使用非常广泛。</p>
-<p>对于Tomcat的目录结构，我们有如下的说明。</p>
+<p>对于Tomcat的目录结构，我们有这样的说明</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ada">bin 	: 存放启动和关闭<span class="hljs-type">Tomcat</span>的脚本文件<br>conf	: <span class="hljs-type">Tomcat</span>各种配置文件的存放文职<br>lib		: 存放<span class="hljs-type">Tomcat</span>服务器和所有Web应用程序需要访问的jar文件<br>logs	: 存放<span class="hljs-type">Tomcat</span>的日志文件<br>temp	: 存放<span class="hljs-type">Tomcat</span>运行时生成的临时文件<br>webapps	: 存放<span class="hljs-type">Tomcat</span>的Web应用程序<br>work	: <span class="hljs-type">Tomcat</span>将JSP生成的Servelet源文件及字节码存放在这个目录下。<br></code></pre></td></tr></table></figure>
+<p>Tomcat的最常见的一个配置就是设置服务器软件监听的端口的配置，大部分情况下也只需要关注这个配置即可。</p>
+<p>在<code>conf/server.xml</code>找到<code>Connector</code>配置即可完成相应的配置</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231006215631395.png" srcset="/img/loading.gif" lazyload alt="image-20231006215631395" /></p>
+<h2 id="servelet技术">4、Servelet技术</h2>
+<h3 id="创建程序">4.1、创建程序</h3>
+<h3 id="目录结构">4.2、目录结构</h3>
+<p>学习代码审计，首先要了解的就是Web应用程序的目录结构。对于Java Web，它的Web目录结构相对来说比较陌生，尤其是比起常见的文件路由形式。</p>
+<p>首先，我们根据上一节创建的</p>
 
                 
               </div>
@@ -401,6 +411,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2023/10/22/blog0037-%E9%9D%B6%E5%9C%BA%E7%AC%94%E8%AE%B0-w1r3s/" title="靶场笔记-w1r3s">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">靶场笔记-w1r3s</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
