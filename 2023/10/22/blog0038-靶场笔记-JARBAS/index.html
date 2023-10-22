@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022220716669.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022220948981.png">
 <meta property="article:published_time" content="2023-10-22T10:32:28.000Z">
-<meta property="article:modified_time" content="2023-10-22T14:13:57.964Z">
+<meta property="article:modified_time" content="2023-10-22T16:38:50.154Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="pentest">
 <meta property="article:tag" content="nmap">
@@ -325,11 +325,11 @@
 <h3 id="jenkins攻击">Jenkins攻击</h3>
 <p>将刚刚爆破出来的账号在Jenkin上测试发现，发现eder/vipsu能够顺利进入Jenkins后台。</p>
 <p>尝试Jenkins的两种RCE方式</p>
-<h4 id="脚本命令行">脚本命令行</h4>
+<h4 id="脚本命令行rce">脚本命令行RCE</h4>
 <p>Jenkins 右侧系统管理 -&gt; 脚本命令行</p>
 <p>如下图，但是此种模式无法反弹shell</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022210700227.png" srcset="/img/loading.gif" lazyload alt="image-20231022210700227" /></p>
-<h4 id="构建任务">构建任务</h4>
+<h4 id="构建任务rce">构建任务RCE</h4>
 <p>选择新建任务</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022211658093.png" srcset="/img/loading.gif" lazyload alt="image-20231022211658093" /></p>
 <p>在构建这里选择<code>Execute shell</code>，在下方框中输入你需要执行的命令。</p>
@@ -464,6 +464,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2023/10/23/blog0039-mitmproxy%E6%8B%A6%E6%88%AA%E4%BF%AE%E6%94%B9TCP%E6%95%B0%E6%8D%AE%E5%8C%85/" title="blog0039-mitmproxy拦截修改TCP数据包">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">blog0039-mitmproxy拦截修改TCP数据包</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
