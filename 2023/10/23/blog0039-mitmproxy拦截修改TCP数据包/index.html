@@ -17,12 +17,12 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="1、功能说明 1.1、网络拓扑 假设我们有主机A与主机B，以下对A主机和B主机进行说明。  A主机运行服务ServiceA，运行端口为portA。 B主机运行服务ServiceB，运行端口为portB。  实现功能如下：  在A主机上拦截修改A主机访问ServiceB的流量以及B主机访问ServiceA的流量。 在B主机上拦截修改B主机访问ServiceA的流量以及A主机访问S">
+                    <meta name="description" content="这个需求最开始的产生是某个项目的通信协议不是HTTP协议，如果需要在这个项目上完成相应的抓包拦截攻击，那么就需要在TCP层面拦截数据。 发现mitmproxy支持这个功能，但是相关的配置文章还是比较少的，因此在这里补充一下。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mitmproxy拦截修改TCP数据包">
 <meta property="og:url" content="http://example.com/2023/10/23/blog0039-mitmproxy%E6%8B%A6%E6%88%AA%E4%BF%AE%E6%94%B9TCP%E6%95%B0%E6%8D%AE%E5%8C%85/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="1、功能说明 1.1、网络拓扑 假设我们有主机A与主机B，以下对A主机和B主机进行说明。  A主机运行服务ServiceA，运行端口为portA。 B主机运行服务ServiceB，运行端口为portB。  实现功能如下：  在A主机上拦截修改A主机访问ServiceB的流量以及B主机访问ServiceA的流量。 在B主机上拦截修改B主机访问ServiceA的流量以及A主机访问S">
+<meta property="og:description" content="这个需求最开始的产生是某个项目的通信协议不是HTTP协议，如果需要在这个项目上完成相应的抓包拦截攻击，那么就需要在TCP层面拦截数据。 发现mitmproxy支持这个功能，但是相关的配置文章还是比较少的，因此在这里补充一下。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021145019017.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004024587.png">
@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173456256.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173515615.png">
 <meta property="article:published_time" content="2023-10-22T16:33:56.000Z">
-<meta property="article:modified_time" content="2023-10-22T16:43:59.247Z">
+<meta property="article:modified_time" content="2023-10-22T16:58:44.640Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="TCP&#x2F;IP">
 <meta property="article:tag" content="mitmproxy">
@@ -241,7 +241,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.7k 字
+          5.8k 字
         
       </span>
     
@@ -252,7 +252,7 @@
         
         
         
-          48 分钟
+          49 分钟
         
       </span>
     
@@ -294,7 +294,10 @@
             
               <div class="markdown-body">
                 
-                <h2 id="功能说明">1、功能说明</h2>
+                <p>这个需求最开始的产生是某个项目的通信协议不是HTTP协议，如果需要在这个项目上完成相应的抓包拦截攻击，那么就需要在TCP层面拦截数据。</p>
+<p>发现mitmproxy支持这个功能，但是相关的配置文章还是比较少的，因此在这里补充一下。</p>
+<span id="more"></span>
+<h2 id="功能说明">1、功能说明</h2>
 <h3 id="网络拓扑">1.1、网络拓扑</h3>
 <p>假设我们有主机A与主机B，以下对A主机和B主机进行说明。</p>
 <ul>
@@ -509,6 +512,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2023/11/22/blog0040-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E5%9B%9B%EF%BC%89-JavaEE%E6%A1%86%E6%9E%B6/" title="Java代码审计（四）-JavaEE框架">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java代码审计（四）-JavaEE框架</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">

