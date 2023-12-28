@@ -124,9 +124,9 @@
       
       <tag>web</tag>
       
-      <tag>Code Audit</tag>
-      
       <tag>notes</tag>
+      
+      <tag>Code Audit</tag>
       
     </tags>
     
@@ -244,9 +244,9 @@
       
       <tag>web</tag>
       
-      <tag>Code Audit</tag>
-      
       <tag>notes</tag>
+      
+      <tag>Code Audit</tag>
       
     </tags>
     
@@ -331,9 +331,9 @@
       
       <tag>web</tag>
       
-      <tag>Code Audit</tag>
-      
       <tag>notes</tag>
+      
+      <tag>Code Audit</tag>
       
     </tags>
     
@@ -362,9 +362,9 @@
       
       <tag>web</tag>
       
-      <tag>Code Audit</tag>
-      
       <tag>notes</tag>
+      
+      <tag>Code Audit</tag>
       
     </tags>
     
@@ -711,7 +711,7 @@
   
   
   <entry>
-    <title>Flask SSTI利用总结</title>
+    <title>Flask-SSTI利用总结</title>
     <link href="/2022/05/06/blog0019-ctfshow-SSTI-wp/"/>
     <url>/2022/05/06/blog0019-ctfshow-SSTI-wp/</url>
     
@@ -1007,9 +1007,9 @@
     
     <tags>
       
-      <tag>CTF</tag>
-      
       <tag>Web</tag>
+      
+      <tag>CTF</tag>
       
       <tag>RCE</tag>
       
@@ -1038,9 +1038,9 @@
     
     <tags>
       
-      <tag>CTF</tag>
-      
       <tag>Web</tag>
+      
+      <tag>CTF</tag>
       
       <tag>RCE</tag>
       
