@@ -25,7 +25,7 @@
 <meta property="og:description" content="我们在做题的时候，对于其他版本的glibc，在ret2libc的时候只需要使用glibc-all-in-one里面的libc-database即可。 但是有的时候，我们需要搭建glibc的调试环境，尤其是在学习堆的时候，这个时候我们就需要掌握多版本glibc调试环境的使用了。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-12-26T16:16:01.000Z">
-<meta property="article:modified_time" content="2023-12-26T17:37:01.255Z">
+<meta property="article:modified_time" content="2023-12-29T15:02:01.281Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="二进制">
 <meta property="article:tag" content="glibc">
@@ -227,7 +227,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k 字
+          2.5k 字
         
       </span>
     
@@ -238,7 +238,7 @@
         
         
         
-          14 分钟
+          21 分钟
         
       </span>
     
@@ -293,9 +293,9 @@
 <p>进入glibc源码文件夹</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">mkdir build &amp;&amp; cd build<br></code></pre></td></tr></table></figure>
 <p>编译64位程序，注意--prefix指定安装位置</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">../configure --prefix=/home/kali/glibc/glibc-2.23/out --enable-debug=yes<br>make -j4 &amp;&amp; sudo make install<br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">../configure --prefix=/home/kali/glibc/glibc-2.23/out --enable-debug=yes --disable-werror<br>make -j4 &amp;&amp; sudo make install<br></code></pre></td></tr></table></figure>
 <p>编译32位程序</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">../configure --prefix=/home/kali/glibc/glibc-2.23/out_32 --enable-debug=yes --host=i686-linux-gnu --build=i686-linux-gnu CC=&quot;gcc -m32&quot; CXX=&quot;g++ -m32&quot; CFLAGS=&quot;-O2 -march=i686&quot; CXXFLAGS=&quot;-O2 -march=i686”<br>make -j4 &amp;&amp; sudo make install<br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">../configure --prefix=/home/kali/glibc/glibc-2.23/out32 --enable-debug=yes --host=i686-linux-gnu --build=i686-linux-gnu --disable-werror CC=&quot;gcc -m32&quot; CXX=&quot;g++ -m32&quot; CFLAGS=&quot;-g -g3 -ggdb -gdwarf-4 -Og -Wno-error&quot; CXXFLAGS=&quot;-g -g3 -ggdb -gdwarf-4 -Og -Wno-error&quot;<br>make -j4 &amp;&amp; sudo make install<br></code></pre></td></tr></table></figure>
 <h2 id="程序指定链接glibc">3、程序指定链接glibc</h2>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">gcc -L/home/kali/glibc/glibc-2.23/out/lib -Wl,--rpath=/home/kali/glibc/glibc-2.23/out/lib/ -Wl,-I/home/kali/glibc/glibc-2.23/out/lib/ld-2.23.so 23_heap_test.c<br></code></pre></td></tr></table></figure>
 <h2 id="patchelf">4、patchelf</h2>
@@ -305,14 +305,22 @@
 <p>如果我们需要调试glibc的源码，可以进入pwndbg后使用dir命令</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">dir /home/kali/glibc/glibc-2.23/malloc<br></code></pre></td></tr></table></figure>
 <h2 id="错误与解决">6、错误与解决</h2>
-<h3 id="ubuntu16.04-glibc2.23">Ubuntu16.04-glibc2.23</h3>
+<h3 id="实际编译报错">实际编译报错</h3>
 <p>实际操作中可能会编译报错</p>
-<p>我这边的编译环境是：kali 2021.2 + gcc (Debian 13.2.0-5) 13.2.0</p>
+<p>我这边的编译环境是：kali 2021.2 + gcc (Debian 13.2.0-5) 13.2.0 + x64</p>
 <p>编译语句如下</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">..<span class="hljs-regexp">/configure --prefix=/</span>home<span class="hljs-regexp">/kali/g</span>libc<span class="hljs-regexp">/glibc-2.23/</span>out --enable-debug=yes --enable-add-ons=libidn --enable-obsolete-nsl --disable-werror<br></code></pre></td></tr></table></figure>
+<p>glibc-2.23</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">../configure --prefix=/home/kali/glibc/glibc-2.23/out --enable-debug=yes --enable-add-ons=libidn --enable-obsolete-nsl --disable-werror<br><br>../configure --prefix=/home/kali/glibc/glibc-2.23/out32 --enable-debug=yes --host=i686-linux-gnu --build=i686-linux-gnu  --enable-add-ons=libidn --enable-obsolete-nsl --disable-werror  CC=&quot;gcc -m32&quot; CXX=&quot;g++ -m32&quot; CFLAGS=&quot;-g -g3 -ggdb -gdwarf-4 -Og -Wno-error -fno-stack-protector&quot; CXXFLAGS=&quot;-g -g3 -ggdb -gdwarf-4 -Og -Wno-error -fno-stack-protector&quot; <br></code></pre></td></tr></table></figure>
+<p>glibc-2.27</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">../configure --prefix=/home/kali/glibc/glibc-2.27/out --enable-debug=yes --disable-werror<br><br>../configure --prefix=/home/kali/glibc/glibc-2.27/out32 --enable-debug=yes --host=i686-linux-gnu --build=i686-linux-gnu --disable-werror CC=&quot;gcc -m32&quot; CXX=&quot;g++ -m32&quot; CFLAGS=&quot;-g -g3 -ggdb -gdwarf-4 -Og&quot; CXXFLAGS=&quot;-g -g3 -ggdb -gdwarf-4 -Og&quot;<br></code></pre></td></tr></table></figure>
 <p>参考链接：</p>
 <p>https://www.mail-archive.com/debian-glibc@lists.debian.org/msg57925.html</p>
 <p>https://www.cnblogs.com/zq10/p/14314952.html</p>
+<h3 id="报错找不到asmunistd.h">报错：找不到asm/unistd.h</h3>
+<p>尝试使用如下命令</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">sudo ln -s <span class="hljs-regexp">/usr/i</span>nclude<span class="hljs-regexp">/x86_64-linux-gnu/</span>asm <span class="hljs-regexp">/usr/i</span>nclude/asm <br></code></pre></td></tr></table></figure>
+<h2 id="参考链接">7、参考链接</h2>
+<p>https://0xffff.one/d/337</p>
 
                 
               </div>

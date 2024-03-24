@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0032/image-20230915144536182.png">
 <meta property="article:published_time" content="2023-08-26T09:31:55.000Z">
-<meta property="article:modified_time" content="2023-09-15T07:44:13.391Z">
+<meta property="article:modified_time" content="2024-02-01T15:36:32.034Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="Web">
 <meta property="article:tag" content="ctf">
@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.2k 字
+          3.3k 字
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          27 分钟
+          28 分钟
         
       </span>
     
@@ -315,17 +315,18 @@
 <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">C wakeup <span class="hljs-selector-tag">B</span> wakeup <span class="hljs-selector-tag">A</span> wakeup <span class="hljs-selector-tag">A</span> destruct <span class="hljs-selector-tag">B</span> destruct C destruct<br></code></pre></td></tr></table></figure>
 <h3 id="异常反序列化">2.3、异常反序列化</h3>
 <p>在此基础上，我们引入新的姿势，PHP反序列化发生异常时，会直接调用destruct方法。</p>
-<p>此处我们加上了A的一个属性，从而导致反序列化发生异常，从而发生了destruct的调用。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$ser</span> = <span class="hljs-string">&#x27;O:1:&quot;A&quot;:1:&#123;s:4:&quot;attr&quot;;O:1:&quot;B&quot;:1:&#123;s:4:&quot;attr&quot;;O:1:&quot;C&quot;:0:&#123;&#125;&#125;;1&#125;&#x27;</span>;<br>unserialize(<span class="hljs-variable">$ser</span>);<br></code></pre></td></tr></table></figure>
-<p>输出结果如下</p>
+<p>构造一个能够触发反序列化发生异常的语句，基于上述的代码来看有什么问题。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$ser</span> = <span class="hljs-string">&#x27;O:1:&quot;A&quot;:1:&#123;s:4:&quot;attr&quot;;O:1:&quot;B&quot;:1:&#123;s:4:&quot;attr&quot;;O:1:&quot;C&quot;:0:&#123;&#125;&#125;&#125;&#x27;</span>;<br><span class="hljs-variable">$ser</span> = <span class="hljs-string">&#x27;O:1:&quot;A&quot;:1:&#123;s:4:&quot;attr&quot;;O:1:&quot;B&quot;:1:&#123;s:4:&quot;attr&quot;;O:1:&quot;C&quot;:0:&#123;&#125;&#125;;1&#125;&#x27;</span>;<br>unserialize(<span class="hljs-variable">$ser</span>);<br></code></pre></td></tr></table></figure>
+<p>输出结果如下，还是正常的结果。</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">C wakeup B wakeup A wakeup A destruct B destruct C destruct<br></code></pre></td></tr></table></figure>
-<p>这里我们再补充一个姿势，可以再额外验证。</p>
+<p>那该如何触发绕过<code>__wakeup</code>呢？</p>
+<p>这里我们再补充一个姿势，感兴趣的师傅们可以通过调试验证。</p>
 <ul>
 <li>php反序列化时，递归为对象分配内存空间。然后才调用wakeup方法</li>
 <li>对于同一个对象，即使发生异常，也是先调用wakeup再调用destruct</li>
 </ul>
 <p>为了更好地说明问题，我们将A的wakeup注释，再次尝试异常反序列化。</p>
-<p>输出结果如下，可以发现先调用了A的destruct</p>
+<p>输出结果如下，可以发现先调用了A的destruct。</p>
 <figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coq">A <span class="hljs-built_in">destruct</span> C wakeup B wakeup B <span class="hljs-built_in">destruct</span> C <span class="hljs-built_in">destruct</span><br></code></pre></td></tr></table></figure>
 <h3 id="攻击方式总结">2.4、攻击方式总结</h3>
 <p>假设此时C的一个非destruct类中存在危险函数（但是涉及到的属性会被C的wakeup给清除）。</p>
@@ -344,7 +345,7 @@
 <p>我们构造如下的payload即可实现绕过</p>
 <figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada"><span class="hljs-symbol">&#x27;C</span>:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;Saferman&quot;</span>:<span class="hljs-number">0</span>:&#123;&#125;&#x27;<br></code></pre></td></tr></table></figure>
 <p>在某些版本可以使用ArrayObject将需要的类封装起来从而实现在C绕过中为类赋值。但是攻击面还是很狭窄的。</p>
-<p>具体想要了解的可以参考这题：<a target="_blank" rel="noopener" href="https://www.yuque.com/boogipop/tdotcs/hobe2yqmb3kgy1l8?singleDoc#">C绕过trick</a></p>
+<p>如果有CTF需求想要学习的可以参考这道题：<a target="_blank" rel="noopener" href="https://www.yuque.com/boogipop/tdotcs/hobe2yqmb3kgy1l8?singleDoc#">C绕过trick</a></p>
 
                 
               </div>

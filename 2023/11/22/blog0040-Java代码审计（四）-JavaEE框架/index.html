@@ -17,15 +17,15 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="因为各种原因，拖了好久orz 上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇还是持续更新。">
+                    <meta name="description" content="上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java代码审计（四） JavaEE框架">
 <meta property="og:url" content="http://example.com/2023/11/22/blog0040-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E5%9B%9B%EF%BC%89-JavaEE%E6%A1%86%E6%9E%B6/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="因为各种原因，拖了好久orz 上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇还是持续更新。">
+<meta property="og:description" content="上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-11-21T17:22:53.000Z">
-<meta property="article:modified_time" content="2023-11-22T13:04:24.500Z">
+<meta property="article:modified_time" content="2024-02-29T12:13:20.764Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="notes">
@@ -281,9 +281,8 @@
             
               <div class="markdown-body">
                 
-                <p>因为各种原因，拖了好久orz</p>
-<p>上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。</p>
-<p>因为涉及到的开发内容比较多，所以这一篇还是持续更新。</p>
+                <p>上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。</p>
+<p>因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。</p>
 <span id="more"></span>
 <h2 id="常见java框架">1、常见Java框架</h2>
 <p>首先，我们简单认识一下Java常见的开发框架。</p>
@@ -351,6 +350,10 @@
 </ul>
 <h2 id="structs2">4、Structs2</h2>
 <h2 id="mybatis">5、Mybatis</h2>
+<p>MyBatis 是一款优秀的<strong>持久层</strong>框架，它支持<strong>定制化 SQL</strong>、存储过程以及高级映射。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对 象）为数据库中的记录。</p>
+<p>对于Mybatis的系统学习，可以参照<a target="_blank" rel="noopener" href="https://mybatis.org/mybatis-3/zh/getting-started.htm">官方教程</a>。接下来以一个简单的例子说明Mybatis的使用。</p>
+<h3 id="创建mybatis工程">5.1、创建Mybatis工程</h3>
+<p>创建一个SpringBoot工程，这里的S</p>
 <h2 id="hibernate">6、Hibernate</h2>
 <h2 id="shiro">7、Shiro</h2>
 <p>Apache Shiro是一个强大且易于使用的Java安全框架，提供了身份验证（Authentication）、授权（Authorization）、加密（Cryptography）和会话管理（Session Management）等安全功能。</p>
@@ -368,15 +371,6 @@
 <p>在实际操作过程中，当用户需要访问相应的API，则检查API需要的权限和用户角色的权限，如果API需要的权限为用户角色权限的子集，则表示通过鉴权。</p>
 <h3 id="shiro-1">7.2、Shiro</h3>
 <p>这一部分相对来说</p>
-<h2 id="ssh框架">SSH框架</h2>
-<p>在第一节中，我们提到了许多开发中的框架，对于实际的Web项目，往往是多个框架的组合。为了方便熟悉，这里我们使用Struct2 + Spring(IOC) + Hibernate，即SSH框架来进行说明。</p>
-<p>三者之间的关系如下：</p>
-<ul>
-<li>Struts2 负责显示页面和接受请求</li>
-<li>Spring 的 IOC 容器管理各个组件: 整合 Struts2，Hibernate 和 其他组件，AOP 完成声明式事务</li>
-<li>Hibernate 提供 DAO 操作</li>
-</ul>
-<h2 id="ssm框架">SSM框架</h2>
 
                 
               </div>
