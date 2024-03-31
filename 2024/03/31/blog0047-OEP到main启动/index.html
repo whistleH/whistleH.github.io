@@ -17,25 +17,33 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。">
+                    <meta name="description" content="逆向随笔">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java代码审计（四） JavaEE框架">
-<meta property="og:url" content="http://example.com/2023/11/22/blog0040-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E5%9B%9B%EF%BC%89-JavaEE%E6%A1%86%E6%9E%B6/index.html">
+<meta property="og:title" content="逆向分析-OEP到main启动">
+<meta property="og:url" content="http://example.com/2024/03/31/blog0047-OEP%E5%88%B0main%E5%90%AF%E5%8A%A8/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。">
+<meta property="og:description" content="逆向随笔">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-11-21T17:22:53.000Z">
-<meta property="article:modified_time" content="2024-02-29T12:13:20.764Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711864165088-e728436b-1b13-4805-9732-a36ffa9bae65.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865787331-6219fe9b-f8e6-4d49-86e6-bdbc2e3de513.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865948651-1d4dbec4-305a-45a3-9a90-d44cfffb4a69.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867004127-9ecf5ac8-370b-4052-a28a-d6056b26e799.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867089828-a28a530b-2ce3-4f5e-bb1f-8a56ee399f57.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865907187-33ab19f3-6558-4564-b06b-a543fc158b15.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867351255-8e636718-4ee3-492a-baa0-12e14f287065.png">
+<meta property="article:published_time" content="2024-03-31T07:07:52.000Z">
+<meta property="article:modified_time" content="2024-03-31T07:17:03.031Z">
 <meta property="article:author" content="whistle.H">
-<meta property="article:tag" content="web">
-<meta property="article:tag" content="Code Audit">
-<meta property="article:tag" content="notes">
+<meta property="article:tag" content="Reverse">
+<meta property="article:tag" content="Windows">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png">
                         
                                 
                                         
                                                     <title>
-                                                        Java代码审计（四） JavaEE框架 - The world of whistleH
+                                                        逆向分析-OEP到main启动 - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -205,7 +213,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java代码审计（四） JavaEE框架"></span>
+            <span id="subtitle" data-typed-text="逆向分析-OEP到main启动"></span>
           
         </div>
 
@@ -216,8 +224,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-11-22 01:22" pubdate>
-          2023年11月22日 凌晨
+        <time datetime="2024-03-31 15:07" pubdate>
+          2024年3月31日 下午
         </time>
       </span>
     
@@ -228,7 +236,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.1k 字
+          2.8k 字
         
       </span>
     
@@ -239,7 +247,7 @@
         
         
         
-          18 分钟
+          24 分钟
         
       </span>
     
@@ -276,101 +284,35 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java代码审计（四） JavaEE框架</h1>
+            <h1 id="seo-header">逆向分析-OEP到main启动</h1>
             
             
               <div class="markdown-body">
                 
-                <p>上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。</p>
-<p>因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。</p>
+                <p>逆向随笔</p>
 <span id="more"></span>
-<h2 id="常见java框架">1、常见Java框架</h2>
-<p>首先，我们简单认识一下Java常见的开发框架。</p>
-<p>Struts2（控制层）</p>
-<ul>
-<li>MVC设计模式的实现</li>
-<li>拦截器</li>
-<li>可变和可重用的标签a</li>
-</ul>
-<p>Spring MVC（控制层）</p>
-<ul>
-<li>结构最清晰的MVC Model2实现</li>
-<li>高度可配置，支持多种视图技术</li>
-<li>定制化开发</li>
-</ul>
-<p>Hibernate（持久层）</p>
-<ul>
-<li>ORM，简化数据库操作</li>
-<li>DAO层</li>
-</ul>
-<p>Mybatis（半ORM）(目前的主流框架)</p>
-<ul>
-<li>半自动化的ORM实现</li>
-<li>DAO层</li>
-<li>动态SQL</li>
-<li>小巧灵活、简单易学置。</li>
-</ul>
-<p>Shiro（鉴权）</p>
-<ul>
-<li>权限管理</li>
-</ul>
-<p>Spring（大管家）</p>
-<ul>
-<li>依赖注入容器 / AOP实现</li>
-<li>声明式事务</li>
-<li>简化Java EE应用</li>
-<li>黏合剂，将大家组装到一起</li>
-</ul>
-<h2 id="spring框架">2、Spring框架</h2>
-<p>Spring是一个综合性的Java应用开发框架，提供了广泛的功能和模块，包括依赖注入、AOP（面向切面编程）、事务管理、数据访问等。</p>
-<p>Spring框架的核心是IoC（控制反转）和依赖注入，它简化了应用的开发，提高了代码的可测试性和可维护性。</p>
-<ul>
-<li>IOC 容器管理各层的组件</li>
-<li>使用 AOP 配置声明式事务</li>
-<li><strong>整合其他框架</strong>.</li>
-</ul>
-<h3 id="aop技术">2.1、AOP技术</h3>
-<p>AOP允许开发者通过在不同层面上（例如日志、安全、事务等）切入代码，将一些横切关注点（cross-cutting concerns）从业务逻辑中分离出来。这些关注点可能是跨越应用程序的多个模块和层次的，例如日志记录、事务管理、安全性等。AOP能够提高代码的模块化、可重用性和可维护性。</p>
-<p>我们之前在Tomcat中学习到的Filter其实也属于AOP。</p>
-<h3 id="ioc">2.2、IOC</h3>
-<p>IOC（Invert Of Control），控制反转。也成为 <strong>DI(依赖注入)</strong>其思想是反转资源获取的方向。传统的资源查找方式要求组件向容器发起请求查找资源.作为回应, 容器适时的返回资源. 而应用了 IOC 之后, 则是容器主动地将资源推送给它所管理的组件,组件所要做的仅是选择一种合适的方式来接受资源. 这种行为也被称为查找的被动形式</p>
-<h2 id="spring-mvc">3、Spring MVC</h2>
-<ul>
-<li>清晰的角色划分：前端控制器（DispatcherServlet）、请求到处理器映射（HandlerMapping）、处理器适配器（HandlerAdapter）、视图解析器。（ViewResolver）、处理器或页面控制器（Controller）、验证器（ Validator）、命令对象（Command 请求参数绑定到的对象就叫命令对象）、<strong>表单对象</strong>（Form <strong>Object 提供给表单展示和提交到的对象就叫表单对象</strong>）。</li>
-<li>分工明确，而且扩展点相当灵活，可以很容易扩展，虽然几乎不需要。</li>
-<li>由于命令对象就是一个POJO，无需继承框架特定API，可以使用命令对象直接作为业务对象。</li>
-<li>和Spring 其他框架无缝集成，是其它Web框架所不具备的。</li>
-<li>可适配，通过HandlerAdapter可以支持任意的类作为处理器。</li>
-<li>可定制性，HandlerMapping、ViewResolver等能够非常简单的定制。</li>
-<li>功能强大的数据验证、格式化、绑定机制。</li>
-<li>利用Spring提供的Mock对象能够非常简单的进行Web层单元测试。</li>
-<li>本地化、主题的解析的支持，使我们更容易进行国际化和主题的切换。</li>
-<li>强大的JSP标签库，使JSP编写更容易。</li>
-<li>还有比如RESTful风格的支持、简单的文件上传、约定大于配置的契约式编程支持、基于注解的零配置支持等等。</li>
-</ul>
-<h2 id="structs2">4、Structs2</h2>
-<h2 id="mybatis">5、Mybatis</h2>
-<p>MyBatis 是一款优秀的<strong>持久层</strong>框架，它支持<strong>定制化 SQL</strong>、存储过程以及高级映射。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对 象）为数据库中的记录。</p>
-<p>对于Mybatis的系统学习，可以参照<a target="_blank" rel="noopener" href="https://mybatis.org/mybatis-3/zh/getting-started.htm">官方教程</a>。接下来以一个简单的例子说明Mybatis的使用。</p>
-<h3 id="创建mybatis工程">5.1、创建Mybatis工程</h3>
-<p>创建一个SpringBoot工程，这里的S</p>
-<h2 id="hibernate">6、Hibernate</h2>
-<h2 id="shiro">7、Shiro</h2>
-<p>Apache Shiro是一个强大且易于使用的Java安全框架，提供了身份验证（Authentication）、授权（Authorization）、加密（Cryptography）和会话管理（Session Management）等安全功能。</p>
-<p>Shiro致力于简化应用程序的安全性实现，使得开发人员能够更轻松地集成安全功能到他们的应用程序中。</p>
-<h3 id="传统鉴权">7.1、传统鉴权</h3>
-<p>我们先给出一个传统鉴权的解决方案</p>
-<p>在数据库层面会有如下结构：</p>
-<ol type="1">
-<li>权限表：将应用系统所有如接口、数据等类型的权限存储到数据表</li>
-<li>用户表：存储系统所有的用户</li>
-<li>角色表：存储系统所有的角色</li>
-<li>用户-角色表：将用户和角色建立连接</li>
-<li>角色-权限：将角色和权限建立连接</li>
-</ol>
-<p>在实际操作过程中，当用户需要访问相应的API，则检查API需要的权限和用户角色的权限，如果API需要的权限为用户角色权限的子集，则表示通过鉴权。</p>
-<h3 id="shiro-1">7.2、Shiro</h3>
-<p>这一部分相对来说</p>
+<h2 id="项目配置">项目配置</h2>
+<p>我们选用Ollydbg和VS2019来实现对一个进程从OEP到main函数的过程分析</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>);<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>为了方便查看外部代码，我们关闭<code>调试 -&gt; 选项 -&gt; 启用仅我的代码</code></p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p>（可选）<code>属性 -&gt; 链接器 -&gt; 高级</code>里关闭随机基址</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711864165088-e728436b-1b13-4805-9732-a36ffa9bae65.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<h2 id="调试过程">调试过程</h2>
+<p>F5启动程序，可以发现当前main函数的调用堆栈情况</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865787331-6219fe9b-f8e6-4d49-86e6-bdbc2e3de513.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p>我们从<code>mainCRTStartup</code>开始分析</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865948651-1d4dbec4-305a-45a3-9a90-d44cfffb4a69.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p>使用OD也可以看出，程序OEP的第一条指令就是<code>jmp mainCRTStartup</code></p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867004127-9ecf5ac8-370b-4052-a28a-d6056b26e799.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867089828-a28a530b-2ce3-4f5e-bb1f-8a56ee399f57.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p>跟进<code>__scrt_common_main()</code>，该函数主要完成gs安全机制的<code>security_cookie</code>的初始化</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865907187-33ab19f3-6558-4564-b06b-a543fc158b15.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867351255-8e636718-4ee3-492a-baa0-12e14f287065.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p>继续跟进<code>__scrt_common_main_seh()</code>，这里我直接复制了C源码，可以看到Windows在重要部分都添加了注释说明</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">static</span> __declspec(noinline) <span class="hljs-keyword">int</span> __cdecl __scrt_common_main_seh()<br>&#123;<br>    <span class="hljs-comment">// 初始化CRT</span><br>    <span class="hljs-keyword">if</span> (!__scrt_initialize_crt(__scrt_module_type::exe))<br>        __scrt_fastfail(FAST_FAIL_FATAL_APP_EXIT);<br>    <br>    <span class="hljs-keyword">bool</span> has_cctor = <span class="hljs-literal">false</span>;<br>    __try<br>    &#123;<br>        <span class="hljs-keyword">bool</span> <span class="hljs-keyword">const</span> is_nested = __scrt_acquire_startup_lock();<br><br>        <span class="hljs-keyword">if</span> (__scrt_current_native_startup_state == __scrt_native_startup_state::initializing)<br>        &#123;<br>            __scrt_fastfail(FAST_FAIL_FATAL_APP_EXIT);<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (__scrt_current_native_startup_state == __scrt_native_startup_state::uninitialized)<br>        &#123;<br>            __scrt_current_native_startup_state = __scrt_native_startup_state::initializing;<br><br>            <span class="hljs-comment">// 初始化全局变量、静态变量</span><br>            <span class="hljs-keyword">if</span> (_initterm_e(__xi_a, __xi_z) != <span class="hljs-number">0</span>)<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">255</span>;<br><br>            _initterm(__xc_a, __xc_z);<br><br>            __scrt_current_native_startup_state = __scrt_native_startup_state::initialized;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            has_cctor = <span class="hljs-literal">true</span>;<br>        &#125;<br><br>        __scrt_release_startup_lock(is_nested);<br><br>        <span class="hljs-comment">// If this module has any dynamically initialized __declspec(thread)</span><br>        <span class="hljs-comment">// variables, then we invoke their initialization for the primary thread</span><br>        <span class="hljs-comment">// used to start the process:</span><br>        _tls_callback_type <span class="hljs-keyword">const</span>* <span class="hljs-keyword">const</span> tls_init_callback = __scrt_get_dyn_tls_init_callback();<br>        <span class="hljs-keyword">if</span> (*tls_init_callback != <span class="hljs-literal">nullptr</span> &amp;&amp; __scrt_is_nonwritable_in_current_image(tls_init_callback))<br>        &#123;<br>            (*tls_init_callback)(<span class="hljs-literal">nullptr</span>, DLL_THREAD_ATTACH, <span class="hljs-literal">nullptr</span>);<br>        &#125;<br><br>        <span class="hljs-comment">// If this module has any thread-local destructors, register the</span><br>        <span class="hljs-comment">// callback function with the Unified CRT to run on exit.</span><br>        _tls_callback_type <span class="hljs-keyword">const</span> * <span class="hljs-keyword">const</span> tls_dtor_callback = __scrt_get_dyn_tls_dtor_callback();<br>        <span class="hljs-keyword">if</span> (*tls_dtor_callback != <span class="hljs-literal">nullptr</span> &amp;&amp; __scrt_is_nonwritable_in_current_image(tls_dtor_callback))<br>        &#123;<br>            _register_thread_local_exe_atexit_callback(*tls_dtor_callback);<br>        &#125;<br><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// Initialization is complete; invoke main...</span><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// 调用main函数</span><br><br>        <span class="hljs-keyword">int</span> <span class="hljs-keyword">const</span> main_result = invoke_main();<br><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// main has returned; exit somehow...</span><br>        <span class="hljs-comment">//</span><br><br>        <span class="hljs-keyword">if</span> (!__scrt_is_managed_app())<br>            <span class="hljs-built_in">exit</span>(main_result);<br><br>        <span class="hljs-keyword">if</span> (!has_cctor)<br>            _cexit();<br><br>        <span class="hljs-comment">// Finally, we terminate the CRT:</span><br>        __scrt_uninitialize_crt(<span class="hljs-literal">true</span>, <span class="hljs-literal">false</span>);<br>        <span class="hljs-keyword">return</span> main_result;<br>    &#125;<br>    __except (_seh_filter_exe(GetExceptionCode(), GetExceptionInformation()))<br>    &#123;<br>        <span class="hljs-comment">// Note:  We should never reach this except clause.</span><br>        <span class="hljs-keyword">int</span> <span class="hljs-keyword">const</span> main_result = GetExceptionCode();<br><br>        <span class="hljs-keyword">if</span> (!__scrt_is_managed_app())<br>            _exit(main_result);<br><br>        <span class="hljs-keyword">if</span> (!has_cctor)<br>            _c_exit();<br><br>        <span class="hljs-keyword">return</span> main_result;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>继续跟进<code>invoke_main</code>，发现在这里调用了main函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __cdecl <span class="hljs-title">invoke_main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> main(__argc, __argv, _get_initial_narrow_environment());<br>&#125;<br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -389,12 +331,12 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="category-chain-item">代码审计</a>
+  <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/" class="category-chain-item">二进制安全</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/Java/" class="category-chain-item">Java</a>
+  <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="category-chain-item">基础知识</a>
   
   
 
@@ -411,11 +353,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/web/" class="print-no-link">#web</a>
+        <a href="/tags/Reverse/" class="print-no-link">#Reverse</a>
       
-        <a href="/tags/Code-Audit/" class="print-no-link">#Code Audit</a>
-      
-        <a href="/tags/notes/" class="print-no-link">#notes</a>
+        <a href="/tags/Windows/" class="print-no-link">#Windows</a>
       
     </div>
   
@@ -427,8 +367,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java代码审计（四） JavaEE框架</div>
-      <div>http://example.com/2023/11/22/blog0040-Java代码审计（四）-JavaEE框架/</div>
+      <div>逆向分析-OEP到main启动</div>
+      <div>http://example.com/2024/03/31/blog0047-OEP到main启动/</div>
     </div>
     <div class="license-meta">
       
@@ -440,7 +380,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年11月22日</div>
+          <div>2024年3月31日</div>
         </div>
       
       
@@ -472,18 +412,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/12/07/blog0041-pwn%E4%B8%AD%E7%9A%84shellcode%E5%88%A9%E7%94%A8/" title="pwn中的shellcode利用">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">pwn中的shellcode利用</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/23/blog0039-mitmproxy%E6%8B%A6%E6%88%AA%E4%BF%AE%E6%94%B9TCP%E6%95%B0%E6%8D%AE%E5%8C%85/" title="mitmproxy拦截修改TCP数据包">
-                        <span class="hidden-mobile">mitmproxy拦截修改TCP数据包</span>
+                      <a href="/2024/02/29/blog0046-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E2%80%94%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/" title="Java代码审计—反序列化经典案例">
+                        <span class="hidden-mobile">Java代码审计—反序列化经典案例</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
