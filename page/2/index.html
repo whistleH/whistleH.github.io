@@ -230,6 +230,82 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2023/12/07/blog0041-pwn%E4%B8%AD%E7%9A%84shellcode%E5%88%A9%E7%94%A8/" target="_self">
+          <img src="/img/hacker1.jpg" srcset="/img/loading.gif" lazyload alt="pwn中的shellcode利用">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/12/07/blog0041-pwn%E4%B8%AD%E7%9A%84shellcode%E5%88%A9%E7%94%A8/" target="_self">
+          pwn中的shellcode利用
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2023/12/07/blog0041-pwn%E4%B8%AD%E7%9A%84shellcode%E5%88%A9%E7%94%A8/" target="_self">
+        <div>
+          这篇文章主要讲讲Pwn中的shellcode利用，主要基于Linux操作系统。
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-12-07 21:06" pubdate>
+              2023-12-07
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/" class="category-chain-item">二进制安全</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/shellcode/" class="category-chain-item">shellcode</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6/">#二进制</a>
+            
+              <a href="/tags/shellcode/">#shellcode</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/2023/11/22/blog0031-3-JavaEE%E6%A1%86%E6%9E%B6/" target="_self">
           <img src="/img/hacker1.jpg" srcset="/img/loading.gif" lazyload alt="Java代码审计 JavaEE框架">
         </a>
@@ -294,9 +370,9 @@
             
               <a href="/tags/web/">#web</a>
             
-              <a href="/tags/Code-Audit/">#Code Audit</a>
-            
               <a href="/tags/notes/">#notes</a>
+            
+              <a href="/tags/Code-Audit/">#Code Audit</a>
             
           </div>
         
@@ -597,9 +673,9 @@
             
               <a href="/tags/web/">#web</a>
             
-              <a href="/tags/Code-Audit/">#Code Audit</a>
-            
               <a href="/tags/notes/">#notes</a>
+            
+              <a href="/tags/Code-Audit/">#Code Audit</a>
             
           </div>
         
@@ -815,9 +891,9 @@
             
               <a href="/tags/web/">#web</a>
             
-              <a href="/tags/Code-Audit/">#Code Audit</a>
-            
               <a href="/tags/notes/">#notes</a>
+            
+              <a href="/tags/Code-Audit/">#Code Audit</a>
             
           </div>
         
@@ -893,87 +969,9 @@
             
               <a href="/tags/web/">#web</a>
             
-              <a href="/tags/Code-Audit/">#Code Audit</a>
-            
               <a href="/tags/notes/">#notes</a>
             
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2023/08/26/blog0032-php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%BB%95%E8%BF%87-wakeup%E6%80%BB%E7%BB%93/" target="_self">
-          <img src="/img/hacker1.jpg" srcset="/img/loading.gif" lazyload alt="php反序列化绕过 wakeup 总结">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/08/26/blog0032-php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%BB%95%E8%BF%87-wakeup%E6%80%BB%E7%BB%93/" target="_self">
-          php反序列化绕过 wakeup 总结
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2023/08/26/blog0032-php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%BB%95%E8%BF%87-wakeup%E6%80%BB%E7%BB%93/" target="_self">
-        <div>
-          上次某个比赛看到PHP反序列化的__wakeup绕过，发现自己竟然只知道利用属性个数异常的来绕过一种方法。确实是比赛打得太少了，很多trick都不知道，特地找了些博客去分析了一下。 推荐博客：php wakeup绕过 1、CVE-2016-7124 影响范围：  PHP5 &lt; 5.6.25 PHP7 &lt; 7.0.10  这个是我学习PHP反序列化绕过学习到的第一个姿势。
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-08-26 17:31" pubdate>
-              2023-08-26
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="category-chain-item">代码审计</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/PHP/" class="category-chain-item">PHP</a>
-  
-  
-
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Web/">#Web</a>
-            
-              <a href="/tags/ctf/">#ctf</a>
-            
-              <a href="/tags/php/">#php</a>
+              <a href="/tags/Code-Audit/">#Code Audit</a>
             
           </div>
         
@@ -985,7 +983,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 
