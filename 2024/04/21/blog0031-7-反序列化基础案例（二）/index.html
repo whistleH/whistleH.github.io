@@ -17,15 +17,15 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="经过前面的基础铺垫，我们进入了Web安全漏洞的领域。这一篇章其中重点关注跟Java Web特性有关的漏洞。">
+                    <meta name="description" content="上一章节，我们分析了URLDNS、CC1以及CC6的反序列化，接下来我们进一部分分析其他CC链。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java代码审计（五）——Web安全漏洞">
-<meta property="og:url" content="http://example.com/2024/01/14/blog0045-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%BA%94%EF%BC%89-Web%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:title" content="反序列化基础案例（二）">
+<meta property="og:url" content="http://example.com/2024/04/21/blog0031-7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%9F%BA%E7%A1%80%E6%A1%88%E4%BE%8B%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="经过前面的基础铺垫，我们进入了Web安全漏洞的领域。这一篇章其中重点关注跟Java Web特性有关的漏洞。">
+<meta property="og:description" content="上一章节，我们分析了URLDNS、CC1以及CC6的反序列化，接下来我们进一部分分析其他CC链。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-01-13T18:01:10.000Z">
-<meta property="article:modified_time" content="2024-02-29T12:13:45.895Z">
+<meta property="article:published_time" content="2024-04-21T07:55:52.000Z">
+<meta property="article:modified_time" content="2024-04-21T07:58:20.270Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="Code Audit">
@@ -35,7 +35,7 @@
                                 
                                         
                                                     <title>
-                                                        Java代码审计（五）——Web安全漏洞 - The world of whistleH
+                                                        反序列化基础案例（二） - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -205,7 +205,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java代码审计（五）——Web安全漏洞"></span>
+            <span id="subtitle" data-typed-text="反序列化基础案例（二）"></span>
           
         </div>
 
@@ -216,8 +216,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-01-14 02:01" pubdate>
-          2024年1月14日 凌晨
+        <time datetime="2024-04-21 15:55" pubdate>
+          2024年4月21日 下午
         </time>
       </span>
     
@@ -228,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.8k 字
+          64 字
         
       </span>
     
@@ -239,7 +239,7 @@
         
         
         
-          15 分钟
+          1 分钟
         
       </span>
     
@@ -276,27 +276,17 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java代码审计（五）——Web安全漏洞</h1>
+            <h1 id="seo-header">反序列化基础案例（二）</h1>
             
             
               <div class="markdown-body">
                 
-                <p>经过前面的基础铺垫，我们进入了Web安全漏洞的领域。这一篇章其中重点关注跟Java Web特性有关的漏洞。</p>
+                <p>上一章节，我们分析了URLDNS、CC1以及CC6的反序列化，接下来我们进一部分分析其他CC链。</p>
 <span id="more"></span>
-<h2 id="xss">XSS</h2>
-<h3 id="xssfilter实现逻辑">XssFilter实现逻辑</h3>
-<p>XSS漏洞其实准确来说跟Java本身关系不是非常大，主要还是属于前端安全的范围。我们之前在Filter过滤器的部分提到了基于过滤器的XSS防护，在这里我们尝试实现一个基于Filter的XSS简单防护。</p>
-<p>基本的思路是：</p>
-<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xl">F<span class="hljs-function"><span class="hljs-title">ilter</span>拦截 -&gt;</span> 检测XSS -&gt; 封装被XSS过滤后的H<span class="hljs-function"><span class="hljs-title">ttpServletRequest</span>/HttpServletResponse类 -&gt;</span> 放行<br></code></pre></td></tr></table></figure>
-<p>这里我们起码要实现两个类，也就是<code>Filter</code>过滤器类以及<code>XSSHttpServletRequest</code>类</p>
-<p><code>XssFilter</code>这里我们省略了其他相关的配置代码。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">XssFilter</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Filter</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">doFilter</span><span class="hljs-params">(ServletRequest request, ServletResponse response, FilterChain chain)</span></span><br><span class="hljs-function">            <span class="hljs-keyword">throws</span> IOException, ServletException</span><br><span class="hljs-function">    </span>&#123;<br>        HttpServletRequest req = (HttpServletRequest) request;<br>        HttpServletResponse resp = (HttpServletResponse) response;<br>        <span class="hljs-keyword">if</span> (handleExcludeURL(req, resp))<br>        &#123;<br>            chain.doFilter(request, response);<br>            <span class="hljs-keyword">return</span>;<br>        &#125;<br>        XssHttpServletRequestWrapper xssRequest = <span class="hljs-keyword">new</span> XssHttpServletRequestWrapper((HttpServletRequest) request);<br>        chain.doFilter(xssRequest, response);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>对于<code>XssHttpServletRequestWrapper</code>类，我们重写了<code>getParameterValues</code>，这样当获取我们参数的时候，就能够实现Xss过滤器的保护。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">XssHttpServletRequestWrapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">HttpServletRequestWrapper</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">XssHttpServletRequestWrapper</span><span class="hljs-params">(HttpServletRequest request)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">super</span>(request);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String[] getParameterValues(String name)<br>    &#123;<br>        String[] values = <span class="hljs-keyword">super</span>.getParameterValues(name);<br>        <span class="hljs-keyword">if</span> (values != <span class="hljs-keyword">null</span>)<br>        &#123;<br>            <span class="hljs-keyword">int</span> length = values.length;<br>            String[] escapseValues = <span class="hljs-keyword">new</span> String[length];<br>            System.out.println(values);<br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; length; i++)<br>            &#123;<br>                <span class="hljs-comment">// 防xss攻击和过滤前后空格</span><br>                escapseValues[i] = EscapeUtil.clean(values[i]).trim();<br>            &#125;<br>            System.out.println(escapseValues);<br>            <span class="hljs-keyword">return</span> escapseValues;<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">super</span>.getParameterValues(name);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="补充">补充</h3>
-<p>基于这样的XssFilter能够非常有效的限制通过参数传递来实现的Xss攻击，而且一次性全局配置。</p>
-<p>当然仍然存在可能的被XSS攻击的敏感点。例如<code>文件上传</code>，很多的XSS检测不一定会实现对于文件流内容的XSS检测，这也就导致了可以通过文件上传导入用户等等方式来将XSS的数据写入数据库，从而实现存储型XSS攻击。</p>
-<h2 id="sql注入">SQL注入</h2>
+<h1 id="cc2链">CC2链</h1>
+<h1 id="cc3链">CC3链</h1>
+<h1 id="cc4链">CC4链</h1>
+<h1 id="cc5链">CC5链</h1>
 
                 
               </div>
@@ -353,8 +343,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java代码审计（五）——Web安全漏洞</div>
-      <div>http://example.com/2024/01/14/blog0045-Java代码审计（五）-Web安全漏洞/</div>
+      <div>反序列化基础案例（二）</div>
+      <div>http://example.com/2024/04/21/blog0031-7-反序列化基础案例（二）/</div>
     </div>
     <div class="license-meta">
       
@@ -366,7 +356,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年1月14日</div>
+          <div>2024年4月21日</div>
         </div>
       
       
@@ -398,18 +388,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/02/29/blog0046-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E2%80%94%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/" title="Java代码审计—反序列化经典案例">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java代码审计—反序列化经典案例</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/12/28/blog0044-%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%E4%B8%8Eret2dl-resolve%E5%88%86%E6%9E%90/" title="延迟绑定与ret2dl_resolve分析">
-                        <span class="hidden-mobile">延迟绑定与ret2dl_resolve分析</span>
+                      <a href="/2024/04/20/blog0031-6-Java%E5%AD%97%E8%8A%82%E7%A0%81/" title="Java代码审计 Java字节码">
+                        <span class="hidden-mobile">Java代码审计 Java字节码</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

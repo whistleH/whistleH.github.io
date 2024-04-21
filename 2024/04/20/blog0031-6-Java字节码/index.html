@@ -17,25 +17,28 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。">
+                    <meta name="description" content="Java字节码是关于Java底层安全的内容。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java代码审计（四） JavaEE框架">
-<meta property="og:url" content="http://example.com/2023/11/22/blog0040-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E5%9B%9B%EF%BC%89-JavaEE%E6%A1%86%E6%9E%B6/index.html">
+<meta property="og:title" content="Java代码审计 Java字节码">
+<meta property="og:url" content="http://example.com/2024/04/20/blog0031-6-Java%E5%AD%97%E8%8A%82%E7%A0%81/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。">
+<meta property="og:description" content="Java字节码是关于Java底层安全的内容。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-11-21T17:22:53.000Z">
-<meta property="article:modified_time" content="2024-02-29T12:13:20.764Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240418002909238.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240419234215733.png">
+<meta property="article:published_time" content="2024-04-20T13:34:20.000Z">
+<meta property="article:modified_time" content="2024-04-20T14:08:02.390Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="Code Audit">
 <meta property="article:tag" content="notes">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240418002909238.png">
                         
                                 
                                         
                                                     <title>
-                                                        Java代码审计（四） JavaEE框架 - The world of whistleH
+                                                        Java代码审计 Java字节码 - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -205,7 +208,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java代码审计（四） JavaEE框架"></span>
+            <span id="subtitle" data-typed-text="Java代码审计 Java字节码"></span>
           
         </div>
 
@@ -216,8 +219,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-11-22 01:22" pubdate>
-          2023年11月22日 凌晨
+        <time datetime="2024-04-20 21:34" pubdate>
+          2024年4月20日 晚上
         </time>
       </span>
     
@@ -228,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.1k 字
+          2.3k 字
         
       </span>
     
@@ -239,7 +242,7 @@
         
         
         
-          18 分钟
+          19 分钟
         
       </span>
     
@@ -276,101 +279,72 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java代码审计（四） JavaEE框架</h1>
+            <h1 id="seo-header">Java代码审计 Java字节码</h1>
             
             
               <div class="markdown-body">
                 
-                <p>上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。</p>
-<p>因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。</p>
+                <p>Java字节码是关于Java底层安全的内容。</p>
 <span id="more"></span>
-<h2 id="常见java框架">1、常见Java框架</h2>
-<p>首先，我们简单认识一下Java常见的开发框架。</p>
-<p>Struts2（控制层）</p>
-<ul>
-<li>MVC设计模式的实现</li>
-<li>拦截器</li>
-<li>可变和可重用的标签a</li>
-</ul>
-<p>Spring MVC（控制层）</p>
-<ul>
-<li>结构最清晰的MVC Model2实现</li>
-<li>高度可配置，支持多种视图技术</li>
-<li>定制化开发</li>
-</ul>
-<p>Hibernate（持久层）</p>
-<ul>
-<li>ORM，简化数据库操作</li>
-<li>DAO层</li>
-</ul>
-<p>Mybatis（半ORM）(目前的主流框架)</p>
-<ul>
-<li>半自动化的ORM实现</li>
-<li>DAO层</li>
-<li>动态SQL</li>
-<li>小巧灵活、简单易学置。</li>
-</ul>
-<p>Shiro（鉴权）</p>
-<ul>
-<li>权限管理</li>
-</ul>
-<p>Spring（大管家）</p>
-<ul>
-<li>依赖注入容器 / AOP实现</li>
-<li>声明式事务</li>
-<li>简化Java EE应用</li>
-<li>黏合剂，将大家组装到一起</li>
-</ul>
-<h2 id="spring框架">2、Spring框架</h2>
-<p>Spring是一个综合性的Java应用开发框架，提供了广泛的功能和模块，包括依赖注入、AOP（面向切面编程）、事务管理、数据访问等。</p>
-<p>Spring框架的核心是IoC（控制反转）和依赖注入，它简化了应用的开发，提高了代码的可测试性和可维护性。</p>
-<ul>
-<li>IOC 容器管理各层的组件</li>
-<li>使用 AOP 配置声明式事务</li>
-<li><strong>整合其他框架</strong>.</li>
-</ul>
-<h3 id="aop技术">2.1、AOP技术</h3>
-<p>AOP允许开发者通过在不同层面上（例如日志、安全、事务等）切入代码，将一些横切关注点（cross-cutting concerns）从业务逻辑中分离出来。这些关注点可能是跨越应用程序的多个模块和层次的，例如日志记录、事务管理、安全性等。AOP能够提高代码的模块化、可重用性和可维护性。</p>
-<p>我们之前在Tomcat中学习到的Filter其实也属于AOP。</p>
-<h3 id="ioc">2.2、IOC</h3>
-<p>IOC（Invert Of Control），控制反转。也成为 <strong>DI(依赖注入)</strong>其思想是反转资源获取的方向。传统的资源查找方式要求组件向容器发起请求查找资源.作为回应, 容器适时的返回资源. 而应用了 IOC 之后, 则是容器主动地将资源推送给它所管理的组件,组件所要做的仅是选择一种合适的方式来接受资源. 这种行为也被称为查找的被动形式</p>
-<h2 id="spring-mvc">3、Spring MVC</h2>
-<ul>
-<li>清晰的角色划分：前端控制器（DispatcherServlet）、请求到处理器映射（HandlerMapping）、处理器适配器（HandlerAdapter）、视图解析器。（ViewResolver）、处理器或页面控制器（Controller）、验证器（ Validator）、命令对象（Command 请求参数绑定到的对象就叫命令对象）、<strong>表单对象</strong>（Form <strong>Object 提供给表单展示和提交到的对象就叫表单对象</strong>）。</li>
-<li>分工明确，而且扩展点相当灵活，可以很容易扩展，虽然几乎不需要。</li>
-<li>由于命令对象就是一个POJO，无需继承框架特定API，可以使用命令对象直接作为业务对象。</li>
-<li>和Spring 其他框架无缝集成，是其它Web框架所不具备的。</li>
-<li>可适配，通过HandlerAdapter可以支持任意的类作为处理器。</li>
-<li>可定制性，HandlerMapping、ViewResolver等能够非常简单的定制。</li>
-<li>功能强大的数据验证、格式化、绑定机制。</li>
-<li>利用Spring提供的Mock对象能够非常简单的进行Web层单元测试。</li>
-<li>本地化、主题的解析的支持，使我们更容易进行国际化和主题的切换。</li>
-<li>强大的JSP标签库，使JSP编写更容易。</li>
-<li>还有比如RESTful风格的支持、简单的文件上传、约定大于配置的契约式编程支持、基于注解的零配置支持等等。</li>
-</ul>
-<h2 id="structs2">4、Structs2</h2>
-<h2 id="mybatis">5、Mybatis</h2>
-<p>MyBatis 是一款优秀的<strong>持久层</strong>框架，它支持<strong>定制化 SQL</strong>、存储过程以及高级映射。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对 象）为数据库中的记录。</p>
-<p>对于Mybatis的系统学习，可以参照<a target="_blank" rel="noopener" href="https://mybatis.org/mybatis-3/zh/getting-started.htm">官方教程</a>。接下来以一个简单的例子说明Mybatis的使用。</p>
-<h3 id="创建mybatis工程">5.1、创建Mybatis工程</h3>
-<p>创建一个SpringBoot工程，这里的S</p>
-<h2 id="hibernate">6、Hibernate</h2>
-<h2 id="shiro">7、Shiro</h2>
-<p>Apache Shiro是一个强大且易于使用的Java安全框架，提供了身份验证（Authentication）、授权（Authorization）、加密（Cryptography）和会话管理（Session Management）等安全功能。</p>
-<p>Shiro致力于简化应用程序的安全性实现，使得开发人员能够更轻松地集成安全功能到他们的应用程序中。</p>
-<h3 id="传统鉴权">7.1、传统鉴权</h3>
-<p>我们先给出一个传统鉴权的解决方案</p>
-<p>在数据库层面会有如下结构：</p>
+<h1 id="java字节码">Java字节码</h1>
+<p>参考博客：<a target="_blank" rel="noopener" href="https://pdai.tech/md/java/jvm/java-jvm-class.html">Java字节码</a></p>
+<h2 id="概念">1、概念</h2>
+<p>Java代码是不能直接在计算机系统上运行的，为了实现真正的跨平台，Java实现的方式是将Java代码编译成Java字节码，然后由JVM来实现字节码在对应操作系统上机器码的实现。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240418002909238.png" srcset="/img/loading.gif" lazyload alt="image-20240418002909238" /></p>
+<h2 id="虚拟机实现">2、虚拟机实现</h2>
+<p>虚拟机常见的实现方式有两种：基于栈的和基于<strong>寄存器</strong>的。比如基于栈的虚拟机有Hotspot JVM、.net CLR，这种基于栈实现虚拟机是一种广泛的实现方法。而基于寄存器的虚拟机有 Lua 语言虚拟机 LuaVM 和 Google 开发的安卓虚拟机 DalvikVM。</p>
+<h2 id="类字节码">3、类字节码</h2>
+<h3 id="结构">3.1、结构</h3>
+<p>类字节码由十个部分组成</p>
 <ol type="1">
-<li>权限表：将应用系统所有如接口、数据等类型的权限存储到数据表</li>
-<li>用户表：存储系统所有的用户</li>
-<li>角色表：存储系统所有的角色</li>
-<li>用户-角色表：将用户和角色建立连接</li>
-<li>角色-权限：将角色和权限建立连接</li>
+<li>魔数（Magic Number）</li>
+<li><strong>版本号</strong>（Minor&amp;Major Version）</li>
+<li><strong>常量池</strong>（Constant Pool）</li>
+<li>类访问标记(Access Flags)</li>
+<li>类索引（This Class）</li>
+<li>超类索引（Super Class）</li>
+<li>接口表索引（Interfaces）</li>
+<li>字段表（Fields）</li>
+<li>方法表（Methods）</li>
+<li>属性表（Attributes）</li>
 </ol>
-<p>在实际操作过程中，当用户需要访问相应的API，则检查API需要的权限和用户角色的权限，如果API需要的权限为用户角色权限的子集，则表示通过鉴权。</p>
-<h3 id="shiro-1">7.2、Shiro</h3>
-<p>这一部分相对来说</p>
+<p>具体的内容说明可以查看上面推荐的博客，这里不再赘述。</p>
+<h3 id="简单字节码">3.2、简单字节码</h3>
+<p>字节码是基于栈完成操作的，因此常见的指令都是围绕栈操作展开，这里我们学习一下常见的指令。</p>
+<ul>
+<li>ldc -&gt; 将int、float或String型常量值从常量池中推送至栈顶(宽索引)</li>
+<li>xload -&gt; 将指定类型的本地变量推送至栈顶 (x代表任意字符串)</li>
+<li>xstore -&gt; 将指定类型的栈顶值存入本地变量中 (x代表任意字符串)</li>
+<li>pop -&gt; 将栈顶数值弹出(数值不能是long或double类型的)</li>
+<li>dup -&gt; 复制栈顶数值并将复制值压入栈顶</li>
+<li>xadd -&gt; 将栈顶两指定型数值相加并将结果压入栈顶 (x代表任意字符串)</li>
+<li>goto -&gt; 无条件跳转</li>
+<li>xreturn -&gt; 从当前方法返回指定类型 (x代表任意字符串)</li>
+<li>invokevirtual -&gt; 调用实例方法</li>
+<li>invokespecial -&gt; 调用超类构建方法, 实例初始化方法, 私有方法</li>
+<li>invokestatic -&gt; 调用静态方法</li>
+<li>invokeinterface -&gt; 调用接口方法</li>
+<li>invokedynamic -&gt; 调用动态方法</li>
+</ul>
+<p>接下来我们以一个最简单的程序字节码来说明，一个简单的加法程序，翻译成栈虚拟机的字节码，操作就会繁琐非常多。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(java.lang.String[])</span></span>;<br>   descriptor: ([Ljava/lang/String;)V<br>   flags: ACC_PUBLIC, ACC_STATIC<br>   Code:<br>     stack=<span class="hljs-number">2</span>, locals=<span class="hljs-number">4</span>, args_size=<span class="hljs-number">1</span><br>        <span class="hljs-number">0</span>: sipush        <span class="hljs-number">1</span>  				<span class="hljs-comment">// 将1推入栈中</span><br>        <span class="hljs-number">3</span>: istore_1						<span class="hljs-comment">// 栈顶数据存储到1号变量中</span><br>        <span class="hljs-number">4</span>: sipush        <span class="hljs-number">2</span>					<span class="hljs-comment">// 将2推入栈中</span><br>        <span class="hljs-number">7</span>: istore_2						<span class="hljs-comment">// 栈顶数据存储到2号变量中</span><br>        <span class="hljs-number">8</span>: iload_1							<span class="hljs-comment">// 将1号变量推入栈中</span><br>        <span class="hljs-number">9</span>: iload_2							<span class="hljs-comment">// 将2号变量推入栈中</span><br>       <span class="hljs-number">10</span>: iadd							<span class="hljs-comment">// 栈顶两个元素相加</span><br>       <span class="hljs-number">11</span>: istore_3						<span class="hljs-comment">// 栈顶数据存储到3号变量中</span><br>       <span class="hljs-number">12</span>: getstatic     #<span class="hljs-number">2</span>                  <span class="hljs-comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span><br>       <span class="hljs-number">15</span>: iload_3<br>       <span class="hljs-number">16</span>: invokevirtual #<span class="hljs-number">3</span>                  <span class="hljs-comment">// Method java/io/PrintStream.println:(I)V</span><br>       <span class="hljs-number">19</span>: <span class="hljs-keyword">return</span><br></code></pre></td></tr></table></figure>
+<h2 id="asm基础">4、ASM基础</h2>
+<p>ASM技术主要是为了直接修改字节码提出。</p>
+<p>利用ASM技术，可以直接在类读取的时候修改对应的字节码（简单Patch Jar包），除此之外，还能实现AOP、热部署等等功能。</p>
+<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240419234215733.png" srcset="/img/loading.gif" lazyload alt="image-20240419234215733" /></p>
+<h3 id="asm组成">4.1、ASM组成</h3>
+<p>ASM大致可以分为三个部分组成，分别是ClassReader,ClassVisitor以及ClassWriter。</p>
+<p>ClassReader，它是字节码读取和分析引擎，帮我们做了最苦最累的解析二进制的 class 文件字节码 的活。每当有事件发生时，触发相应的 ClassVisitor、MethodVisitor 等做相应的处理。</p>
+<p>ClassVisitor，它是一个抽象类，ClassReader 对象创建之后，调用 ClassReader.accept() 方法，传 入一个 ClassVisitor 对象。ClassVisitor 在解析字节码的过程中遇到不同的节点时会调用不同的 visit() 方法。比如用于访问方法的MethodVisitor、用于访问类变量的FieldVisitor、用于访问注解的AnnotationVisitor等。为了实现AOP，重点要使用的是MethodVisitor。</p>
+<p>ClassWriter，这个类是 ClassVisitor 抽象类的一个实现类，其之前的每个 ClassVisitor 都可能对原始的字节码做修改，ClassWriter 的 toByteArray 方法则把最终修改的字节码以 byte 数组的形式返回</p>
+<h2 id="asm实战">5、ASM实战</h2>
+<h3 id="修改字符串">5.1、修改字符串</h3>
+<p>我们假设有一个类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> ASMTry;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Base</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">process</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;process!&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>现在我们希望将其中的字符串<code>process!</code>改为其他我们想要的字符串</p>
+<p>为了解决这个需求，我们需要自行定义一个方法，对编译后的类完成指定的修改。</p>
+<h3 id="实现aop">5.2、实现AOP</h3>
+<h2 id="java">6、Java</h2>
 
                 
               </div>
@@ -427,8 +401,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java代码审计（四） JavaEE框架</div>
-      <div>http://example.com/2023/11/22/blog0040-Java代码审计（四）-JavaEE框架/</div>
+      <div>Java代码审计 Java字节码</div>
+      <div>http://example.com/2024/04/20/blog0031-6-Java字节码/</div>
     </div>
     <div class="license-meta">
       
@@ -440,7 +414,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年11月22日</div>
+          <div>2024年4月20日</div>
         </div>
       
       
@@ -472,9 +446,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/12/07/blog0041-pwn%E4%B8%AD%E7%9A%84shellcode%E5%88%A9%E7%94%A8/" title="pwn中的shellcode利用">
+                      <a href="/2024/04/21/blog0031-7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%9F%BA%E7%A1%80%E6%A1%88%E4%BE%8B%EF%BC%88%E4%BA%8C%EF%BC%89/" title="反序列化基础案例（二）">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">pwn中的shellcode利用</span>
+                        <span class="hidden-mobile">反序列化基础案例（二）</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -482,8 +456,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/23/blog0039-mitmproxy%E6%8B%A6%E6%88%AA%E4%BF%AE%E6%94%B9TCP%E6%95%B0%E6%8D%AE%E5%8C%85/" title="mitmproxy拦截修改TCP数据包">
-                        <span class="hidden-mobile">mitmproxy拦截修改TCP数据包</span>
+                      <a href="/2024/03/31/blog0047-OEP%E5%88%B0main%E5%90%AF%E5%8A%A8/" title="逆向分析-OEP到main启动">
+                        <span class="hidden-mobile">逆向分析-OEP到main启动</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

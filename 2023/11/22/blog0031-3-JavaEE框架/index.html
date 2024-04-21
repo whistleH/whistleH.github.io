@@ -17,28 +17,25 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="1、文件上传">
+                    <meta name="description" content="上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="edusrc首次尝试——任意文件上传">
-<meta property="og:url" content="http://example.com/2022/07/11/blog0021-edusrc%E9%A6%96%E6%AC%A1%E5%B0%9D%E8%AF%95%E2%80%94%E2%80%94%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/index.html">
+<meta property="og:title" content="Java代码审计 JavaEE框架">
+<meta property="og:url" content="http://example.com/2023/11/22/blog0031-3-JavaEE%E6%A1%86%E6%9E%B6/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="1、文件上传">
+<meta property="og:description" content="上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。 因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0001.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0002.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0003.png">
-<meta property="article:published_time" content="2022-07-11T13:30:14.000Z">
-<meta property="article:modified_time" content="2022-08-12T07:41:19.213Z">
+<meta property="article:published_time" content="2023-11-21T17:22:53.000Z">
+<meta property="article:modified_time" content="2024-04-20T13:38:26.724Z">
 <meta property="article:author" content="whistle.H">
-<meta property="article:tag" content="upload">
-<meta property="article:tag" content="src">
+<meta property="article:tag" content="web">
+<meta property="article:tag" content="Code Audit">
+<meta property="article:tag" content="notes">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0001.jpg">
                         
                                 
                                         
                                                     <title>
-                                                        edusrc首次尝试——任意文件上传 - The world of whistleH
+                                                        Java代码审计 JavaEE框架 - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -208,7 +205,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="edusrc首次尝试——任意文件上传"></span>
+            <span id="subtitle" data-typed-text="Java代码审计 JavaEE框架"></span>
           
         </div>
 
@@ -219,8 +216,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-07-11 21:30" pubdate>
-          2022年7月11日 晚上
+        <time datetime="2023-11-22 01:22" pubdate>
+          2023年11月22日 凌晨
         </time>
       </span>
     
@@ -231,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          88 字
+          2.1k 字
         
       </span>
     
@@ -242,7 +239,7 @@
         
         
         
-          1 分钟
+          18 分钟
         
       </span>
     
@@ -279,20 +276,101 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">edusrc首次尝试——任意文件上传</h1>
+            <h1 id="seo-header">Java代码审计 JavaEE框架</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="文件上传">1、文件上传</h2>
+                <p>上一章节，我们已经学习了Java Web的基础概念。但是在现代开发中，我们需要面对的场景往往是基于框架的Java Web开发，比如大家喜闻乐见的Spring系列。这一章节就会为大家介绍这些概念。</p>
+<p>因为涉及到的开发内容比较多，所以这一篇其实也是很难写，暂且放个坑在这里。</p>
 <span id="more"></span>
-<p>进入意见反馈/维修报修页面，发现可以存在图片上传控件。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0001.jpg" srcset="/img/loading.gif" lazyload alt="img3" /></p>
-<p>使用bp抓包修改文件名，绕过WAF</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0002.jpg" srcset="/img/loading.gif" lazyload alt="img2" /></p>
-<p>访问对应路径，实现文件解析。</p>
-<p>由于是意见反馈和报修页面，因此可以实现XSS等。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0021/blog0021_0003.png" srcset="/img/loading.gif" lazyload alt="img1" /></p>
+<h2 id="常见java框架">1、常见Java框架</h2>
+<p>首先，我们简单认识一下Java常见的开发框架。</p>
+<p>Struts2（控制层）</p>
+<ul>
+<li>MVC设计模式的实现</li>
+<li>拦截器</li>
+<li>可变和可重用的标签a</li>
+</ul>
+<p>Spring MVC（控制层）</p>
+<ul>
+<li>结构最清晰的MVC Model2实现</li>
+<li>高度可配置，支持多种视图技术</li>
+<li>定制化开发</li>
+</ul>
+<p>Hibernate（持久层）</p>
+<ul>
+<li>ORM，简化数据库操作</li>
+<li>DAO层</li>
+</ul>
+<p>Mybatis（半ORM）(目前的主流框架)</p>
+<ul>
+<li>半自动化的ORM实现</li>
+<li>DAO层</li>
+<li>动态SQL</li>
+<li>小巧灵活、简单易学置。</li>
+</ul>
+<p>Shiro（鉴权）</p>
+<ul>
+<li>权限管理</li>
+</ul>
+<p>Spring（大管家）</p>
+<ul>
+<li>依赖注入容器 / AOP实现</li>
+<li>声明式事务</li>
+<li>简化Java EE应用</li>
+<li>黏合剂，将大家组装到一起</li>
+</ul>
+<h2 id="spring框架">2、Spring框架</h2>
+<p>Spring是一个综合性的Java应用开发框架，提供了广泛的功能和模块，包括依赖注入、AOP（面向切面编程）、事务管理、数据访问等。</p>
+<p>Spring框架的核心是IoC（控制反转）和依赖注入，它简化了应用的开发，提高了代码的可测试性和可维护性。</p>
+<ul>
+<li>IOC 容器管理各层的组件</li>
+<li>使用 AOP 配置声明式事务</li>
+<li><strong>整合其他框架</strong>.</li>
+</ul>
+<h3 id="aop技术">2.1、AOP技术</h3>
+<p>AOP允许开发者通过在不同层面上（例如日志、安全、事务等）切入代码，将一些横切关注点（cross-cutting concerns）从业务逻辑中分离出来。这些关注点可能是跨越应用程序的多个模块和层次的，例如日志记录、事务管理、安全性等。AOP能够提高代码的模块化、可重用性和可维护性。</p>
+<p>我们之前在Tomcat中学习到的Filter其实也属于AOP。</p>
+<h3 id="ioc">2.2、IOC</h3>
+<p>IOC（Invert Of Control），控制反转。也成为 <strong>DI(依赖注入)</strong>其思想是反转资源获取的方向。传统的资源查找方式要求组件向容器发起请求查找资源.作为回应, 容器适时的返回资源. 而应用了 IOC 之后, 则是容器主动地将资源推送给它所管理的组件,组件所要做的仅是选择一种合适的方式来接受资源. 这种行为也被称为查找的被动形式</p>
+<h2 id="spring-mvc">3、Spring MVC</h2>
+<ul>
+<li>清晰的角色划分：前端控制器（DispatcherServlet）、请求到处理器映射（HandlerMapping）、处理器适配器（HandlerAdapter）、视图解析器。（ViewResolver）、处理器或页面控制器（Controller）、验证器（ Validator）、命令对象（Command 请求参数绑定到的对象就叫命令对象）、<strong>表单对象</strong>（Form <strong>Object 提供给表单展示和提交到的对象就叫表单对象</strong>）。</li>
+<li>分工明确，而且扩展点相当灵活，可以很容易扩展，虽然几乎不需要。</li>
+<li>由于命令对象就是一个POJO，无需继承框架特定API，可以使用命令对象直接作为业务对象。</li>
+<li>和Spring 其他框架无缝集成，是其它Web框架所不具备的。</li>
+<li>可适配，通过HandlerAdapter可以支持任意的类作为处理器。</li>
+<li>可定制性，HandlerMapping、ViewResolver等能够非常简单的定制。</li>
+<li>功能强大的数据验证、格式化、绑定机制。</li>
+<li>利用Spring提供的Mock对象能够非常简单的进行Web层单元测试。</li>
+<li>本地化、主题的解析的支持，使我们更容易进行国际化和主题的切换。</li>
+<li>强大的JSP标签库，使JSP编写更容易。</li>
+<li>还有比如RESTful风格的支持、简单的文件上传、约定大于配置的契约式编程支持、基于注解的零配置支持等等。</li>
+</ul>
+<h2 id="structs2">4、Structs2</h2>
+<h2 id="mybatis">5、Mybatis</h2>
+<p>MyBatis 是一款优秀的<strong>持久层</strong>框架，它支持<strong>定制化 SQL</strong>、存储过程以及高级映射。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对 象）为数据库中的记录。</p>
+<p>对于Mybatis的系统学习，可以参照<a target="_blank" rel="noopener" href="https://mybatis.org/mybatis-3/zh/getting-started.htm">官方教程</a>。接下来以一个简单的例子说明Mybatis的使用。</p>
+<h3 id="创建mybatis工程">5.1、创建Mybatis工程</h3>
+<p>创建一个SpringBoot工程，这里的S</p>
+<h2 id="hibernate">6、Hibernate</h2>
+<h2 id="shiro">7、Shiro</h2>
+<p>Apache Shiro是一个强大且易于使用的Java安全框架，提供了身份验证（Authentication）、授权（Authorization）、加密（Cryptography）和会话管理（Session Management）等安全功能。</p>
+<p>Shiro致力于简化应用程序的安全性实现，使得开发人员能够更轻松地集成安全功能到他们的应用程序中。</p>
+<h3 id="传统鉴权">7.1、传统鉴权</h3>
+<p>我们先给出一个传统鉴权的解决方案</p>
+<p>在数据库层面会有如下结构：</p>
+<ol type="1">
+<li>权限表：将应用系统所有如接口、数据等类型的权限存储到数据表</li>
+<li>用户表：存储系统所有的用户</li>
+<li>角色表：存储系统所有的角色</li>
+<li>用户-角色表：将用户和角色建立连接</li>
+<li>角色-权限：将角色和权限建立连接</li>
+</ol>
+<p>在实际操作过程中，当用户需要访问相应的API，则检查API需要的权限和用户角色的权限，如果API需要的权限为用户角色权限的子集，则表示通过鉴权。</p>
+<h3 id="shiro-1">7.2、Shiro</h3>
+<p>这一部分相对来说</p>
 
                 
               </div>
@@ -311,12 +389,12 @@
     
       <span class="category-chain">
         
-  <a href="/categories/src/" class="category-chain-item">src</a>
+  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="category-chain-item">代码审计</a>
   
   
     <span>></span>
     
-  <a href="/categories/src/edu/" class="category-chain-item">edu</a>
+  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/Java/" class="category-chain-item">Java</a>
   
   
 
@@ -333,9 +411,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/upload/" class="print-no-link">#upload</a>
+        <a href="/tags/web/" class="print-no-link">#web</a>
       
-        <a href="/tags/src/" class="print-no-link">#src</a>
+        <a href="/tags/Code-Audit/" class="print-no-link">#Code Audit</a>
+      
+        <a href="/tags/notes/" class="print-no-link">#notes</a>
       
     </div>
   
@@ -347,8 +427,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>edusrc首次尝试——任意文件上传</div>
-      <div>http://example.com/2022/07/11/blog0021-edusrc首次尝试——任意文件上传/</div>
+      <div>Java代码审计 JavaEE框架</div>
+      <div>http://example.com/2023/11/22/blog0031-3-JavaEE框架/</div>
     </div>
     <div class="license-meta">
       
@@ -360,7 +440,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年7月11日</div>
+          <div>2023年11月22日</div>
         </div>
       
       
@@ -392,9 +472,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/08/12/blog0022-ctfshow-ssrf-wp/" title="ctfshow-ssrf-wp">
+                      <a href="/2023/12/07/blog0041-pwn%E4%B8%AD%E7%9A%84shellcode%E5%88%A9%E7%94%A8/" title="pwn中的shellcode利用">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">ctfshow-ssrf-wp</span>
+                        <span class="hidden-mobile">pwn中的shellcode利用</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -402,8 +482,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/07/06/blog0020-ctfshow-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81-wp/" title="ctfshow-权限维持-wp">
-                        <span class="hidden-mobile">ctfshow-权限维持-wp</span>
+                      <a href="/2023/10/23/blog0039-mitmproxy%E6%8B%A6%E6%88%AA%E4%BF%AE%E6%94%B9TCP%E6%95%B0%E6%8D%AE%E5%8C%85/" title="mitmproxy拦截修改TCP数据包">
+                        <span class="hidden-mobile">mitmproxy拦截修改TCP数据包</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -17,33 +17,25 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="逆向随笔">
+                    <meta name="description" content="经过前面的基础铺垫，我们进入了Web安全漏洞的领域。这一篇章其中重点关注跟Java Web特性有关的漏洞。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="逆向分析-OEP到main启动">
-<meta property="og:url" content="http://example.com/2024/03/31/blog0047-OEP%E5%88%B0main%E5%90%AF%E5%8A%A8/index.html">
+<meta property="og:title" content="Java代码审计 Web安全漏洞">
+<meta property="og:url" content="http://example.com/2024/01/14/blog0031-4-Web%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="逆向随笔">
+<meta property="og:description" content="经过前面的基础铺垫，我们进入了Web安全漏洞的领域。这一篇章其中重点关注跟Java Web特性有关的漏洞。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711864165088-e728436b-1b13-4805-9732-a36ffa9bae65.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865787331-6219fe9b-f8e6-4d49-86e6-bdbc2e3de513.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865948651-1d4dbec4-305a-45a3-9a90-d44cfffb4a69.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867004127-9ecf5ac8-370b-4052-a28a-d6056b26e799.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867089828-a28a530b-2ce3-4f5e-bb1f-8a56ee399f57.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865907187-33ab19f3-6558-4564-b06b-a543fc158b15.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867351255-8e636718-4ee3-492a-baa0-12e14f287065.png">
-<meta property="article:published_time" content="2024-03-31T07:07:52.000Z">
-<meta property="article:modified_time" content="2024-03-31T07:17:03.031Z">
+<meta property="article:published_time" content="2024-01-13T18:01:10.000Z">
+<meta property="article:modified_time" content="2024-04-20T13:38:29.953Z">
 <meta property="article:author" content="whistle.H">
-<meta property="article:tag" content="Reverse">
-<meta property="article:tag" content="Windows">
+<meta property="article:tag" content="web">
+<meta property="article:tag" content="Code Audit">
+<meta property="article:tag" content="notes">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png">
                         
                                 
                                         
                                                     <title>
-                                                        逆向分析-OEP到main启动 - The world of whistleH
+                                                        Java代码审计 Web安全漏洞 - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -213,7 +205,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="逆向分析-OEP到main启动"></span>
+            <span id="subtitle" data-typed-text="Java代码审计 Web安全漏洞"></span>
           
         </div>
 
@@ -224,8 +216,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-03-31 15:07" pubdate>
-          2024年3月31日 下午
+        <time datetime="2024-01-14 02:01" pubdate>
+          2024年1月14日 凌晨
         </time>
       </span>
     
@@ -236,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k 字
+          1.8k 字
         
       </span>
     
@@ -247,7 +239,7 @@
         
         
         
-          24 分钟
+          15 分钟
         
       </span>
     
@@ -284,35 +276,27 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">逆向分析-OEP到main启动</h1>
+            <h1 id="seo-header">Java代码审计 Web安全漏洞</h1>
             
             
               <div class="markdown-body">
                 
-                <p>逆向随笔</p>
+                <p>经过前面的基础铺垫，我们进入了Web安全漏洞的领域。这一篇章其中重点关注跟Java Web特性有关的漏洞。</p>
 <span id="more"></span>
-<h2 id="项目配置">项目配置</h2>
-<p>我们选用Ollydbg和VS2019来实现对一个进程从OEP到main函数的过程分析</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>);<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>为了方便查看外部代码，我们关闭<code>调试 -&gt; 选项 -&gt; 启用仅我的代码</code></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p>（可选）<code>属性 -&gt; 链接器 -&gt; 高级</code>里关闭随机基址</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711864165088-e728436b-1b13-4805-9732-a36ffa9bae65.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<h2 id="调试过程">调试过程</h2>
-<p>F5启动程序，可以发现当前main函数的调用堆栈情况</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865787331-6219fe9b-f8e6-4d49-86e6-bdbc2e3de513.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p>我们从<code>mainCRTStartup</code>开始分析</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865948651-1d4dbec4-305a-45a3-9a90-d44cfffb4a69.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p>使用OD也可以看出，程序OEP的第一条指令就是<code>jmp mainCRTStartup</code></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867004127-9ecf5ac8-370b-4052-a28a-d6056b26e799.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867089828-a28a530b-2ce3-4f5e-bb1f-8a56ee399f57.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p>跟进<code>__scrt_common_main()</code>，该函数主要完成gs安全机制的<code>security_cookie</code>的初始化</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865907187-33ab19f3-6558-4564-b06b-a543fc158b15.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867351255-8e636718-4ee3-492a-baa0-12e14f287065.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p>继续跟进<code>__scrt_common_main_seh()</code>，这里我直接复制了C源码，可以看到Windows在重要部分都添加了注释说明</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">static</span> __declspec(noinline) <span class="hljs-keyword">int</span> __cdecl __scrt_common_main_seh()<br>&#123;<br>    <span class="hljs-comment">// 初始化CRT</span><br>    <span class="hljs-keyword">if</span> (!__scrt_initialize_crt(__scrt_module_type::exe))<br>        __scrt_fastfail(FAST_FAIL_FATAL_APP_EXIT);<br>    <br>    <span class="hljs-keyword">bool</span> has_cctor = <span class="hljs-literal">false</span>;<br>    __try<br>    &#123;<br>        <span class="hljs-keyword">bool</span> <span class="hljs-keyword">const</span> is_nested = __scrt_acquire_startup_lock();<br><br>        <span class="hljs-keyword">if</span> (__scrt_current_native_startup_state == __scrt_native_startup_state::initializing)<br>        &#123;<br>            __scrt_fastfail(FAST_FAIL_FATAL_APP_EXIT);<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (__scrt_current_native_startup_state == __scrt_native_startup_state::uninitialized)<br>        &#123;<br>            __scrt_current_native_startup_state = __scrt_native_startup_state::initializing;<br><br>            <span class="hljs-comment">// 初始化全局变量、静态变量</span><br>            <span class="hljs-keyword">if</span> (_initterm_e(__xi_a, __xi_z) != <span class="hljs-number">0</span>)<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">255</span>;<br><br>            _initterm(__xc_a, __xc_z);<br><br>            __scrt_current_native_startup_state = __scrt_native_startup_state::initialized;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            has_cctor = <span class="hljs-literal">true</span>;<br>        &#125;<br><br>        __scrt_release_startup_lock(is_nested);<br><br>        <span class="hljs-comment">// If this module has any dynamically initialized __declspec(thread)</span><br>        <span class="hljs-comment">// variables, then we invoke their initialization for the primary thread</span><br>        <span class="hljs-comment">// used to start the process:</span><br>        _tls_callback_type <span class="hljs-keyword">const</span>* <span class="hljs-keyword">const</span> tls_init_callback = __scrt_get_dyn_tls_init_callback();<br>        <span class="hljs-keyword">if</span> (*tls_init_callback != <span class="hljs-literal">nullptr</span> &amp;&amp; __scrt_is_nonwritable_in_current_image(tls_init_callback))<br>        &#123;<br>            (*tls_init_callback)(<span class="hljs-literal">nullptr</span>, DLL_THREAD_ATTACH, <span class="hljs-literal">nullptr</span>);<br>        &#125;<br><br>        <span class="hljs-comment">// If this module has any thread-local destructors, register the</span><br>        <span class="hljs-comment">// callback function with the Unified CRT to run on exit.</span><br>        _tls_callback_type <span class="hljs-keyword">const</span> * <span class="hljs-keyword">const</span> tls_dtor_callback = __scrt_get_dyn_tls_dtor_callback();<br>        <span class="hljs-keyword">if</span> (*tls_dtor_callback != <span class="hljs-literal">nullptr</span> &amp;&amp; __scrt_is_nonwritable_in_current_image(tls_dtor_callback))<br>        &#123;<br>            _register_thread_local_exe_atexit_callback(*tls_dtor_callback);<br>        &#125;<br><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// Initialization is complete; invoke main...</span><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// 调用main函数</span><br><br>        <span class="hljs-keyword">int</span> <span class="hljs-keyword">const</span> main_result = invoke_main();<br><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// main has returned; exit somehow...</span><br>        <span class="hljs-comment">//</span><br><br>        <span class="hljs-keyword">if</span> (!__scrt_is_managed_app())<br>            <span class="hljs-built_in">exit</span>(main_result);<br><br>        <span class="hljs-keyword">if</span> (!has_cctor)<br>            _cexit();<br><br>        <span class="hljs-comment">// Finally, we terminate the CRT:</span><br>        __scrt_uninitialize_crt(<span class="hljs-literal">true</span>, <span class="hljs-literal">false</span>);<br>        <span class="hljs-keyword">return</span> main_result;<br>    &#125;<br>    __except (_seh_filter_exe(GetExceptionCode(), GetExceptionInformation()))<br>    &#123;<br>        <span class="hljs-comment">// Note:  We should never reach this except clause.</span><br>        <span class="hljs-keyword">int</span> <span class="hljs-keyword">const</span> main_result = GetExceptionCode();<br><br>        <span class="hljs-keyword">if</span> (!__scrt_is_managed_app())<br>            _exit(main_result);<br><br>        <span class="hljs-keyword">if</span> (!has_cctor)<br>            _c_exit();<br><br>        <span class="hljs-keyword">return</span> main_result;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>继续跟进<code>invoke_main</code>，发现在这里调用了main函数</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> __cdecl <span class="hljs-title">invoke_main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">return</span> main(__argc, __argv, _get_initial_narrow_environment());<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="xss">XSS</h2>
+<h3 id="xssfilter实现逻辑">XssFilter实现逻辑</h3>
+<p>XSS漏洞其实准确来说跟Java本身关系不是非常大，主要还是属于前端安全的范围。我们之前在Filter过滤器的部分提到了基于过滤器的XSS防护，在这里我们尝试实现一个基于Filter的XSS简单防护。</p>
+<p>基本的思路是：</p>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xl">F<span class="hljs-function"><span class="hljs-title">ilter</span>拦截 -&gt;</span> 检测XSS -&gt; 封装被XSS过滤后的H<span class="hljs-function"><span class="hljs-title">ttpServletRequest</span>/HttpServletResponse类 -&gt;</span> 放行<br></code></pre></td></tr></table></figure>
+<p>这里我们起码要实现两个类，也就是<code>Filter</code>过滤器类以及<code>XSSHttpServletRequest</code>类</p>
+<p><code>XssFilter</code>这里我们省略了其他相关的配置代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">XssFilter</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Filter</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">doFilter</span><span class="hljs-params">(ServletRequest request, ServletResponse response, FilterChain chain)</span></span><br><span class="hljs-function">            <span class="hljs-keyword">throws</span> IOException, ServletException</span><br><span class="hljs-function">    </span>&#123;<br>        HttpServletRequest req = (HttpServletRequest) request;<br>        HttpServletResponse resp = (HttpServletResponse) response;<br>        <span class="hljs-keyword">if</span> (handleExcludeURL(req, resp))<br>        &#123;<br>            chain.doFilter(request, response);<br>            <span class="hljs-keyword">return</span>;<br>        &#125;<br>        XssHttpServletRequestWrapper xssRequest = <span class="hljs-keyword">new</span> XssHttpServletRequestWrapper((HttpServletRequest) request);<br>        chain.doFilter(xssRequest, response);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>对于<code>XssHttpServletRequestWrapper</code>类，我们重写了<code>getParameterValues</code>，这样当获取我们参数的时候，就能够实现Xss过滤器的保护。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">XssHttpServletRequestWrapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">HttpServletRequestWrapper</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">XssHttpServletRequestWrapper</span><span class="hljs-params">(HttpServletRequest request)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">super</span>(request);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String[] getParameterValues(String name)<br>    &#123;<br>        String[] values = <span class="hljs-keyword">super</span>.getParameterValues(name);<br>        <span class="hljs-keyword">if</span> (values != <span class="hljs-keyword">null</span>)<br>        &#123;<br>            <span class="hljs-keyword">int</span> length = values.length;<br>            String[] escapseValues = <span class="hljs-keyword">new</span> String[length];<br>            System.out.println(values);<br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; length; i++)<br>            &#123;<br>                <span class="hljs-comment">// 防xss攻击和过滤前后空格</span><br>                escapseValues[i] = EscapeUtil.clean(values[i]).trim();<br>            &#125;<br>            System.out.println(escapseValues);<br>            <span class="hljs-keyword">return</span> escapseValues;<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">super</span>.getParameterValues(name);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="补充">补充</h3>
+<p>基于这样的XssFilter能够非常有效的限制通过参数传递来实现的Xss攻击，而且一次性全局配置。</p>
+<p>当然仍然存在可能的被XSS攻击的敏感点。例如<code>文件上传</code>，很多的XSS检测不一定会实现对于文件流内容的XSS检测，这也就导致了可以通过文件上传导入用户等等方式来将XSS的数据写入数据库，从而实现存储型XSS攻击。</p>
+<h2 id="sql注入">SQL注入</h2>
 
                 
               </div>
@@ -331,12 +315,12 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/" class="category-chain-item">二进制安全</a>
+  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="category-chain-item">代码审计</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="category-chain-item">基础知识</a>
+  <a href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/Java/" class="category-chain-item">Java</a>
   
   
 
@@ -353,9 +337,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Reverse/" class="print-no-link">#Reverse</a>
+        <a href="/tags/web/" class="print-no-link">#web</a>
       
-        <a href="/tags/Windows/" class="print-no-link">#Windows</a>
+        <a href="/tags/Code-Audit/" class="print-no-link">#Code Audit</a>
+      
+        <a href="/tags/notes/" class="print-no-link">#notes</a>
       
     </div>
   
@@ -367,8 +353,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>逆向分析-OEP到main启动</div>
-      <div>http://example.com/2024/03/31/blog0047-OEP到main启动/</div>
+      <div>Java代码审计 Web安全漏洞</div>
+      <div>http://example.com/2024/01/14/blog0031-4-Web安全漏洞/</div>
     </div>
     <div class="license-meta">
       
@@ -380,7 +366,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年3月31日</div>
+          <div>2024年1月14日</div>
         </div>
       
       
@@ -412,9 +398,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/04/20/blog0031-6-Java%E5%AD%97%E8%8A%82%E7%A0%81/" title="Java代码审计 Java字节码">
+                      <a href="/2024/02/29/blog0031-5-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89/" title="Java代码审计 反序列化基础案例（一）">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java代码审计 Java字节码</span>
+                        <span class="hidden-mobile">Java代码审计 反序列化基础案例（一）</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -422,8 +408,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/02/29/blog0031-5-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89/" title="Java代码审计 反序列化基础案例（一）">
-                        <span class="hidden-mobile">Java代码审计 反序列化基础案例（一）</span>
+                      <a href="/2023/12/28/blog0044-%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%E4%B8%8Eret2dl-resolve%E5%88%86%E6%9E%90/" title="延迟绑定与ret2dl_resolve分析">
+                        <span class="hidden-mobile">延迟绑定与ret2dl_resolve分析</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

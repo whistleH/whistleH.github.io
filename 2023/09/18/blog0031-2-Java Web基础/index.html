@@ -19,8 +19,8 @@
                 
                     <meta name="description" content="在上一章节，我们学习了Java SE的一些基础。 接下来就正式进入了Java Web的学习，我们会从Java Web的架构讲起，并重点介绍servlet、tomcat和JSP技术。 为了方便我们后面的框架讲解，我们在这里引入jdbc的基本说明。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java代码审计（三） Java Web基础">
-<meta property="og:url" content="http://example.com/2023/09/18/blog0036-Java%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%88%E4%B8%89%EF%BC%89-Java%20Web%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:title" content="Java代码审计 Java Web基础">
+<meta property="og:url" content="http://example.com/2023/09/18/blog0031-2-Java%20Web%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="The world of whistleH">
 <meta property="og:description" content="在上一章节，我们学习了Java SE的一些基础。 接下来就正式进入了Java Web的学习，我们会从Java Web的架构讲起，并重点介绍servlet、tomcat和JSP技术。 为了方便我们后面的框架讲解，我们在这里引入jdbc的基本说明。">
 <meta property="og:locale" content="zh_CN">
@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20240117233002748.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0036/image-20211128212618863.png">
 <meta property="article:published_time" content="2023-09-18T09:57:16.000Z">
-<meta property="article:modified_time" content="2024-02-29T12:15:41.270Z">
+<meta property="article:modified_time" content="2024-04-21T07:44:24.070Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="web">
 <meta property="article:tag" content="Code Audit">
@@ -44,7 +44,7 @@
                                 
                                         
                                                     <title>
-                                                        Java代码审计（三） Java Web基础 - The world of whistleH
+                                                        Java代码审计 Java Web基础 - The world of whistleH
                                                     </title>
 
                                                     <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
@@ -214,7 +214,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java代码审计（三） Java Web基础"></span>
+            <span id="subtitle" data-typed-text="Java代码审计 Java Web基础"></span>
           
         </div>
 
@@ -285,7 +285,7 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Java代码审计（三） Java Web基础</h1>
+            <h1 id="seo-header">Java代码审计 Java Web基础</h1>
             
             
               <div class="markdown-body">
@@ -376,7 +376,7 @@ ServletRequest.getRequestDispatcher （参数可以是不以“/”开头的路�
 <p>一般来说，你请求一个JSP资源会经历如下过程</p>
 <ul>
 <li>作为正常的页面，你的浏览器发送一个 HTTP 请求到 web 服务器。</li>
-<li>web 服务器承认一个 JSP 页面的 HTTP 请求，并将其转发给一个 JSP 引擎。这是通过使用 URL 或 JSP 页面实现的，该 JSP 页面是以<strong>.jsp</strong>结尾而不是以 .Html 结尾的。</li>
+<li>web 服务器承认一个 JSP 页面的 HTTP 请求，并将其转发给一个 JSP 引擎。这是通过使用 URL 或 JSP 页面实现的，该 JSP 页面是以<strong>.jsp</strong>结尾而不是以 .html 结尾的。</li>
 <li>JSP 引擎从磁盘加载 JSP 页面并将其转换为一个 servlet 的内容。这种转换是非常简单的，所有模板文本转换为 println()语句，所有 JSP 元素转换为 Java 代码实现页面的相应的动态行为。</li>
 <li>JSP 引擎编译 servlet 到一个可执行的类中，并将原始请求转发给一个 servlet 引擎。</li>
 <li>调用 servlet 引擎的 web 服务器的一部分加载 Servlet 类并执行它。执行期间，Servlet 产生一个 HTML 格式的输出，servlet 引擎将该输出传递到 HTTP 响应内的 web 服务器中。</li>
@@ -500,8 +500,8 @@ ServletRequest.getRequestDispatcher （参数可以是不以“/”开头的路�
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java代码审计（三） Java Web基础</div>
-      <div>http://example.com/2023/09/18/blog0036-Java代码审计（三）-Java Web基础/</div>
+      <div>Java代码审计 Java Web基础</div>
+      <div>http://example.com/2023/09/18/blog0031-2-Java Web基础/</div>
     </div>
     <div class="license-meta">
       
