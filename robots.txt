@@ -1,2 +1,6 @@
 User-agent: *
+Allow: /
+Allow: /archives/
+Allow: /categories/
+Allow: /tags/ 
 Sitemap: https://whistleh.github.io/sitemap.xml
