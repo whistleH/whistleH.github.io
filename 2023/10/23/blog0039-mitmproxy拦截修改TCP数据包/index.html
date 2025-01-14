@@ -17,33 +17,19 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="这个需求最开始的产生是某个项目的通信协议不是HTTP协议，如果需要在这个项目上完成相应的抓包拦截攻击，那么就需要在TCP层面拦截数据。 发现mitmproxy支持这个功能，但是相关的配置文章还是比较少的，因此在这里补充一下。">
+                    <meta name="description" content="这个需求最开始的产生是某个项目的通信协议不是HTTP协议，如果需要在这个项目上完成相应的抓包拦截攻击，那么就需要在TCP层面拦截数据。 发现mitmproxy支持这个功能，但是相关的配置文章还是比较少的，因此在这里补充一下。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mitmproxy拦截修改TCP数据包">
-<meta property="og:url" content="http://example.com/2023/10/23/blog0039-mitmproxy%E6%8B%A6%E6%88%AA%E4%BF%AE%E6%94%B9TCP%E6%95%B0%E6%8D%AE%E5%8C%85/index.html">
+<meta property="og:url" content="https://whistleh.github.io/2023/10/23/blog0039-mitmproxy%E6%8B%A6%E6%88%AA%E4%BF%AE%E6%94%B9TCP%E6%95%B0%E6%8D%AE%E5%8C%85/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="这个需求最开始的产生是某个项目的通信协议不是HTTP协议，如果需要在这个项目上完成相应的抓包拦截攻击，那么就需要在TCP层面拦截数据。 发现mitmproxy支持这个功能，但是相关的配置文章还是比较少的，因此在这里补充一下。">
+<meta property="og:description" content="这个需求最开始的产生是某个项目的通信协议不是HTTP协议，如果需要在这个项目上完成相应的抓包拦截攻击，那么就需要在TCP层面拦截数据。 发现mitmproxy支持这个功能，但是相关的配置文章还是比较少的，因此在这里补充一下。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021145019017.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004024587.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021150151268.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021151822118.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004123121.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021161114637.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021161131288.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021165724747.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004201726.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021171328976.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173544890.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173456256.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173515615.png">
 <meta property="article:published_time" content="2023-10-22T16:33:56.000Z">
-<meta property="article:modified_time" content="2023-10-22T16:58:44.640Z">
+<meta property="article:modified_time" content="2023-10-22T16:58:46.000Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="TCP&#x2F;IP">
 <meta property="article:tag" content="mitmproxy">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021145019017.png">
                         
                                 
                                         
@@ -91,7 +77,7 @@
                                                         <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"whistleh.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -310,16 +296,22 @@
 <li>在B主机上拦截修改B主机访问ServiceA的流量以及A主机访问ServiceB的流量。</li>
 </ul>
 <p>以下给出演示说明的网络拓扑。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021145019017.png" srcset="/img/loading.gif" lazyload alt="image-20231021145019017" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021145019017.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021145019017" /></p>
 <h3 id="工作模式">1.2、工作模式</h3>
 <p>以下对mitmproxy的工作模式做具体说明，以A主机为例说明，B主机类似。</p>
 <h4 id="socks5代理">1.2.1、socks5代理</h4>
 <p>如果需要拦截A访问ServiceB的流量，可以在A主机上搭建socks5代理，在socks端口统一管理外出流量。</p>
-<p>A访问ServiceB的流量模式如下<img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004024587.png" srcset="/img/loading.gif" lazyload alt="image-20231023004024587" /></p>
+<p>A访问ServiceB的流量模式如下<img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004024587.png" srcset="/img/loading.gif" lazyload
+alt="image-20231023004024587" /></p>
 <h4 id="反向代理">1.2.2、反向代理</h4>
 <p>如果需要在A主机上拦截B访问ServiceA的流量，可以在A主机上搭建反向代理，统一管理进入访问ServiceA的流量。</p>
 <p>B访问ServiceA的流量模式如下：</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021150151268.png" srcset="/img/loading.gif" lazyload alt="image-20231021150151268" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021150151268.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021150151268" /></p>
 <h2 id="配置与安装">2、配置与安装</h2>
 <h3 id="配置说明">2.1、配置说明</h3>
 <p>本项目基于Python3 + mitmproxy实现，其中对于版本有一定的要求。</p>
@@ -348,18 +340,24 @@
 <li>mode：mitmproxy的工作模式，此处指定为socks5</li>
 <li>listen-port : 代理服务的端口</li>
 <li>scripts: 相应的hook脚本，即后续对监听到的流量做处理的脚本</li>
-<li>set: 设置参数，rawtcp必须设置为true，否则默认socks5代理只走http协议。</li>
+<li>set:
+设置参数，rawtcp必须设置为true，否则默认socks5代理只走http协议。</li>
 </ul>
 <p>测试相应的代理服务(以主机A为例)：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">curl --proxy socks5://127.0.0.1:1080 http://baidu.com<br></code></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021151822118.png" srcset="/img/loading.gif" lazyload alt="image-20231021151822118" /></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004123121.png" srcset="/img/loading.gif" lazyload alt="image-20231023004123121" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021151822118.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021151822118" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004123121.png" srcset="/img/loading.gif" lazyload
+alt="image-20231023004123121" /></p>
 <h3 id="反向代理搭建">3.2、反向代理搭建</h3>
 <p>使用如下命令搭建反向代理（主机A为例）</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">mitmdump --mode reverse:tcp://192.168.80.1:45367 --listen-port 7080 --scripts addons_reverse.py --set rawtcp=true<br></code></pre></td></tr></table></figure>
 <p>说明上述参数:</p>
 <ul>
-<li>mode：mitmproxy的工作模式，此处指定为反向代理主机A 45367上的服务</li>
+<li>mode：mitmproxy的工作模式，此处指定为反向代理主机A
+45367上的服务</li>
 <li>listen-port : 反向代理的端口</li>
 <li>scripts: 相应的hook脚本，即后续对监听到的流量做处理的脚本</li>
 <li>set: 设置参数</li>
@@ -377,7 +375,8 @@
 <p><code>demo_socks5.py</code></p>
 <p>注意事项：</p>
 <ol type="1">
-<li>这里的hook API严格对应<a target="_blank" rel="noopener" href="https://docs.mitmproxy.org/stable/api/events.html">官方文档</a>上的说明</li>
+<li>这里的hook API严格对应<a
+target="_blank" rel="noopener" href="https://docs.mitmproxy.org/stable/api/events.html">官方文档</a>上的说明</li>
 </ol>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br><span class="hljs-keyword">import</span> mitmproxy.tcp<br><span class="hljs-keyword">from</span> mitmproxy <span class="hljs-keyword">import</span> ctx<br><br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DemoOne</span>:</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-literal">None</span>:</span><br>        self.num=<span class="hljs-number">0</span><br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_start</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        ctx.log.info(<span class="hljs-string">&quot;TCP begin&quot;</span>)<br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_message</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        ctx.log.info((<span class="hljs-built_in">repr</span>(flow.messages[-<span class="hljs-number">1</span>])))<br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_end</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        ctx.log.info(<span class="hljs-string">&quot;TCP end&quot;</span>)<br></code></pre></td></tr></table></figure>
 <h2 id="演示说明">4、演示说明</h2>
@@ -389,10 +388,15 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> socket<br><br><span class="hljs-comment"># 创建一个 socket 对象</span><br>server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br><br>port = <span class="hljs-number">45367</span><br><br><span class="hljs-comment"># 绑定主机和端口</span><br>server_socket.bind((<span class="hljs-string">&quot;0.0.0.0&quot;</span>, port))<br><br><span class="hljs-comment"># 设置最大连接数，可以排队等待的客户端连接数</span><br>server_socket.listen(<span class="hljs-number">5</span>)<br><br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    <span class="hljs-comment"># 建立客户端连接</span><br>    client_socket, addr = server_socket.accept()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;Connected from : <span class="hljs-subst">&#123;addr&#125;</span>&#x27;</span>)<br><br>    <span class="hljs-comment"># 接受客户端信息</span><br>    data = client_socket.recv(<span class="hljs-number">1024</span>)<br>    received_message = data.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;from client: <span class="hljs-subst">&#123;received_message&#125;</span>&#x27;</span>)<br><br>    <span class="hljs-comment"># 发送一条欢迎消息到客户端</span><br>    message = <span class="hljs-string">&#x27;Welcome to the server!&#x27;</span><br>    client_socket.send(message.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>))<br><br>    <span class="hljs-comment"># 关闭连接</span><br>    client_socket.close()<br></code></pre></td></tr></table></figure>
 <p>在主机A上正常访问ServiceB。</p>
 <p>主机A</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021161114637.png" srcset="/img/loading.gif" lazyload alt="image-20231021161114637" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021161114637.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021161114637" /></p>
 <p>主机B</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021161131288.png" srcset="/img/loading.gif" lazyload alt="image-20231021161131288" /></p>
-<h3 id="主机a修改a访问serviceb的流量">4.2、主机A修改A访问ServiceB的流量</h3>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021161131288.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021161131288" /></p>
+<h3
+id="主机a修改a访问serviceb的流量">4.2、主机A修改A访问ServiceB的流量</h3>
 <p>A主机上编写插件，大致功能是实现将客户端发送的主机名修改为localhost</p>
 <p><code>demo_socks5.py</code></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br><span class="hljs-keyword">import</span> mitmproxy.tcp<br><span class="hljs-keyword">from</span> mitmproxy <span class="hljs-keyword">import</span> ctx<br><br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DemoSocks5</span>:</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-literal">None</span>:</span><br>        self.num=<span class="hljs-number">0</span><br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_start</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        ctx.log.info(<span class="hljs-string">&quot;TCP begin&quot;</span>)<br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_message</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        bytes_content : <span class="hljs-built_in">bytes</span> = flow.messages[-<span class="hljs-number">1</span>].content<br>        str_original_content : <span class="hljs-built_in">str</span> = bytes_content.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><br>        pattern = re.<span class="hljs-built_in">compile</span>(<span class="hljs-string">r&quot;I&#x27;m from (.+)&quot;</span>)<br>        <br>        res = re.findall(pattern, str_original_content)<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(res) != <span class="hljs-number">0</span>:<br>            <span class="hljs-comment"># ctx.log.info(res[0])</span><br>            edit_str_content = str_original_content.replace(res[<span class="hljs-number">0</span>], <span class="hljs-string">&#x27;localhost&#x27;</span>)<br>            flow.messages[-<span class="hljs-number">1</span>].content = edit_str_content.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>            ctx.log.info(<span class="hljs-string">&quot;&#123;&#125; -&gt; &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(str_original_content, edit_str_content))<br>        <span class="hljs-keyword">else</span>:<br>            ctx.log.info(str_original_content)<br>        <br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_end</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        ctx.log.info(<span class="hljs-string">&quot;TCP end&quot;</span>)<br></code></pre></td></tr></table></figure>
@@ -402,10 +406,15 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">mitmdump --mode socks5 --listen-port 1080 --scripts addons_socks5.py --set rawtcp=true<br></code></pre></td></tr></table></figure>
 <p>client.py中启动socks5代理。</p>
 <p>主机A发送相应的信息，通过mitmdump日志可以看到相应的消息被拦截修改。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021165724747.png" srcset="/img/loading.gif" lazyload alt="image-20231021165724747" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021165724747.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021165724747" /></p>
 <p>服务端接受到的数据发生了变化</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004201726.png" srcset="/img/loading.gif" lazyload alt="image-20231023004201726" /></p>
-<h3 id="主机b修改a访问serviceb的流量">4.3、主机B修改A访问ServiceB的流量</h3>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231023004201726.png" srcset="/img/loading.gif" lazyload
+alt="image-20231023004201726" /></p>
+<h3
+id="主机b修改a访问serviceb的流量">4.3、主机B修改A访问ServiceB的流量</h3>
 <p>在主机B编写插件</p>
 <p><code>demo_reverse.py</code></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br><span class="hljs-keyword">import</span> mitmproxy.tcp<br><span class="hljs-keyword">from</span> mitmproxy <span class="hljs-keyword">import</span> ctx<br><br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DemoReverse</span>:</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-literal">None</span>:</span><br>        self.num=<span class="hljs-number">0</span><br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_start</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        ctx.log.info(<span class="hljs-string">&quot;TCP begin&quot;</span>)<br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_message</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        bytes_content : <span class="hljs-built_in">bytes</span> = flow.messages[-<span class="hljs-number">1</span>].content<br>        str_original_content : <span class="hljs-built_in">str</span> = bytes_content.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br><br>        client_ip = flow.client_conn.address[<span class="hljs-number">0</span>]<br><br>        <span class="hljs-keyword">if</span> client_ip == <span class="hljs-string">&quot;192.168.80.1&quot;</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> flow.messages[-<span class="hljs-number">1</span>].from_client:<br>            <span class="hljs-comment"># ctx.log.info(&quot;&#123;&#125; and &#123;&#125;&quot;.format(client_ip, flow.messages[-1].from_client))</span><br>            ctx.log.info(<span class="hljs-string">&quot;&#123;&#125; -&gt; Evil behaviour detection!&quot;</span>.<span class="hljs-built_in">format</span>(str_original_content))<br>            flow.messages[-<span class="hljs-number">1</span>].content = <span class="hljs-string">b&#x27;Evil behaviour detection!&#x27;</span><br><br>        <br><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tcp_end</span>(<span class="hljs-params">self, flow: mitmproxy.tcp.TCPFlow</span>):</span><br>        ctx.log.info(<span class="hljs-string">&quot;TCP end&quot;</span>)<br></code></pre></td></tr></table></figure>
@@ -413,14 +422,22 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*- coding:utf-8 -*-</span><br><span class="hljs-keyword">import</span> demo_reverse<br><span class="hljs-keyword">from</span> mitmproxy <span class="hljs-keyword">import</span> ctx<br><span class="hljs-keyword">import</span> mitmproxy.tcp<br><span class="hljs-keyword">import</span> re<br><br>addons = [<br>    demo_reverse.DemoRerverse(),<br>]<br></code></pre></td></tr></table></figure>
 <p>在主机B上开启反向代理，设置反向代理端口为7080，启动插件</p>
 <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">mitmdump <span class="hljs-params">--mode</span> reverse<span class="hljs-function">:tcp</span>:<span class="hljs-string">//192.168.80.145</span><span class="hljs-function">:45367</span> <span class="hljs-params">--listen-port</span> 7080 <span class="hljs-params">--scripts</span> addons_reverse.py <span class="hljs-params">--set</span> rawtcp=<span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021171328976.png" srcset="/img/loading.gif" lazyload alt="image-20231021171328976" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021171328976.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021171328976" /></p>
 <p>主机A访问ServiceB</p>
 <p>主机A：</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173544890.png" srcset="/img/loading.gif" lazyload alt="image-20231021173544890" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173544890.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021173544890" /></p>
 <p>主机A的socks5代理</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173456256.png" srcset="/img/loading.gif" lazyload alt="image-20231021173456256" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173456256.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021173456256" /></p>
 <p>主机B的反向代理日志：</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173515615.png" srcset="/img/loading.gif" lazyload alt="image-20231021173515615" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0039/image-20231021173515615.png" srcset="/img/loading.gif" lazyload
+alt="image-20231021173515615" /></p>
 
                 
               </div>
@@ -469,7 +486,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>mitmproxy拦截修改TCP数据包</div>
-      <div>http://example.com/2023/10/23/blog0039-mitmproxy拦截修改TCP数据包/</div>
+      <div>https://whistleh.github.io/2023/10/23/blog0039-mitmproxy拦截修改TCP数据包/</div>
     </div>
     <div class="license-meta">
       

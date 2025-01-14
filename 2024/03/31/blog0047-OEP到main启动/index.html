@@ -20,25 +20,16 @@
                     <meta name="description" content="逆向随笔">
 <meta property="og:type" content="article">
 <meta property="og:title" content="逆向分析-OEP到main启动">
-<meta property="og:url" content="http://example.com/2024/03/31/blog0047-OEP%E5%88%B0main%E5%90%AF%E5%8A%A8/index.html">
+<meta property="og:url" content="https://whistleh.github.io/2024/03/31/blog0047-OEP%E5%88%B0main%E5%90%AF%E5%8A%A8/index.html">
 <meta property="og:site_name" content="The world of whistleH">
 <meta property="og:description" content="逆向随笔">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711864165088-e728436b-1b13-4805-9732-a36ffa9bae65.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865787331-6219fe9b-f8e6-4d49-86e6-bdbc2e3de513.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865948651-1d4dbec4-305a-45a3-9a90-d44cfffb4a69.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867004127-9ecf5ac8-370b-4052-a28a-d6056b26e799.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867089828-a28a530b-2ce3-4f5e-bb1f-8a56ee399f57.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865907187-33ab19f3-6558-4564-b06b-a543fc158b15.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867351255-8e636718-4ee3-492a-baa0-12e14f287065.png">
 <meta property="article:published_time" content="2024-03-31T07:07:52.000Z">
-<meta property="article:modified_time" content="2024-03-31T07:17:03.031Z">
+<meta property="article:modified_time" content="2024-03-31T07:17:04.000Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="Reverse">
 <meta property="article:tag" content="Windows">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png">
                         
                                 
                                         
@@ -86,7 +77,7 @@
                                                         <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"whistleh.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -295,20 +286,36 @@
 <p>我们选用Ollydbg和VS2019来实现对一个进程从OEP到main函数的过程分析</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>);<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>为了方便查看外部代码，我们关闭<code>调试 -&gt; 选项 -&gt; 启用仅我的代码</code></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865738303-fa1a7401-aec4-4c57-a0fc-ff5b047095c2.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
 <p>（可选）<code>属性 -&gt; 链接器 -&gt; 高级</code>里关闭随机基址</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711864165088-e728436b-1b13-4805-9732-a36ffa9bae65.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711864165088-e728436b-1b13-4805-9732-a36ffa9bae65.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
 <h2 id="调试过程">调试过程</h2>
 <p>F5启动程序，可以发现当前main函数的调用堆栈情况</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865787331-6219fe9b-f8e6-4d49-86e6-bdbc2e3de513.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865787331-6219fe9b-f8e6-4d49-86e6-bdbc2e3de513.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
 <p>我们从<code>mainCRTStartup</code>开始分析</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865948651-1d4dbec4-305a-45a3-9a90-d44cfffb4a69.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865948651-1d4dbec4-305a-45a3-9a90-d44cfffb4a69.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
 <p>使用OD也可以看出，程序OEP的第一条指令就是<code>jmp mainCRTStartup</code></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867004127-9ecf5ac8-370b-4052-a28a-d6056b26e799.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867089828-a28a530b-2ce3-4f5e-bb1f-8a56ee399f57.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867004127-9ecf5ac8-370b-4052-a28a-d6056b26e799.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867089828-a28a530b-2ce3-4f5e-bb1f-8a56ee399f57.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
 <p>跟进<code>__scrt_common_main()</code>，该函数主要完成gs安全机制的<code>security_cookie</code>的初始化</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865907187-33ab19f3-6558-4564-b06b-a543fc158b15.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867351255-8e636718-4ee3-492a-baa0-12e14f287065.png" srcset="/img/loading.gif" lazyload alt="img" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711865907187-33ab19f3-6558-4564-b06b-a543fc158b15.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0047/1711867351255-8e636718-4ee3-492a-baa0-12e14f287065.png" srcset="/img/loading.gif" lazyload
+alt="img" /></p>
 <p>继续跟进<code>__scrt_common_main_seh()</code>，这里我直接复制了C源码，可以看到Windows在重要部分都添加了注释说明</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">static</span> __declspec(noinline) <span class="hljs-keyword">int</span> __cdecl __scrt_common_main_seh()<br>&#123;<br>    <span class="hljs-comment">// 初始化CRT</span><br>    <span class="hljs-keyword">if</span> (!__scrt_initialize_crt(__scrt_module_type::exe))<br>        __scrt_fastfail(FAST_FAIL_FATAL_APP_EXIT);<br>    <br>    <span class="hljs-keyword">bool</span> has_cctor = <span class="hljs-literal">false</span>;<br>    __try<br>    &#123;<br>        <span class="hljs-keyword">bool</span> <span class="hljs-keyword">const</span> is_nested = __scrt_acquire_startup_lock();<br><br>        <span class="hljs-keyword">if</span> (__scrt_current_native_startup_state == __scrt_native_startup_state::initializing)<br>        &#123;<br>            __scrt_fastfail(FAST_FAIL_FATAL_APP_EXIT);<br>        &#125;<br>        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (__scrt_current_native_startup_state == __scrt_native_startup_state::uninitialized)<br>        &#123;<br>            __scrt_current_native_startup_state = __scrt_native_startup_state::initializing;<br><br>            <span class="hljs-comment">// 初始化全局变量、静态变量</span><br>            <span class="hljs-keyword">if</span> (_initterm_e(__xi_a, __xi_z) != <span class="hljs-number">0</span>)<br>                <span class="hljs-keyword">return</span> <span class="hljs-number">255</span>;<br><br>            _initterm(__xc_a, __xc_z);<br><br>            __scrt_current_native_startup_state = __scrt_native_startup_state::initialized;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            has_cctor = <span class="hljs-literal">true</span>;<br>        &#125;<br><br>        __scrt_release_startup_lock(is_nested);<br><br>        <span class="hljs-comment">// If this module has any dynamically initialized __declspec(thread)</span><br>        <span class="hljs-comment">// variables, then we invoke their initialization for the primary thread</span><br>        <span class="hljs-comment">// used to start the process:</span><br>        _tls_callback_type <span class="hljs-keyword">const</span>* <span class="hljs-keyword">const</span> tls_init_callback = __scrt_get_dyn_tls_init_callback();<br>        <span class="hljs-keyword">if</span> (*tls_init_callback != <span class="hljs-literal">nullptr</span> &amp;&amp; __scrt_is_nonwritable_in_current_image(tls_init_callback))<br>        &#123;<br>            (*tls_init_callback)(<span class="hljs-literal">nullptr</span>, DLL_THREAD_ATTACH, <span class="hljs-literal">nullptr</span>);<br>        &#125;<br><br>        <span class="hljs-comment">// If this module has any thread-local destructors, register the</span><br>        <span class="hljs-comment">// callback function with the Unified CRT to run on exit.</span><br>        _tls_callback_type <span class="hljs-keyword">const</span> * <span class="hljs-keyword">const</span> tls_dtor_callback = __scrt_get_dyn_tls_dtor_callback();<br>        <span class="hljs-keyword">if</span> (*tls_dtor_callback != <span class="hljs-literal">nullptr</span> &amp;&amp; __scrt_is_nonwritable_in_current_image(tls_dtor_callback))<br>        &#123;<br>            _register_thread_local_exe_atexit_callback(*tls_dtor_callback);<br>        &#125;<br><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// Initialization is complete; invoke main...</span><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// 调用main函数</span><br><br>        <span class="hljs-keyword">int</span> <span class="hljs-keyword">const</span> main_result = invoke_main();<br><br>        <span class="hljs-comment">//</span><br>        <span class="hljs-comment">// main has returned; exit somehow...</span><br>        <span class="hljs-comment">//</span><br><br>        <span class="hljs-keyword">if</span> (!__scrt_is_managed_app())<br>            <span class="hljs-built_in">exit</span>(main_result);<br><br>        <span class="hljs-keyword">if</span> (!has_cctor)<br>            _cexit();<br><br>        <span class="hljs-comment">// Finally, we terminate the CRT:</span><br>        __scrt_uninitialize_crt(<span class="hljs-literal">true</span>, <span class="hljs-literal">false</span>);<br>        <span class="hljs-keyword">return</span> main_result;<br>    &#125;<br>    __except (_seh_filter_exe(GetExceptionCode(), GetExceptionInformation()))<br>    &#123;<br>        <span class="hljs-comment">// Note:  We should never reach this except clause.</span><br>        <span class="hljs-keyword">int</span> <span class="hljs-keyword">const</span> main_result = GetExceptionCode();<br><br>        <span class="hljs-keyword">if</span> (!__scrt_is_managed_app())<br>            _exit(main_result);<br><br>        <span class="hljs-keyword">if</span> (!has_cctor)<br>            _c_exit();<br><br>        <span class="hljs-keyword">return</span> main_result;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>继续跟进<code>invoke_main</code>，发现在这里调用了main函数</p>
@@ -368,7 +375,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>逆向分析-OEP到main启动</div>
-      <div>http://example.com/2024/03/31/blog0047-OEP到main启动/</div>
+      <div>https://whistleh.github.io/2024/03/31/blog0047-OEP到main启动/</div>
     </div>
     <div class="license-meta">
       

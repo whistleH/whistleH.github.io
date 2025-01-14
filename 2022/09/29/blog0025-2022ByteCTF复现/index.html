@@ -17,24 +17,18 @@
                 <meta name="author" content="whistle.H">
                 <meta name="keywords" content="">
                 
-                    <meta name="description" content="周末和队友一起打了ByteCTF，就打了第一天，第二天睡大觉去了。 字节出的题还是学到了非常多的，现在复盘一下。 这次比赛的好多知识点之前在挖洞&#x2F;刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。">
+                    <meta name="description" content="周末和队友一起打了ByteCTF，就打了第一天，第二天睡大觉去了。 字节出的题还是学到了非常多的，现在复盘一下。 这次比赛的好多知识点之前在挖洞&#x2F;刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2022ByteCTF复现">
-<meta property="og:url" content="http://example.com/2022/09/29/blog0025-2022ByteCTF%E5%A4%8D%E7%8E%B0/index.html">
+<meta property="og:url" content="https://whistleh.github.io/2022/09/29/blog0025-2022ByteCTF%E5%A4%8D%E7%8E%B0/index.html">
 <meta property="og:site_name" content="The world of whistleH">
-<meta property="og:description" content="周末和队友一起打了ByteCTF，就打了第一天，第二天睡大觉去了。 字节出的题还是学到了非常多的，现在复盘一下。 这次比赛的好多知识点之前在挖洞&#x2F;刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。">
+<meta property="og:description" content="周末和队友一起打了ByteCTF，就打了第一天，第二天睡大觉去了。 字节出的题还是学到了非常多的，现在复盘一下。 这次比赛的好多知识点之前在挖洞&#x2F;刷题都见过，可惜当时没能深挖，还是缺乏研究的时间啊。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220929231352356.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220929232549876.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/1.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145240477.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145402655.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171917479.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930170938596.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171127025.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171356476.png">
 <meta property="article:published_time" content="2022-09-29T00:22:50.000Z">
-<meta property="article:modified_time" content="2022-10-18T11:04:11.749Z">
+<meta property="article:modified_time" content="2022-10-18T11:04:12.000Z">
 <meta property="article:author" content="whistle.H">
 <meta property="article:tag" content="ctf">
 <meta property="article:tag" content="wp">
@@ -88,7 +82,7 @@
                                                         <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"whistleh.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -335,10 +329,14 @@
 <h4 id="解题复盘-2">解题复盘</h4>
 <p>这道题的两个知识点，CSS注入和CORS我之前都有遇到过，但是比赛的时候结合起来的就意识不到了。</p>
 <p>页面点击进去之后，是一个打字游戏。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145240477.png" srcset="/img/loading.gif" lazyload alt="image-20220930145240477" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145240477.png" srcset="/img/loading.gif" lazyload
+alt="image-20220930145240477" /></p>
 <p>很明显要输入的单词就是#embed 的mp3文件对应的名字。</p>
 <p>简单打打游戏，基本是过不了关的，于是回头查看源代码。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145402655.png" srcset="/img/loading.gif" lazyload alt="image-20220930145402655" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930145402655.png" srcset="/img/loading.gif" lazyload
+alt="image-20220930145402655" /></p>
 <p>源代码中，显示color属性是可控的，因此考虑是不是CSS注入，从而泄露src中的内容，实现游戏的过关。</p>
 <p>还有两个路由：</p>
 <ol type="1">
@@ -354,17 +352,25 @@
 <p>这样的方法有关键在于开了跨域，如果没开的话，那么受同源策略限制是无法做到的。</p>
 <p>分享一篇同源策略讲得非常清楚的博客：https://www.cnblogs.com/bmjoker/p/9500374.html</p>
 <p>在这道题中，我们要实现让victim主动访问<code>/status</code>路由，这需要XSS的实现，刚好存在name参数可以XSS。</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171917479.png" srcset="/img/loading.gif" lazyload alt="image-20220930171917479" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171917479.png" srcset="/img/loading.gif" lazyload
+alt="image-20220930171917479" /></p>
 <p>问题转移到如何实现解题（手动显然不可行</p>
 <p>我们尝试闭合CSS，利用CSS注入泄露HTML页面内容实现在hacker端获取到答案</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930170938596.png" srcset="/img/loading.gif" lazyload alt="image-20220930170938596" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930170938596.png" srcset="/img/loading.gif" lazyload
+alt="image-20220930170938596" /></p>
 <p>这样拼接我们能在hacker端获取到对应页面的src值的内容，并且可以通过向hacker端发送请求实现src值的获取。</p>
 <p>接下来实现自动化答题，回归到源代码，我们查看源代码发现存在两种答题模式</p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171127025.png" srcset="/img/loading.gif" lazyload alt="image-20220930171127025" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171127025.png" srcset="/img/loading.gif" lazyload
+alt="image-20220930171127025" /></p>
 <p>于是单次答题的攻击链如下：</p>
 <figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xl">CSS注入泄露<span class="hljs-function"><span class="hljs-title">src</span> -&gt;</span> <span class="hljs-function"><span class="hljs-title">hacker</span>端接收到对应src -&gt;</span> <span class="hljs-function"><span class="hljs-title">victim</span>端访问hacker端得到src -&gt;</span> 拼接location.href 答题<br></code></pre></td></tr></table></figure>
 <p>当我们解决了所有问题之后，接下来我们就可以利用name的XSS注入了,<code>after_command</code>就是访问<code>/status</code></p>
-<p><img src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171356476.png" srcset="/img/loading.gif" lazyload alt="image-20220930171356476" /></p>
+<p><img
+src="https://raw.githubusercontent.com/whistleH/blogImage/main/img/blog1_100/blog0024/image-20220930171356476.png" srcset="/img/loading.gif" lazyload
+alt="image-20220930171356476" /></p>
 <p>注意到，此时是victim端访问<code>/status</code>，所以通过内网检查。</p>
 <p>victim端获取到HTML内容，接下来就是发送，这当然也涉及跨域，但是此时注意到hacker端就是响应端了，主动权在hacker端，只要设置响应头就可以了。</p>
 <p>最后在hacker端接受传送过来的<code>/status</code>的结果就可以了。</p>
@@ -438,7 +444,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>2022ByteCTF复现</div>
-      <div>http://example.com/2022/09/29/blog0025-2022ByteCTF复现/</div>
+      <div>https://whistleh.github.io/2022/09/29/blog0025-2022ByteCTF复现/</div>
     </div>
     <div class="license-meta">
       
